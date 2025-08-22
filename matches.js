@@ -635,13 +635,13 @@ function generateMatchFormHTML(edit, dateVal, match, aekSpieler, realSpieler, ae
 					<label class="text-gray-300 text-lg w-8">🟨</label>
 					<button type="button" class="card-btn card-btn-down bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowb" data-min="0">−</button>
 					<input type="number" min="0" max="20" name="yellowb" class="card-input border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-12 min-h-[32px] text-sm text-center" value="${match?.yellowb || 0}" readonly>
-					<button type="button" class="card-btn card-btn-up bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowa" data-max="20">+</button>
+					<button type="button" class="card-btn card-btn-up bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowb" data-max="20">+</button>
 				</div>
 				<div class="flex items-center gap-2">
 					<label class="text-gray-300 text-lg w-8">🟥</label>
 					<button type="button" class="card-btn card-btn-down bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="redb" data-min="0">−</button>
 					<input type="number" min="0" max="11" name="redb" class="card-input border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-12 min-h-[32px] text-sm text-center" value="${match?.redb || 0}" readonly>
-					<button type="button" class="card-btn card-btn-up bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="reda" data-max="11">+</button>
+					<button type="button" class="card-btn card-btn-up bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="redb" data-max="11">+</button>
 				</div>
 			</div>
 		</div>

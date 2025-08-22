@@ -1,0 +1,1293 @@
+import { showModal, hideModal, showSuccessAndCloseModal } from './modal.js';
+import { decrementBansAfterMatch } from './bans.js';
+import { dataManager } from './dataManager.js';
+import { loadingManager, ErrorHandler, Performance, DOM } from './utils.js';
+import { supabase } from './supabaseClient.js';
+
+// Optimized data management with caching
+class MatchesDataManager {
+    constructor() {
+        this.matches = [];
+        this.aekAthen = [];
+        this.realMadrid = [];
+        this.bans = [];
+        this.finances = {
+            aekAthen: { balance: 0 },
+            realMadrid: { balance: 0 }
+        };
+        this.spielerDesSpiels = [];
+        this.transactions = [];
+        this.matchesInitialized = false;
+        this.matchesChannel = null;
+        this.lastLoadTime = 0;
+        this.loadingPromise = null;
+    }
+
+    // Debounced data loading to prevent excessive calls
+    loadAllData = Performance.debounce(async (renderFn = null) => {
+        if (this.loadingPromise) {
+            return this.loadingPromise;
+        }
+
+        this.loadingPromise = this._loadAllDataInternal(renderFn);
+        try {
+            await this.loadingPromise;
+        } finally {
+            this.loadingPromise = null;
+        }
+    }, 100);
+
+    async _loadAllDataInternal(renderFn) {
+        const loadingKey = 'matches-data';
+        loadingManager.show(loadingKey);
+
+        try {
+            const data = await dataManager.loadAllAppData();
+            
+            this.matches = data.matches || [];
+            
+            // Filter players by team
+            const allPlayers = data.players || [];
+            this.aekAthen = allPlayers.filter(p => p.team === "AEK");
+            this.realMadrid = allPlayers.filter(p => p.team === "Real");
+            
+            this.bans = data.bans || [];
+            
+            // Process finances
+            const financesData = data.finances || [];
+            this.finances = {
+                aekAthen: financesData.find(f => f.team === "AEK") || { balance: 0 },
+                realMadrid: financesData.find(f => f.team === "Real") || { balance: 0 }
+            };
+            
+            this.spielerDesSpiels = data.spieler_des_spiels || [];
+            this.transactions = data.transactions || [];
+            
+            this.lastLoadTime = Date.now();
+            
+            if (renderFn) {
+                renderFn();
+            }
+        } catch (error) {
+            ErrorHandler.handleDatabaseError(error, 'Matches-Daten laden');
+        } finally {
+            loadingManager.hide(loadingKey);
+        }
+    }
+
+    subscribeToChanges(renderFn = null) {
+        if (this.matchesChannel) return;
+        
+        try {
+            this.matchesChannel = supabase
+                .channel('matches_live')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'matches' }, 
+                    () => this.loadAllData(renderFn))
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'spieler_des_spiels' }, 
+                    () => this.loadAllData(renderFn))
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'finances' }, 
+                    () => this.loadAllData(renderFn))
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'players' }, 
+                    () => this.loadAllData(renderFn))
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, 
+                    () => this.loadAllData(renderFn))
+                .subscribe();
+        } catch (error) {
+            console.error('Error subscribing to changes:', error);
+        }
+    }
+
+    unsubscribe() {
+        if (this.matchesChannel) {
+            supabase.removeChannel(this.matchesChannel);
+            this.matchesChannel = null;
+        }
+    }
+
+    reset() {
+        this.matches = [];
+        this.aekAthen = [];
+        this.realMadrid = [];
+        this.bans = [];
+        this.finances = { aekAthen: { balance: 0 }, realMadrid: { balance: 0 } };
+        this.spielerDesSpiels = [];
+        this.transactions = [];
+        this.matchesInitialized = false;
+        this.lastLoadTime = 0;
+        this.unsubscribe();
+    }
+}
+
+// Create singleton instance
+const matchesData = new MatchesDataManager();
+
+// Hilfsfunktion: App-Matchnummer (laufende Nummer, wie Übersicht) - optimized
+export function getAppMatchNumber(matchId) {
+    if (!matchId || !matchesData.matches.length) return null;
+    
+    // matches ist absteigend sortiert (neueste zuerst)
+    const idx = matchesData.matches.findIndex(m => m.id === matchId);
+    return idx >= 0 ? matchesData.matches.length - idx : null;
+}
+
+export async function renderMatchesTab(containerId = "app") {
+    console.log("renderMatchesTab aufgerufen!", { containerId });
+    
+    const app = DOM.getElementById(containerId);
+    if (!app) {
+        console.error(`Container ${containerId} not found`);
+        return;
+    }
+
+    app.innerHTML = `
+        <div class="flex flex-col sm:flex-row sm:justify-between mb-4 gap-2">
+            <h2 class="text-lg font-semibold">Matches</h2>
+            <button id="add-match-btn" class="bg-green-600 text-white w-full sm:w-auto px-4 py-2 rounded-lg text-base flex items-center justify-center gap-2 active:scale-95 transition">
+                <i class="fas fa-plus"></i> <span>Match hinzufügen</span>
+            </button>
+        </div>
+        <div id="matches-list" class="space-y-3">
+            <div class="flex items-center justify-center py-8">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span class="ml-2 text-gray-600">Lädt Matches...</span>
+            </div>
+        </div>
+    `;
+
+    // Attach event listener safely
+    const addMatchBtn = DOM.getElementById("add-match-btn");
+    if (addMatchBtn) {
+        addMatchBtn.onclick = () => openMatchForm();
+    }
+
+    // Subscribe to real-time changes
+    matchesData.subscribeToChanges(renderMatchesList);
+    
+    // Load data
+    await matchesData.loadAllData(renderMatchesList);
+}
+
+let matchViewDate = new Date().toISOString().slice(0, 10); // Standard: heute
+
+// Optimized match list rendering with better error handling
+function renderMatchesList() {
+    const container = DOM.getElementById('matches-list');
+    if (!container) {
+        console.warn("Element #matches-list nicht gefunden!");
+        return;
+    }
+
+    try {
+        if (!matchesData.matches.length) {
+            container.innerHTML = `<div class="text-gray-400 text-sm text-center py-4">Noch keine Matches eingetragen.</div>`;
+            return;
+        }
+
+        // Alle Daten nach Datum gruppieren - optimized
+        const uniqueDates = [...new Set(matchesData.matches.map(m => m.date))].sort((a, b) => b.localeCompare(a));
+        
+        // matchViewDate initialisieren, falls leer
+        if (!matchViewDate && uniqueDates.length) {
+            matchViewDate = uniqueDates[0];
+        }
+
+        // Nur Matches des aktuellen Tages anzeigen
+        const filteredMatches = matchesData.matches.filter(m => m.date === matchViewDate);
+
+        // Überschrift mit Datum, schön formatiert
+        const dateStr = matchViewDate ? matchViewDate.split('-').reverse().join('.') : '';
+        let html = `<div class="text-center font-semibold text-base mb-2">Spiele am <span class="text-sky-700 dark:text-sky-400">${dateStr}</span></div>`;
+
+        if (!filteredMatches.length) {
+            html += `<div class="text-gray-400 text-sm text-center py-4">Keine Spiele für diesen Tag.</div>`;
+        } else {
+            html += filteredMatches.map(match => {
+                // Durchgehende Nummerierung, unabhängig vom Tag!
+                const nr = matchesData.matches.length - matchesData.matches.findIndex(m => m.id === match.id);
+                return matchHtml(match, nr);
+            }).join('');
+        }
+
+        // Navigation Buttons - optimized
+        html += renderNavigationButtons(uniqueDates);
+        
+        DOM.setSafeHTML(container, html);
+        
+        // Attach event listeners safely
+        attachMatchEventListeners(uniqueDates);
+        
+    } catch (error) {
+        console.error('Error rendering matches list:', error);
+        ErrorHandler.showUserError('Fehler beim Anzeigen der Matches');
+        container.innerHTML = `<div class="text-red-500 text-center py-4">Fehler beim Laden der Matches</div>`;
+    }
+}
+
+// Separate function for navigation buttons
+function renderNavigationButtons(uniqueDates) {
+    const currIdx = uniqueDates.indexOf(matchViewDate);
+    let navHtml = `<div class="flex gap-2 justify-center mt-4">`;
+    
+    if (currIdx < uniqueDates.length - 1) {
+        navHtml += `<button id="older-matches-btn" class="bg-gray-300 dark:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-gray-400">Ältere Spiele anzeigen</button>`;
+    }
+    if (currIdx > 0) {
+        navHtml += `<button id="newer-matches-btn" class="bg-gray-300 dark:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-gray-400">Neuere Spiele anzeigen</button>`;
+    }
+    
+    navHtml += `</div>`;
+    return navHtml;
+}
+
+// Separate function for event listeners
+function attachMatchEventListeners(uniqueDates) {
+    const currIdx = uniqueDates.indexOf(matchViewDate);
+    
+    // Navigation button handlers
+    if (currIdx < uniqueDates.length - 1) {
+        const olderBtn = DOM.getElementById('older-matches-btn');
+        if (olderBtn) {
+            olderBtn.onclick = () => {
+                matchViewDate = uniqueDates[currIdx + 1];
+                renderMatchesList();
+            };
+        }
+    }
+    
+    if (currIdx > 0) {
+        const newerBtn = DOM.getElementById('newer-matches-btn');
+        if (newerBtn) {
+            newerBtn.onclick = () => {
+                matchViewDate = uniqueDates[currIdx - 1];
+                renderMatchesList();
+            };
+        }
+    }
+
+    // Match action buttons
+    document.querySelectorAll('.edit-match-btn').forEach(btn => {
+        btn.onclick = () => {
+            const matchId = parseInt(btn.getAttribute('data-id'));
+            if (matchId) {
+                openMatchForm(matchId);
+            }
+        };
+    });
+    
+    document.querySelectorAll('.delete-match-btn').forEach(btn => {
+        btn.onclick = () => {
+            const matchId = parseInt(btn.getAttribute('data-id'));
+            if (matchId) {
+                deleteMatch(matchId);
+            }
+        };
+    });
+
+    // Match toggle buttons for collapsible details
+    document.querySelectorAll('.match-toggle-btn').forEach(btn => {
+        btn.onclick = () => {
+            const matchId = btn.getAttribute('data-match-id');
+            const detailsDiv = document.querySelector(`.match-details[data-match-id="${matchId}"]`);
+            const icon = btn.querySelector('i');
+            
+            if (detailsDiv) {
+                const isHidden = detailsDiv.style.display === 'none';
+                detailsDiv.style.display = isHidden ? 'block' : 'none';
+                
+                // Rotate the chevron icon
+                if (icon) {
+                    if (isHidden) {
+                        icon.classList.add('rotate-180');
+                    } else {
+                        icon.classList.remove('rotate-180');
+                    }
+                }
+            }
+        };
+    });
+}
+
+function matchHtml(match, nr) {
+    function goalsHtml(goals) {
+        if (!goals || !goals.length) return `<span class="text-gray-400 text-sm italic">Keine Torschützen</span>`;
+        return goals
+            .map(g => {
+                // Handle both string array format (legacy) and object format (new)
+                if (typeof g === 'string') {
+                    return `<span class="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-500 text-green-100 rounded-lg px-3 py-1 text-sm font-medium shadow-md">
+                        ${g} 
+                        <span class="inline-block rounded-md px-2 py-1 border font-bold text-xs bg-green-700 border-green-600 text-green-100">1</span>
+                    </span>`;
+                } else {
+                    return `<span class="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-500 text-green-100 rounded-lg px-3 py-1 text-sm font-medium shadow-md">
+                        ${g.player} 
+                        <span class="inline-block rounded-md px-2 py-1 border font-bold text-xs bg-green-700 border-green-600 text-green-100">${g.count}</span>
+                    </span>`;
+                }
+            })
+            .join(' ');
+    }
+    function prizeHtml(amount, team) {
+        const isPos = amount >= 0;
+        const tClass = team === "AEK" ? "bg-blue-800 dark:bg-blue-900" : "bg-red-800 dark:bg-red-900";
+        const color = isPos ? "text-green-200 dark:text-green-300" : "text-red-200 dark:text-red-300";
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full ${tClass} ${color} font-bold text-xs">
+                    <span class="font-semibold">${team}</span>
+                    <span>${isPos ? '+' : ''}${amount.toLocaleString('de-DE')} €</span>
+                </span>`;
+    }
+    
+    // Determine match result for better visual indication
+    const isWin = match.goalsa > match.goalsb ? 'AEK' : match.goalsa < match.goalsb ? 'Real' : 'Draw';
+    const resultClass = isWin === 'AEK' ? 'border-l-4 border-l-blue-500' : 
+                        isWin === 'Real' ? 'border-l-4 border-l-red-500' : 
+                        'border-l-4 border-l-gray-500';
+    
+    return `
+    <div class="bg-gradient-to-r from-gray-800 to-gray-750 border border-gray-600 rounded-xl p-5 mt-4 text-gray-100 shadow-xl hover:shadow-2xl transition-all duration-300 ${resultClass} transform hover:scale-[1.02]">
+      <!-- Match Header -->
+      <div class="flex justify-between items-start mb-4">
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">#${nr}</span>
+            <span class="text-gray-300 text-sm font-medium">${match.date}</span>
+            <button class="match-toggle-btn bg-gray-600 hover:bg-gray-500 text-white px-3 py-2 rounded-lg text-sm ml-auto transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" data-match-id="${match.id}" title="Details ein-/ausblenden">
+              <span class="text-xs font-medium">Details</span>
+              <i class="fas fa-chevron-down transform transition-transform duration-200"></i>
+            </button>
+          </div>
+          <div class="bg-gradient-to-r from-gray-700 to-gray-650 rounded-xl p-4 mb-3 border border-gray-600">
+            <div class="flex items-center justify-center">
+              <div class="text-center">
+                <span class="text-blue-400 font-bold text-xl block mb-1">${match.teama}</span>
+                <span class="text-3xl font-black text-white">${match.goalsa}</span>
+              </div>
+              <div class="mx-6 text-center">
+                <span class="text-gray-400 text-2xl font-bold">:</span>
+              </div>
+              <div class="text-center">
+                <span class="text-red-400 font-bold text-xl block mb-1">${match.teamb}</span>
+                <span class="text-3xl font-black text-white">${match.goalsb}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-2 ml-4">
+          <button class="edit-match-btn bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-xl text-sm flex items-center justify-center active:scale-95 transition-all shadow-lg hover:shadow-xl" title="Bearbeiten" data-id="${match.id}">
+            <i class="fas fa-edit text-base"></i>
+          </button>
+          <button class="delete-match-btn bg-red-500 hover:bg-red-600 text-white p-3 rounded-xl text-sm flex items-center justify-center active:scale-95 transition-all shadow-lg hover:shadow-xl" title="Löschen" data-id="${match.id}">
+            <i class="fas fa-trash text-base"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Collapsible Details Section -->
+      <div class="match-details" data-match-id="${match.id}" style="display: none;">
+        <!-- Goal Scorers Section -->
+        <div class="space-y-3 mb-4">
+          <div class="bg-gradient-to-r from-blue-900/30 to-blue-800/30 border border-blue-700/50 rounded-xl p-3">
+            <div class="text-sm font-bold text-blue-300 mb-2 flex items-center gap-2">
+              <i class="fas fa-futbol"></i>
+              ${match.teama} Torschützen:
+            </div>
+            <div class="flex flex-wrap gap-2">${goalsHtml(match.goalslista || [])}</div>
+          </div>
+          <div class="bg-gradient-to-r from-red-900/30 to-red-800/30 border border-red-700/50 rounded-xl p-3">
+            <div class="text-sm font-bold text-red-300 mb-2 flex items-center gap-2">
+              <i class="fas fa-futbol"></i>
+              ${match.teamb} Torschützen:
+            </div>
+            <div class="flex flex-wrap gap-2">${goalsHtml(match.goalslistb || [])}</div>
+          </div>
+        </div>
+        
+        <!-- Cards Section -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          <div class="bg-gradient-to-r from-blue-900/30 to-blue-800/30 border border-blue-700/50 rounded-xl p-3">
+            <div class="text-sm font-bold text-blue-300 mb-2 flex items-center gap-2">
+              <i class="fas fa-id-card"></i>
+              ${match.teama} Karten:
+            </div>
+            <div class="flex gap-2">
+              <span class="inline-flex items-center gap-1 bg-yellow-600 text-yellow-100 rounded-lg px-3 py-1 text-sm font-medium shadow-md">🟨 ${match.yellowa || 0}</span>
+              <span class="inline-flex items-center gap-1 bg-red-600 text-red-100 rounded-lg px-3 py-1 text-sm font-medium shadow-md">🟥 ${match.reda || 0}</span>
+            </div>
+          </div>
+          <div class="bg-gradient-to-r from-red-900/30 to-red-800/30 border border-red-700/50 rounded-xl p-3">
+            <div class="text-sm font-bold text-red-300 mb-2 flex items-center gap-2">
+              <i class="fas fa-id-card"></i>
+              ${match.teamb} Karten:
+            </div>
+            <div class="flex gap-2">
+              <span class="inline-flex items-center gap-1 bg-yellow-600 text-yellow-100 rounded-lg px-3 py-1 text-sm font-medium shadow-md">🟨 ${match.yellowb || 0}</span>
+              <span class="inline-flex items-center gap-1 bg-red-600 text-red-100 rounded-lg px-3 py-1 text-sm font-medium shadow-md">🟥 ${match.redb || 0}</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Footer with Prizes and Man of the Match -->
+        <div class="border-t border-gray-600 pt-4 space-y-3">
+          <div>
+            <div class="text-sm font-bold text-gray-300 mb-2 flex items-center gap-2">
+              <i class="fas fa-coins"></i>
+              Preisgelder:
+            </div>
+            <div class="flex flex-wrap gap-2">
+              ${prizeHtml(match.prizeaek ?? 0, "AEK")}
+              ${prizeHtml(match.prizereal ?? 0, "Real")}
+            </div>
+          </div>
+          ${match.manofthematch ? `
+          <div>
+            <div class="text-sm font-bold text-gray-300 mb-2 flex items-center gap-2">
+              <i class="fas fa-star"></i>
+              Spieler des Spiels:
+            </div>
+            <span class="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-600 to-yellow-500 text-yellow-100 px-3 py-2 rounded-lg text-sm font-bold shadow-lg">
+              ⭐ ${match.manofthematch}
+              <span class="text-xs font-medium opacity-90">(${(() => {
+                // Determine team from match data
+                if (match.goalslista && match.goalslista.some(g => g.player === match.manofthematch)) return 'AEK';
+                if (match.goalslistb && match.goalslistb.some(g => g.player === match.manofthematch)) return 'Real';
+                // Fallback: check if player is in AEK or Real team
+                return matchesData.aekAthen.find(p => p.name === match.manofthematch) ? 'AEK' : 'Real';
+              })()})</span>
+            </span>
+          </div>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+    `;
+}
+
+// Helper function to get SdS count for a player - moved outside for global access
+function getSdsCount(playerName, team) {
+    const sdsEntry = matchesData.spielerDesSpiels.find(sds => 
+        sds.name === playerName && sds.team === team
+    );
+    return sdsEntry ? (sdsEntry.count || 0) : 0;
+}
+
+// --- MODERNES, KOMPAKTES POPUP, ABER MIT ALLER ALTER LOGIK ---
+// Optimized match form with better error handling and validation
+function openMatchForm(id) {
+    try {
+        let match = null, edit = false;
+        
+        if (typeof id === "number") {
+            match = matchesData.matches.find(m => m.id === id);
+            edit = !!match;
+        }
+
+        // Validate player data is available
+        if (!matchesData.aekAthen.length && !matchesData.realMadrid.length) {
+            ErrorHandler.showUserError('Keine Spielerdaten verfügbar. Bitte laden Sie die Seite neu.');
+            return;
+        }
+
+        // Spieler-Optionen SORTIERT nach SdS-Anzahl (absteigend), dann nach Toren (absteigend) - safely
+        const aekSorted = [...matchesData.aekAthen].sort((a, b) => {
+            const aSdsCount = getSdsCount(a.name, "AEK");
+            const bSdsCount = getSdsCount(b.name, "AEK");
+            if (aSdsCount !== bSdsCount) return bSdsCount - aSdsCount; // Sort by SdS count first
+            const aGoals = a.goals || 0;
+            const bGoals = b.goals || 0;
+            return bGoals - aGoals; // Then by goals
+        });
+        const realSorted = [...matchesData.realMadrid].sort((a, b) => {
+            const aSdsCount = getSdsCount(a.name, "Real");
+            const bSdsCount = getSdsCount(b.name, "Real");
+            if (aSdsCount !== bSdsCount) return bSdsCount - aSdsCount; // Sort by SdS count first
+            const aGoals = a.goals || 0;
+            const bGoals = b.goals || 0;
+            return bGoals - aGoals; // Then by goals
+        });
+        
+        const aekSpieler = aekSorted.map(p => {
+            const goals = p.goals || 0;
+            return `<option value="${DOM.sanitizeForAttribute(p.name)}">${DOM.sanitizeForHTML(p.name)} (${goals} Tore)</option>`;
+        }).join('');
+        
+        const realSpieler = realSorted.map(p => {
+            const goals = p.goals || 0;
+            return `<option value="${DOM.sanitizeForAttribute(p.name)}">${DOM.sanitizeForHTML(p.name)} (${goals} Tore)</option>`;
+        }).join('');
+
+        const goalsListA = match?.goalslista || [];
+        const goalsListB = match?.goalslistb || [];
+        const manofthematch = match?.manofthematch || "";
+        const dateVal = match ? match.date : (new Date()).toISOString().slice(0,10);
+
+        const filterButtonHTML = `
+            <div class="mb-3 flex gap-2">
+                <button type="button" id="sds-filter-aek" class="sds-filter-btn bg-gray-600 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 border-2 border-transparent flex items-center gap-2 min-h-[40px] flex-1 justify-center touch-manipulation">
+                    <span class="w-3 h-3 bg-blue-400 rounded-full flex-shrink-0 indicator-circle"></span>
+                    <span>AEK</span>
+                </button>
+                <button type="button" id="sds-filter-real" class="sds-filter-btn bg-gray-600 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 border-2 border-transparent flex items-center gap-2 min-h-[40px] flex-1 justify-center touch-manipulation">
+                    <span class="w-3 h-3 bg-red-400 rounded-full flex-shrink-0 indicator-circle"></span>
+                    <span>Real</span>
+                </button>
+            </div>
+        `;
+
+        // Validate date
+        if (!dateVal || !dateVal.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            ErrorHandler.showUserError('Ungültiges Datum');
+            return;
+        }
+
+        // Show modal with enhanced form
+        showModal(generateMatchFormHTML(edit, dateVal, match, aekSpieler, realSpieler, aekSorted, realSorted, goalsListA, goalsListB, manofthematch));
+        
+        // Attach event handlers safely with a small delay to ensure DOM is ready
+		setTimeout(() => {
+			attachMatchFormEventHandlers(edit, match?.id, aekSpieler, realSpieler, aekSorted, realSorted, manofthematch);
+			const modalContent = document.querySelector('.modal-content');
+			if (modalContent) {
+				modalContent.classList.add('match-modal-content');
+			}
+		}, 50);
+        
+    } catch (error) {
+        console.error('Error opening match form:', error);
+        ErrorHandler.showUserError('Fehler beim Öffnen des Match-Formulars');
+    }
+}
+
+// Helper function to generate form HTML
+function generateMatchFormHTML(edit, dateVal, match, aekSpieler, realSpieler, aekSorted, realSorted, goalsListA, goalsListB, manofthematch) {
+    return `
+    <form id="match-form" class="space-y-6 w-full">
+        <div class="space-y-4">
+            <div class="flex justify-center">
+                <button type="button" id="show-date" class="flex items-center gap-2 text-sm font-semibold text-slate-300 hover:text-sky-400 border border-slate-600 rounded-lg px-4 py-3 bg-slate-700 focus:outline-none transition-all focus:ring-2 focus:ring-sky-500" tabindex="0">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <span id="date-label">${dateVal.split('-').reverse().join('.')}</span>
+                </button>
+                <input type="date" name="date" id="date-input" class="hidden" value="${dateVal}" required>
+            </div>
+            <div class="flex items-center justify-center gap-2 bg-slate-800 rounded-lg p-3 border border-slate-600">
+                <div class="flex flex-col items-center">
+                    <span class="font-bold text-blue-400 text-sm mb-1">AEK</span>
+                </div>
+                <input type="number" min="0" max="50" name="goalsa" class="border border-slate-600 bg-slate-700 text-slate-100 rounded-lg p-2 w-14 min-h-[40px] text-center text-lg font-bold focus:ring-2 focus:ring-sky-500 focus:border-transparent" required placeholder="0" value="${match ? match.goalsa : ""}">
+                <span class="font-bold text-lg text-slate-300 mx-1">:</span>
+                <input type="number" min="0" max="50" name="goalsb" class="border border-slate-600 bg-slate-700 text-slate-100 rounded-lg p-2 w-14 min-h-[40px] text-center text-lg font-bold focus:ring-2 focus:ring-sky-500 focus:border-transparent" required placeholder="0" value="${match ? match.goalsb : ""}">
+                <div class="flex flex-col items-center">
+                    <span class="font-bold text-red-400 text-sm mb-1">Real</span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="scorersA-block" class="bg-gray-700 border border-gray-600 p-3 rounded-lg">
+            <b class="text-blue-400 text-sm">Torschützen AEK</b>
+            <div id="scorersA" class="mt-2">${scorerFields("goalslista", goalsListA, aekSpieler)}</div>
+			<button type="button" id="addScorerA"
+				class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-2 py-[2px] rounded active:scale-95 transition text-xs shadow touch-manipulation"
+				style="height: 22px; min-height: 0; min-width: 0; font-size: 12px;">
+				<span class="inline align-middle" style="font-size:1em; line-height:1;">+</span>
+				<span class="align-middle">Torschütze hinzufügen</span>
+			</button>
+
+        </div>
+        
+        <div id="scorersB-block" class="bg-gray-700 border border-gray-600 p-3 rounded-lg">
+            <b class="text-red-400 text-sm">Torschützen Real</b>
+            <div id="scorersB" class="mt-2">
+                ${scorerFields("goalslistb", goalsListB, realSpieler)}
+            </div>
+			<button type="button" id="addScorerB"
+				class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-2 py-[2px] rounded active:scale-95 transition text-xs shadow touch-manipulation"
+				style="height: 22px; min-height: 0; min-width: 0; font-size: 12px;">
+				<span class="inline align-middle" style="font-size:1em; line-height:1;">+</span>
+				<span class="align-middle">Torschütze hinzufügen</span>
+			</button>
+
+        </div>
+        
+		<div class="bg-gray-700 border border-gray-600 p-3 rounded-lg">
+			<b class="text-blue-400 text-sm">Karten AEK</b>
+			<div class="flex flex-col gap-2 mt-2">
+				<div class="flex items-center gap-2">
+					<label class="text-gray-300 text-lg w-8">🟨</label>
+					<button type="button" class="card-btn card-btn-down bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowa" data-min="0">−</button>
+					<input type="number" min="0" max="20" name="yellowa" class="card-input border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-12 min-h-[32px] text-sm text-center" value="${match?.yellowa || 0}" readonly>
+					<button type="button" class="card-btn card-btn-up bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowa" data-max="20">+</button>
+				</div>
+				<div class="flex items-center gap-2">
+					<label class="text-gray-300 text-lg w-8">🟥</label>
+					<button type="button" class="card-btn card-btn-down bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="reda" data-min="0">−</button>
+					<input type="number" min="0" max="11" name="reda" class="card-input border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-12 min-h-[32px] text-sm text-center" value="${match?.reda || 0}" readonly>
+					<button type="button" class="card-btn card-btn-up bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="reda" data-max="11">+</button>
+				</div>
+			</div>
+		</div>
+        
+		<div class="bg-gray-700 border border-gray-600 p-3 rounded-lg">
+			<b class="text-red-400 text-sm">Karten Real</b>
+			<div class="flex flex-col gap-2 mt-2">
+				<div class="flex items-center gap-2">
+					<label class="text-gray-300 text-lg w-8">🟨</label>
+					<button type="button" class="card-btn card-btn-down bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowa" data-min="0">−</button>
+					<input type="number" min="0" max="20" name="yellowb" class="card-input border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-12 min-h-[32px] text-sm text-center" value="${match?.yellowb || 0}" readonly>
+					<button type="button" class="card-btn card-btn-up bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowa" data-max="20">+</button>
+				</div>
+				<div class="flex items-center gap-2">
+					<label class="text-gray-300 text-lg w-8">🟥</label>
+					<button type="button" class="card-btn card-btn-down bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="reda" data-min="0">−</button>
+					<input type="number" min="0" max="11" name="redb" class="card-input border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-12 min-h-[32px] text-sm text-center" value="${match?.redb || 0}" readonly>
+					<button type="button" class="card-btn card-btn-up bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="reda" data-max="11">+</button>
+				</div>
+			</div>
+		</div>
+        
+        <div class="bg-gray-700 border border-gray-600 p-3 rounded-lg">
+            <label class="font-semibold text-gray-100 block mb-2">Spieler des Spiels (SdS):</label>
+            
+            <!-- Team Filter Toggle with enhanced visual indicators -->
+            <div class="mb-3 flex gap-2">
+                <button type="button" id="sds-filter-aek" class="sds-filter-btn bg-gray-600 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 border-2 border-transparent flex items-center gap-2 min-h-[40px] flex-1 justify-center touch-manipulation">
+                    <span class="w-3 h-3 bg-blue-400 rounded-full flex-shrink-0 indicator-circle"></span>
+                    <span>AEK</span>
+                </button>
+                <button type="button" id="sds-filter-real" class="sds-filter-btn bg-gray-600 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 border-2 border-transparent flex items-center gap-2 min-h-[40px] flex-1 justify-center touch-manipulation">
+                    <span class="w-3 h-3 bg-red-400 rounded-full flex-shrink-0 indicator-circle"></span>
+                    <span>Real</span>
+                </button>
+            </div>
+            
+            <select name="manofthematch" id="manofthematch-select" class="border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-full min-h-[40px] text-sm">
+                <option value="">Keiner</option>
+                ${aekSorted.map(p => {
+                    const sdsCount = getSdsCount(p.name, "AEK");
+                    return `<option value="${DOM.sanitizeForAttribute(p.name)}" data-team="AEK"${manofthematch===p.name?' selected':''}>${DOM.sanitizeForHTML(p.name)} (AEK, ${sdsCount} SdS)</option>`;
+                }).join('')}
+                ${realSorted.map(p => {
+                    const sdsCount = getSdsCount(p.name, "Real");
+                    return `<option value="${DOM.sanitizeForAttribute(p.name)}" data-team="Real"${manofthematch===p.name?' selected':''}>${DOM.sanitizeForHTML(p.name)} (Real, ${sdsCount} SdS)</option>`;
+                }).join('')}
+            </select>
+        </div>
+        
+        <div class="flex flex-col gap-2 pt-2">
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white w-full px-4 py-2 rounded-lg text-sm font-semibold active:scale-95 transition min-h-[40px] touch-manipulation">${edit ? "Speichern" : "Anlegen"}</button>
+            <button type="button" class="bg-gray-600 hover:bg-gray-700 text-gray-100 w-full px-4 py-2 rounded-lg text-sm font-semibold transition-colors min-h-[40px] touch-manipulation" onclick="window.hideModal()">Abbrechen</button>
+        </div>
+    </form>
+    `;
+}
+
+// Helper functions for DOM safety
+DOM.sanitizeForHTML = function(str) {
+    if (!str) return '';
+    return str.replace(/[<>&"']/g, function(match) {
+        const escapeMap = { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' };
+        return escapeMap[match];
+    });
+};
+
+DOM.sanitizeForAttribute = function(str) {
+    if (!str) return '';
+    return str.replace(/[<>&"']/g, function(match) {
+        const escapeMap = { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' };
+        return escapeMap[match];
+    });
+};
+
+// Helper function to attach event handlers to the match form
+function attachMatchFormEventHandlers(edit, id, aekSpieler, realSpieler, aekSorted, realSorted, manofthematch) {
+    // Datum-Show/Hide (wie gehabt)
+    document.getElementById('show-date').onclick = function() {
+        document.getElementById('date-input').classList.toggle('hidden');
+        document.getElementById('date-input').focus();
+    };
+    document.getElementById('date-input').onchange = function() {
+        document.getElementById('date-label').innerText = this.value.split('-').reverse().join('.');
+        this.classList.add('hidden');
+    };
+
+    // --- Restliche Logik ---
+    function addScorerHandler(scorersId, name, spielerOpts) {
+        const container = document.getElementById(scorersId);
+        const div = document.createElement("div");
+        div.className = "flex gap-2 mb-2 scorer-row items-center";
+        div.innerHTML = `
+            <select name="${name}-player" class="border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 min-h-[40px] text-sm flex-1" style="min-width:100px;">
+                <option value="">Spieler wählen</option>
+                ${spielerOpts}
+            </select>
+            <input type="number" min="1" name="${name}-count" placeholder="Tore" class="border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-16 min-h-[40px] text-sm text-center flex-shrink-0" value="1">
+            <button type="button" class="remove-goal-btn bg-red-600 hover:bg-red-700 text-white px-2 py-2 rounded-lg min-h-[40px] w-10 flex items-center justify-center transition-all duration-200 flex-shrink-0 hover:scale-105 touch-manipulation" title="Torschütze entfernen">
+                <i class="fas fa-minus text-xs"></i>
+            </button>
+        `;
+        div.querySelector('.remove-goal-btn').onclick = function() {
+            if(container.querySelectorAll('.scorer-row').length > 1)
+                div.remove();
+        };
+        container.appendChild(div);
+    }
+    document.querySelectorAll("#scorersA .remove-goal-btn").forEach(btn => {
+        btn.onclick = function() {
+            const parent = document.getElementById('scorersA');
+            if(parent.querySelectorAll('.scorer-row').length > 1)
+                btn.closest('.scorer-row').remove();
+        };
+    });
+    document.querySelectorAll("#scorersB .remove-goal-btn").forEach(btn => {
+        btn.onclick = function() {
+            const parent = document.getElementById('scorersB');
+            if(parent.querySelectorAll('.scorer-row').length > 1)
+                btn.closest('.scorer-row').remove();
+        };
+    });
+    document.getElementById("addScorerA").onclick = () => addScorerHandler("scorersA", "goalslista", aekSpieler);
+    document.getElementById("addScorerB").onclick = () => addScorerHandler("scorersB", "goalslistb", realSpieler);
+
+    function toggleScorerFields() {
+        const goalsA = parseInt(document.querySelector('input[name="goalsa"]').value) || 0;
+        const goalsB = parseInt(document.querySelector('input[name="goalsb"]').value) || 0;
+        const scorersABlock = document.getElementById('scorersA-block');
+        const scorersBBlock = document.getElementById('scorersB-block');
+        scorersABlock.style.display = goalsA > 0 ? '' : 'none';
+        scorersBBlock.style.display = goalsB > 0 ? '' : 'none';
+    }
+    document.querySelector('input[name="goalsa"]').addEventListener('input', toggleScorerFields);
+    document.querySelector('input[name="goalsb"]').addEventListener('input', toggleScorerFields);
+    toggleScorerFields();
+	
+	    // Add event listeners for team filter buttons with error checking
+    const aekBtn = document.getElementById('sds-filter-aek');
+    const realBtn = document.getElementById('sds-filter-real');
+    if (aekBtn && realBtn) {
+        const addFilterEventListeners = (btn, team) => {
+            let touchStarted = false;
+            const handler = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                filterSdsDropdown(team, aekSorted, realSorted, document.getElementById('manofthematch-select').value);
+            };
+            btn.addEventListener('touchstart', (e) => {
+                touchStarted = true;
+                btn.style.transform = 'scale(0.98)';
+            });
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                btn.style.transform = 'scale(1)';
+                if (touchStarted) {
+                    touchStarted = false;
+                    filterSdsDropdown(team, aekSorted, realSorted, document.getElementById('manofthematch-select').value);
+                }
+            });
+            btn.addEventListener('click', (e) => {
+                if (!touchStarted) {
+                    handler(e);
+                }
+            });
+            btn.addEventListener('touchcancel', () => {
+                touchStarted = false;
+                btn.style.transform = 'scale(1)';
+            });
+        };
+        addFilterEventListeners(aekBtn, 'AEK');
+        addFilterEventListeners(realBtn, 'Real');
+        filterSdsDropdown('AEK', aekSorted, realSorted, manofthematch); // Default
+    } else {
+        console.error('Team filter buttons not found:', { aekBtn, realBtn });
+    }
+	setupCardButtons();
+}
+    
+
+
+
+    // Add event listeners for card increment/decrement buttons
+function setupCardButtons() {
+    document.querySelectorAll('.card-btn-up').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = e.currentTarget.getAttribute('data-target');
+            const max = parseInt(e.currentTarget.getAttribute('data-max')) || 99;
+            const input = document.querySelector(`input[name="${target}"]`);
+            if (input) {
+                const current = parseInt(input.value) || 0;
+                if (current < max) {
+                    input.value = current + 1;
+                }
+            }
+        });
+    });
+    document.querySelectorAll('.card-btn-down').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = e.currentTarget.getAttribute('data-target');
+            const min = parseInt(e.currentTarget.getAttribute('data-min')) || 0;
+            const input = document.querySelector(`input[name="${target}"]`);
+            if (input) {
+                const current = parseInt(input.value) || 0;
+                if (current > min) {
+                    input.value = current - 1;
+                }
+            }
+        });
+    });
+}
+
+
+
+function scorerFields(name, arr, spielerOpts) {
+    if (!arr.length) arr = [{ player: "", count: 1 }];
+    return arr.map((g, i) => `
+        <div class="flex gap-2 mb-2 scorer-row items-center">
+            <select name="${name}-player" class="border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 min-h-[40px] text-sm flex-1" style="min-width:100px;">
+                <option value="">Spieler wählen</option>
+                ${spielerOpts.replace(`value="${g.player}"`, `value="${g.player}" selected`)}
+            </select>
+            <input type="number" min="1" name="${name}-count" placeholder="Tore" class="border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-16 min-h-[40px] text-sm text-center flex-shrink-0" value="${g.count||1}">
+            <button type="button" class="remove-goal-btn bg-red-600 hover:bg-red-700 text-white px-2 py-2 rounded-lg min-h-[40px] w-10 flex items-center justify-center transition-all duration-200 flex-shrink-0 ${arr.length===1 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'} touch-manipulation" title="Torschütze entfernen" ${arr.length===1 ? 'disabled' : ''}>
+                <i class="fas fa-minus text-xs"></i>
+            </button>
+        </div>
+    `).join('');
+}
+
+async function updatePlayersGoals(goalslist, team) {
+    for (const scorer of goalslist) {
+        if (!scorer.player) continue;
+        // Spieler laden, aktueller Stand
+        const { data: player } = await supabase.from('players').select('goals').eq('name', scorer.player).eq('team', team).single();
+        let newGoals = scorer.count;
+        if (player && typeof player.goals === 'number') {
+            newGoals = player.goals + scorer.count;
+        }
+        await supabase.from('players').update({ goals: newGoals }).eq('name', scorer.player).eq('team', team);
+    }
+}
+
+// 1. Die Filterfunktion für den Spieler des Spiels
+function filterSdsDropdown(team, aekSorted, realSorted, manofthematch) {
+    const select = document.getElementById('manofthematch-select');
+    select.innerHTML = ""; // Clear all
+    // "Keiner"-Option
+    const noneOption = document.createElement('option');
+    noneOption.value = '';
+    noneOption.textContent = 'Keiner';
+    if (!manofthematch) noneOption.selected = true;
+    select.appendChild(noneOption);
+
+    let list = [];
+    if (team === "AEK") list = aekSorted;
+    else if (team === "Real") list = realSorted;
+
+    for (const p of list) {
+        const option = document.createElement('option');
+        option.value = p.name;
+        option.textContent = `${p.name} (${team}, ${getSdsCount(p.name, team)} SdS)`;
+        option.setAttribute('data-team', team);
+        if (manofthematch === p.name) option.selected = true;
+        select.appendChild(option);
+    }
+    // Button-Style-Logik wie gehabt...
+    document.querySelectorAll('.sds-filter-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-blue-600', 'bg-red-600', 'border-blue-400', 'border-red-400', 'shadow-lg');
+        btn.classList.add('bg-gray-600', 'border-transparent');
+        const indicator = btn.querySelector('.indicator-circle');
+        if (indicator) {
+            indicator.classList.remove('bg-white', 'bg-blue-100', 'bg-red-100', 'border', 'border-white');
+        }
+    });
+    const activeBtn = document.getElementById(`sds-filter-${team.toLowerCase()}`);
+    if (activeBtn) {
+        activeBtn.classList.add('active', 'shadow-lg');
+        activeBtn.classList.remove('bg-gray-600', 'border-transparent');
+        const indicator = activeBtn.querySelector('.indicator-circle');
+        if (team === 'AEK') {
+            activeBtn.classList.add('bg-blue-600', 'border-blue-400');
+            if (indicator) {
+                indicator.classList.remove('bg-blue-400');
+                indicator.classList.add('bg-white', 'border', 'border-blue-200');
+            }
+        } else if (team === 'Real') {
+            activeBtn.classList.add('bg-red-600', 'border-red-400');
+            if (indicator) {
+                indicator.classList.remove('bg-red-400');
+                indicator.classList.add('bg-white', 'border', 'border-red-200');
+            }
+        }
+    }
+}
+
+async function submitMatchForm(event, id) {
+    event.preventDefault();
+    const form = event.target;
+    const date = form.date.value;
+    const teama = "AEK";
+    const teamb = "Real";
+    const goalsa = parseInt(form.goalsa.value);
+    const goalsb = parseInt(form.goalsb.value);
+    const yellowa = parseInt(form.yellowa.value) || 0;
+    const reda = parseInt(form.reda.value) || 0;
+    const yellowb = parseInt(form.yellowb.value) || 0;
+    const redb = parseInt(form.redb.value) || 0;
+    const manofthematch = form.manofthematch.value || "";
+
+    function getScorers(group, name) {
+        return Array.from(group.querySelectorAll('.scorer-row')).map(d => ({
+            player: d.querySelector(`select[name="${name}-player"]`).value,
+            count: parseInt(d.querySelector(`input[name="${name}-count"]`).value) || 1
+        })).filter(g => g.player);
+    }
+
+    let goalslista = [];
+    let goalslistb = [];
+    if (goalsa > 0) {
+        const groupA = form.querySelector("#scorersA");
+        goalslista = getScorers(groupA, "goalslista");
+        const sumA = goalslista.reduce((sum, g) => sum + (g.count || 0), 0);
+        if (sumA > goalsa) {
+            alert(`Die Summe der Torschützen-Tore für ${teama} (${sumA}) darf nicht größer als die Gesamtanzahl der Tore (${goalsa}) sein!`);
+            return;
+        }
+    }
+    if (goalsb > 0) {
+        const groupB = form.querySelector("#scorersB");
+        goalslistb = getScorers(groupB, "goalslistb");
+        const sumB = goalslistb.reduce((sum, g) => sum + (g.count || 0), 0);
+        if (sumB > goalsb) {
+            alert(`Die Summe der Torschützen-Tore für ${teamb} (${sumB}) darf nicht größer als die Gesamtanzahl der Tore (${goalsb}) sein!`);
+            return;
+        }
+    }
+
+    // Preisgeld-Berechnung
+    let prizeaek = 0, prizereal = 0;
+    let winner = null, loser = null;
+    if (goalsa > goalsb) { winner = "AEK"; loser = "Real"; }
+    else if (goalsa < goalsb) { winner = "Real"; loser = "AEK"; }
+
+    if (winner && loser) {
+        if (winner === "AEK") {
+            prizeaek = 1000000 - (goalsb*50000) - (yellowa*20000) - (reda*50000);
+            prizereal = - (500000 + goalsa*50000 + yellowb*20000 + redb*50000);
+        } else {
+            prizereal = 1000000 - (goalsa*50000) - (yellowb*20000) - (redb*50000);
+            prizeaek = - (500000 + goalsb*50000 + yellowa*20000 + reda*50000);
+        }
+    }
+    // SdS Bonus
+    let sdsBonusAek = 0, sdsBonusReal = 0;
+    if (manofthematch) {
+        if (matchesData.aekAthen.find(p => p.name === manofthematch)) sdsBonusAek = 100000;
+        if (matchesData.realMadrid.find(p => p.name === manofthematch)) sdsBonusReal = 100000;
+    }
+
+    // Spieler des Spiels-Statistik (Tabelle spieler_des_spiels)
+    if (manofthematch) {
+        let t = matchesData.aekAthen.find(p => p.name === manofthematch) ? "AEK" : "Real";
+        const { data: existing } = await supabase.from('spieler_des_spiels').select('*').eq('name', manofthematch).eq('team', t);
+        if (existing && existing.length > 0) {
+            await supabase.from('spieler_des_spiels').update({ count: existing[0].count + 1 }).eq('id', existing[0].id);
+        } else {
+            await supabase.from('spieler_des_spiels').insert([{ name: manofthematch, team: t, count: 1 }]);
+        }
+    }
+
+    // Edit-Modus: Vorherigen Match löschen (und zugehörige Transaktionen an diesem Tag!)
+    if (id && matches.find(m => m.id === id)) {
+        const { data: matchOld } = await supabase.from('matches').select('date').eq('id', id).single();
+        if (matchOld && matchOld.date) {
+            await supabase.from('transactions').delete().or(`type.eq.Preisgeld,type.eq.Bonus SdS,type.eq.Echtgeld-Ausgleich`).eq('date', matchOld.date);
+        }
+        await supabase.from('matches').delete().eq('id', id);
+    }
+
+    // Save Match (JSON für goalslista/goalslistb)
+    const insertObj = {
+        date,
+        teama,
+        teamb,
+        goalsa,
+        goalsb,
+        goalslista,
+        goalslistb,
+        yellowa,
+        reda,
+        yellowb,
+        redb,
+        manofthematch,
+        prizeaek,
+        prizereal
+    };
+
+    // Insert Match und ID zurückgeben
+    const { data: inserted, error } = await supabase
+        .from('matches')
+        .insert([insertObj])
+        .select('id')
+        .single();
+    if (error) {
+        alert('Fehler beim Insert: ' + error.message);
+        console.error(error);
+        return;
+    }
+    const matchId = inserted?.id;
+
+    // Nach Insert: ALLE Daten laden (damit matches aktuell ist)
+    await loadAllData(() => {});
+
+    // Hole App-Matchnummer (laufende Nummer)
+    const appMatchNr = getAppMatchNumber(matchId);
+
+    // Spieler-Tore aufaddieren!
+    if (goalsa > 0) await updatePlayersGoals(goalslista, "AEK");
+    if (goalsb > 0) await updatePlayersGoals(goalslistb, "Real");
+
+    await decrementBansAfterMatch();
+
+    // Transaktionen buchen (Preisgelder & SdS Bonus, inkl. Finanzen update)
+    const now = new Date().toISOString().slice(0,10);
+
+    async function getTeamFinance(team) {
+        const { data } = await supabase.from('finances').select('balance').eq('team', team).single();
+        return (data && typeof data.balance === "number") ? data.balance : 0;
+    }
+
+    // Preisgelder buchen & neuen Kontostand berechnen (niemals unter 0)
+    let aekOldBalance = await getTeamFinance("AEK");
+    let realOldBalance = await getTeamFinance("Real");
+    let aekNewBalance = aekOldBalance + (prizeaek || 0) + (sdsBonusAek || 0);
+    let realNewBalance = realOldBalance + (prizereal || 0) + (sdsBonusReal || 0);
+
+    // 1. SdS Bonus
+    if (sdsBonusAek) {
+        aekOldBalance += sdsBonusAek;
+        await supabase.from('transactions').insert([{
+            date: now,
+            type: "Bonus SdS",
+            team: "AEK",
+            amount: sdsBonusAek,
+            match_id: matchId,
+            info: `Match #${appMatchNr}`
+        }]);
+        await supabase.from('finances').update({ balance: aekOldBalance }).eq('team', "AEK");
+    }
+    if (sdsBonusReal) {
+        realOldBalance += sdsBonusReal;
+        await supabase.from('transactions').insert([{
+            date: now,
+            type: "Bonus SdS",
+            team: "Real",
+            amount: sdsBonusReal,
+            match_id: matchId,
+            info: `Match #${appMatchNr}`
+        }]);
+        await supabase.from('finances').update({ balance: realOldBalance }).eq('team', "Real");
+    }
+
+    // 2. Preisgeld
+    if (prizeaek !== 0) {
+        aekOldBalance += prizeaek;
+        if (aekOldBalance < 0) aekOldBalance = 0;
+        await supabase.from('transactions').insert([{
+            date: now,
+            type: "Preisgeld",
+            team: "AEK",
+            amount: prizeaek,
+            match_id: matchId,
+            info: `Match #${appMatchNr}`
+        }]);
+        await supabase.from('finances').update({ balance: aekOldBalance }).eq('team', "AEK");
+    }
+    if (prizereal !== 0) {
+        realOldBalance += prizereal;
+        if (realOldBalance < 0) realOldBalance = 0;
+        await supabase.from('transactions').insert([{
+            date: now,
+            type: "Preisgeld",
+            team: "Real",
+            amount: prizereal,
+            match_id: matchId,
+            info: `Match #${appMatchNr}`
+        }]);
+        await supabase.from('finances').update({ balance: realOldBalance }).eq('team', "Real");
+    }
+
+    // --- Berechne für beide Teams den Echtgeldbetrag nach deiner Formel ---
+    function calcEchtgeldbetrag(balance, preisgeld, sdsBonus) {
+        let konto = balance;
+        if (sdsBonus) konto += 100000;
+        let zwischenbetrag = (Math.abs(preisgeld) - konto) / 100000;
+        if (zwischenbetrag < 0) zwischenbetrag = 0;
+        return 5 + Math.round(zwischenbetrag);
+    }
+
+    if (winner && loser) {
+        const debts = {
+            AEK: finances.aekAthen.debt || 0,
+            Real: finances.realMadrid.debt || 0,
+        };
+        const aekSds = manofthematch && matchesData.aekAthen.find(p => p.name === manofthematch) ? 1 : 0;
+        const realSds = manofthematch && matchesData.realMadrid.find(p => p.name === manofthematch) ? 1 : 0;
+
+        const aekBetrag = calcEchtgeldbetrag(aekOldBalance, prizeaek, aekSds);
+        const realBetrag = calcEchtgeldbetrag(realOldBalance, prizereal, realSds);
+
+        let gewinner = winner === "AEK" ? "AEK" : "Real";
+        let verlierer = loser === "AEK" ? "AEK" : "Real";
+        let gewinnerBetrag = gewinner === "AEK" ? aekBetrag : realBetrag;
+        let verliererBetrag = verlierer === "AEK" ? aekBetrag : realBetrag;
+
+        let gewinnerDebt = debts[gewinner];
+        let verliererDebt = debts[verlierer];
+
+        let verrechnet = Math.min(gewinnerDebt, verliererBetrag * 1);
+        let neuerGewinnerDebt = Math.max(0, gewinnerDebt - verrechnet);
+        let restVerliererBetrag = verliererBetrag * 1 - verrechnet;
+
+        let neuerVerliererDebt = verliererDebt + Math.max(0, restVerliererBetrag);
+
+        await supabase.from('finances').update({ debt: neuerGewinnerDebt }).eq('team', gewinner);
+
+        if (restVerliererBetrag > 0) {
+            await supabase.from('transactions').insert([{
+                date: now,
+                type: "Echtgeld-Ausgleich",
+                team: verlierer,
+                amount: Math.max(0, restVerliererBetrag),
+                match_id: matchId,
+                info: `Match #${appMatchNr}`
+            }]);
+            await supabase.from('finances').update({ debt: neuerVerliererDebt }).eq('team', verlierer);
+        }
+
+        if (verrechnet > 0) {
+            await supabase.from('transactions').insert([{
+                date: now,
+                type: "Echtgeld-Ausgleich (getilgt)",
+                team: gewinner,
+                amount: -verrechnet,
+                match_id: matchId,
+                info: `Match #${appMatchNr}`
+            }]);
+        }
+    }
+
+    const matchDisplayText = id ? "Match erfolgreich aktualisiert" : `Match ${teama} vs ${teamb} (${goalsa}:${goalsb}) erfolgreich hinzugefügt`;
+    showSuccessAndCloseModal(matchDisplayText);
+    // Kein manuelles Neuladen nötig – Live-Sync!
+}
+
+// ---------- DELETE ----------
+
+async function deleteMatch(id) {
+    // 1. Hole alle Infos des Matches
+    const { data: match } = await supabase
+        .from('matches')
+        .select('date,prizeaek,prizereal,goalslista,goalslistb,manofthematch,yellowa,reda,yellowb,redb')
+        .eq('id', id)
+        .single();
+
+    if (!match) return;
+
+    // 2. Transaktionen zu diesem Match löschen (inkl. Echtgeld-Ausgleich)
+    await supabase
+        .from('transactions')
+        .delete()
+        .or(`type.eq.Preisgeld,type.eq.Bonus SdS,type.eq.Echtgeld-Ausgleich,type.eq.Echtgeld-Ausgleich (getilgt)`)
+        .eq('match_id', id);
+
+    // 3. Finanzen zurückrechnen (niemals unter 0!)
+    if (typeof match.prizeaek === "number" && match.prizeaek !== 0) {
+        const { data: aekFin } = await supabase.from('finances').select('balance').eq('team', 'AEK').single();
+        let newBal = (aekFin?.balance || 0) - match.prizeaek;
+        if (newBal < 0) newBal = 0;
+        await supabase.from('finances').update({
+            balance: newBal
+        }).eq('team', 'AEK');
+    }
+    if (typeof match.prizereal === "number" && match.prizereal !== 0) {
+        const { data: realFin } = await supabase.from('finances').select('balance').eq('team', 'Real').single();
+        let newBal = (realFin?.balance || 0) - match.prizereal;
+        if (newBal < 0) newBal = 0;
+        await supabase.from('finances').update({
+            balance: newBal
+        }).eq('team', 'Real');
+    }
+    // Bonus SdS rückrechnen
+    const { data: bonusTrans } = await supabase.from('transactions')
+        .select('team,amount')
+        .eq('match_id', id)
+        .eq('type', 'Bonus SdS');
+    if (bonusTrans) {
+        for (const t of bonusTrans) {
+            const { data: fin } = await supabase.from('finances').select('balance').eq('team', t.team).single();
+            let newBal = (fin?.balance || 0) - t.amount;
+            if (newBal < 0) newBal = 0;
+            await supabase.from('finances').update({
+                balance: newBal
+            }).eq('team', t.team);
+        }
+    }
+
+    // 4. Spieler-Tore abziehen
+    const removeGoals = async (goalslist, team) => {
+        if (!goalslist || !Array.isArray(goalslist)) return;
+        for (const scorer of goalslist) {
+            if (!scorer.player) continue;
+            const { data: player } = await supabase.from('players').select('goals').eq('name', scorer.player).eq('team', team).single();
+            let newGoals = (player?.goals || 0) - scorer.count;
+            if (newGoals < 0) newGoals = 0;
+            await supabase.from('players').update({ goals: newGoals }).eq('name', scorer.player).eq('team', team);
+        }
+    };
+    await removeGoals(match.goalslista, "AEK");
+    await removeGoals(match.goalslistb, "Real");
+
+    // 5. Spieler des Spiels rückgängig machen
+    if (match.manofthematch) {
+        let sdsTeam = null;
+        if (match.goalslista && match.goalslista.find(g => g.player === match.manofthematch)) sdsTeam = "AEK";
+        else if (match.goalslistb && match.goalslistb.find(g => g.player === match.manofthematch)) sdsTeam = "Real";
+        else {
+            const { data: p } = await supabase.from('players').select('team').eq('name', match.manofthematch).single();
+            sdsTeam = p?.team;
+        }
+        if (sdsTeam) {
+            const { data: sds } = await supabase.from('spieler_des_spiels').select('count').eq('name', match.manofthematch).eq('team', sdsTeam).single();
+            if (sds) {
+                const newCount = Math.max(0, sds.count - 1);
+                await supabase.from('spieler_des_spiels').update({ count: newCount }).eq('name', match.manofthematch).eq('team', sdsTeam);
+            }
+        }
+    }
+
+    // 6. Karten zurücksetzen (Spieler-Kartenzähler updaten, falls du sowas hast)
+    // Falls du Karten pro Spieler speicherst, musst du analog zu removeGoals abziehen!
+
+    // 7. Match löschen
+    await supabase.from('matches').delete().eq('id', id);
+    // Kein manuelles Neuladen nötig – Live-Sync!
+}
+
+export function resetMatchesState() {
+    matches = [];
+    aekAthen = [];
+    realMadrid = [];
+    bans = [];
+    finances = { aekAthen: { balance: 0 }, realMadrid: { balance: 0 } };
+    spielerDesSpiels = [];
+    transactions = [];
+    matchesInitialized = false;
+    if (matchesChannel && typeof matchesChannel.unsubscribe === "function") {
+        try { matchesChannel.unsubscribe(); } catch (e) {}
+    }
+    matchesChannel = undefined;
+}
+
+export {matchesData as matches};

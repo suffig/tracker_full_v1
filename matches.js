@@ -808,7 +808,14 @@ function attachMatchFormEventHandlers(edit, id, aekSpieler, realSpieler, aekSort
 
 
     // Add event listeners for card increment/decrement buttons
+let cardButtonsInitialized = false;
 function setupCardButtons() {
+    // Prevent duplicate event listeners
+    if (cardButtonsInitialized) {
+        return;
+    }
+    cardButtonsInitialized = true;
+    
     document.querySelectorAll('.card-btn-up').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();

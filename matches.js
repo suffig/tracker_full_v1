@@ -802,6 +802,14 @@ function attachMatchFormEventHandlers(edit, id, aekSpieler, realSpieler, aekSort
         console.error('Team filter buttons not found:', { aekBtn, realBtn });
     }
 	setupCardButtons();
+    
+    // Add form submit handler - this was missing and caused the primary issue
+    const matchForm = document.getElementById('match-form');
+    if (matchForm) {
+        matchForm.onsubmit = (e) => submitMatchForm(e, id);
+    } else {
+        console.error('Match form not found - cannot bind submit handler');
+    }
 }
     
 

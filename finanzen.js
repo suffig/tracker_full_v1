@@ -119,7 +119,8 @@ function groupTransactionsByDate(transactions) {
             ...t,
             date: dateField,
             info: t.info || t.description || 'Keine Beschreibung',
-            type: t.type || 'Sonstiges'
+            type: t.type || 'Sonstiges',
+            amount: typeof t.amount === 'number' ? t.amount : (parseFloat(t.amount) || 0)
         };
         groups[dateField].push(normalizedTransaction);
     }

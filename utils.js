@@ -3,6 +3,28 @@
  * Common helper functions for the application
  */
 
+// Configuration
+const DEBUG_MODE = true; // Set to false for production
+
+// Debug utilities for better console management
+export class Debug {
+    static log(...args) {
+        if (DEBUG_MODE) console.log(...args);
+    }
+    
+    static warn(...args) {
+        if (DEBUG_MODE) console.warn(...args);
+    }
+    
+    static error(...args) {
+        console.error(...args); // Always show errors
+    }
+    
+    static info(...args) {
+        if (DEBUG_MODE) console.info(...args);
+    }
+}
+
 // DOM Utility Functions
 export const DOM = {
     // Safe element selection

@@ -2,6 +2,7 @@ import { POSITIONEN, savePlayer as dataSavePlayer, deletePlayer as dataDeletePla
 import { showModal, hideModal, showSuccessAndCloseModal } from './modal.js';
 import { supabaseDb, supabase } from './supabaseClient.js';
 import { isDatabaseAvailable } from './connectionMonitor.js';
+import { ErrorHandler } from './utils.js';
 
 let aekAthen = [];
 let realMadrid = [];
@@ -267,7 +268,7 @@ async function savePlayer(player) {
     try {
         await dataSavePlayer(player);
     } catch (error) {
-        alert(error.message);
+        ErrorHandler.showUserError(error.message, "error");
         throw error;
     }
 }
@@ -276,7 +277,7 @@ async function deletePlayerDb(id) {
     try {
         await dataDeletePlayer(id);
     } catch (error) {
-        alert(error.message);
+        ErrorHandler.showUserError(error.message, "error");
         throw error;
     }
 }
@@ -313,7 +314,7 @@ async function movePlayerWithTransaction(id, newTeam) {
         let finKey = newTeam === "AEK" ? "aekAthen" : "realMadrid";
         const konto = finances[finKey].balance || 0;
         if (konto < abloese) {
-            alert("Kontostand zu gering für diesen Transfer!");
+            ErrorHandler.showUserError("Kontostand zu gering für diesen Transfer!", "warning");
             return;
         }
         await supabase.from('transactions').insert([{
@@ -336,7 +337,7 @@ async function movePlayerWithTransaction(id, newTeam) {
 
 async function movePlayerToTeam(id, newTeam) {
     const { error } = await supabase.from('players').update({ team: newTeam }).eq('id', id);
-    if (error) alert('Fehler beim Verschieben: ' + error.message);
+    if (error) ErrorHandler.showUserError(`Fehler beim Verschieben: ${error.message}`, "error");
 }
 
 async function saveTransactionAndFinance(team, type, amount, info = "") {
@@ -389,7 +390,7 @@ async function submitPlayerForm(event, team, id) {
         if (!id && (team === "AEK" || team === "Real")) {
             let fin = team === "AEK" ? finances.aekAthen : finances.realMadrid;
             if (fin.balance < value * 1000000) {
-                alert("Kontostand zu gering!");
+                ErrorHandler.showUserError("Kontostand zu gering für diesen Spielerkauf!", "warning");
                 return;
             }
             try {
@@ -408,7 +409,7 @@ async function submitPlayerForm(event, team, id) {
         }
     } catch (error) {
         console.error("Error submitting player form:", error);
-        alert("Fehler beim Speichern des Spielers: " + error.message);
+        ErrorHandler.showUserError(`Fehler beim Speichern des Spielers: ${error.message}`, "error");
     }
 }
 

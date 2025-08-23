@@ -470,7 +470,7 @@ function setupLogoutButton() {
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
         logoutBtn.onclick = async () => {
-			alert('Du wurdest ausgeloggt!');
+			ErrorHandler.showSuccessMessage('Du wurdest erfolgreich ausgeloggt!');
             await signOut();
             let tries = 0;
             while (tries < 20) {
@@ -535,7 +535,7 @@ async function renderLoginArea() {
                 <div class="min-h-screen bg-gray-900 flex flex-col items-center justify-center px-4 py-8">
                     <div class="w-full">
                         <div class="flex flex-col items-center mb-8">
-                            <img src="assets/logo.png" alt="Logo" class="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 mb-4" />
+                            <img src="assets/logo.png" alt="FIFA Tracker Logo" class="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 mb-4" loading="eager" decoding="async" />
                             <h1 class="text-2xl sm:text-3xl font-bold text-gray-100 text-center">FIFA Statistik-Tracker</h1>
                             <p class="text-gray-400 text-center mt-2">Melden Sie sich an, um fortzufahren</p>
                         </div>
@@ -670,8 +670,31 @@ function showFallbackStatus() {
     
     // Add click handler to show configuration help
     indicator.onclick = () => {
-        alert(`Demo-Modus aktiv\n\nUm eine echte Supabase-Verbindung zu verwenden:\n\n1. Ersetzen Sie SUPABASE_URL in supabaseClient.js\n2. Ersetzen Sie SUPABASE_ANON_KEY in supabaseClient.js\n3. Stellen Sie sicher, dass die Supabase CDN geladen werden kann\n\nMomentan werden keine echten Daten geladen.`);
+        showDemoModeConfigurationHelp();
     };
+}
+
+function showDemoModeConfigurationHelp() {
+    const helpContent = `
+        <div class="p-6 text-gray-700">
+            <h3 class="text-xl font-bold mb-4 text-blue-600">🔧 Demo-Modus Konfiguration</h3>
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                <p class="text-sm"><strong>Hinweis:</strong> Die Anwendung läuft im Demo-Modus mit simulierten Daten.</p>
+            </div>
+            <h4 class="font-semibold mb-2">Um eine echte Supabase-Verbindung zu verwenden:</h4>
+            <ol class="list-decimal list-inside space-y-2 text-sm">
+                <li>Ersetzen Sie <code class="bg-gray-100 px-1 rounded">SUPABASE_URL</code> in supabaseClient.js</li>
+                <li>Ersetzen Sie <code class="bg-gray-100 px-1 rounded">SUPABASE_ANON_KEY</code> in supabaseClient.js</li>
+                <li>Stellen Sie sicher, dass die Supabase CDN geladen werden kann</li>
+                <li>Konfigurieren Sie die Datenbank-Tabellen gemäß SUPABASE_SETUP.md</li>
+            </ol>
+            <div class="mt-4 p-3 bg-gray-50 rounded">
+                <p class="text-xs text-gray-600">Weitere Informationen finden Sie in der Datei <strong>SUPABASE_SETUP.md</strong></p>
+            </div>
+        </div>
+    `;
+    
+    ErrorHandler.showUserError(helpContent, 'info');
 }
 
 document.addEventListener('visibilitychange', handleVisibilityChange);

@@ -714,6 +714,8 @@ function attachMatchFormEventHandlers(edit, id, aekSpieler, realSpieler, aekSort
     // --- Restliche Logik ---
     function addScorerHandler(scorersId, name, spielerOpts) {
         const container = document.getElementById(scorersId);
+        const rowCount = container.querySelectorAll('.scorer-row').length;
+        const uniqueId = `${name}-count-${rowCount}`;
         const div = document.createElement("div");
         div.className = "flex gap-2 mb-2 scorer-row items-center";
         div.innerHTML = `
@@ -721,7 +723,9 @@ function attachMatchFormEventHandlers(edit, id, aekSpieler, realSpieler, aekSort
                 <option value="">Spieler wählen</option>
                 ${spielerOpts}
             </select>
-            <input type="number" min="1" name="${name}-count" placeholder="Tore" class="border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-16 min-h-[40px] text-sm text-center flex-shrink-0" value="1">
+            <button type="button" class="goal-btn goal-btn-down bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="${uniqueId}" data-min="1">−</button>
+            <input type="number" min="1" name="${name}-count" placeholder="Tore" class="goal-input border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-12 min-h-[32px] text-sm text-center flex-shrink-0" value="1" readonly id="${uniqueId}">
+            <button type="button" class="goal-btn goal-btn-up bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="${uniqueId}" data-max="20">+</button>
             <button type="button" class="remove-goal-btn bg-red-600 hover:bg-red-700 text-white px-2 py-2 rounded-lg min-h-[40px] w-10 flex items-center justify-center transition-all duration-200 flex-shrink-0 hover:scale-105 touch-manipulation" title="Torschütze entfernen">
                 <i class="fas fa-minus text-xs"></i>
             </button>
@@ -731,6 +735,9 @@ function attachMatchFormEventHandlers(edit, id, aekSpieler, realSpieler, aekSort
                 div.remove();
         };
         container.appendChild(div);
+        
+        // Set up goal buttons for the newly added row
+        setupGoalButtons();
     }
     document.querySelectorAll("#scorersA .remove-goal-btn").forEach(btn => {
         btn.onclick = function() {
@@ -802,6 +809,15 @@ function attachMatchFormEventHandlers(edit, id, aekSpieler, realSpieler, aekSort
         console.error('Team filter buttons not found:', { aekBtn, realBtn });
     }
 	setupCardButtons();
+	setupGoalButtons();
+    
+    // Add form submit handler - this was missing and caused the primary issue
+    const matchForm = document.getElementById('match-form');
+    if (matchForm) {
+        matchForm.onsubmit = (e) => submitMatchForm(e, id);
+    } else {
+        console.error('Match form not found - cannot bind submit handler');
+    }
 }
     
 
@@ -846,6 +862,52 @@ function setupCardButtons() {
     });
 }
 
+// Add event listeners for goal increment/decrement buttons
+let goalButtonsInitialized = false;
+function setupGoalButtons() {
+    // Reset the flag to allow re-initialization for dynamically added elements
+    goalButtonsInitialized = false;
+    
+    // Prevent duplicate event listeners by removing existing ones first
+    document.querySelectorAll('.goal-btn-up').forEach(btn => {
+        btn.replaceWith(btn.cloneNode(true));
+    });
+    document.querySelectorAll('.goal-btn-down').forEach(btn => {
+        btn.replaceWith(btn.cloneNode(true));
+    });
+    
+    document.querySelectorAll('.goal-btn-up').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = e.currentTarget.getAttribute('data-target');
+            const max = parseInt(e.currentTarget.getAttribute('data-max')) || 20;
+            const input = document.getElementById(target);
+            if (input) {
+                const current = parseInt(input.value) || 1;
+                if (current < max) {
+                    input.value = current + 1;
+                }
+            }
+        });
+    });
+    
+    document.querySelectorAll('.goal-btn-down').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = e.currentTarget.getAttribute('data-target');
+            const min = parseInt(e.currentTarget.getAttribute('data-min')) || 1;
+            const input = document.getElementById(target);
+            if (input) {
+                const current = parseInt(input.value) || 1;
+                if (current > min) {
+                    input.value = current - 1;
+                }
+            }
+        });
+    });
+    
+    goalButtonsInitialized = true;
+}
 
 
 function scorerFields(name, arr, spielerOpts) {
@@ -856,7 +918,9 @@ function scorerFields(name, arr, spielerOpts) {
                 <option value="">Spieler wählen</option>
                 ${spielerOpts.replace(`value="${g.player}"`, `value="${g.player}" selected`)}
             </select>
-            <input type="number" min="1" name="${name}-count" placeholder="Tore" class="border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-16 min-h-[40px] text-sm text-center flex-shrink-0" value="${g.count||1}">
+            <button type="button" class="goal-btn goal-btn-down bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="${name}-count-${i}" data-min="1">−</button>
+            <input type="number" min="1" name="${name}-count" placeholder="Tore" class="goal-input border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-12 min-h-[32px] text-sm text-center flex-shrink-0" value="${g.count||1}" readonly id="${name}-count-${i}">
+            <button type="button" class="goal-btn goal-btn-up bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="${name}-count-${i}" data-max="20">+</button>
             <button type="button" class="remove-goal-btn bg-red-600 hover:bg-red-700 text-white px-2 py-2 rounded-lg min-h-[40px] w-10 flex items-center justify-center transition-all duration-200 flex-shrink-0 ${arr.length===1 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'} touch-manipulation" title="Torschütze entfernen" ${arr.length===1 ? 'disabled' : ''}>
                 <i class="fas fa-minus text-xs"></i>
             </button>

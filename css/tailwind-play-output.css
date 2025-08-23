@@ -1409,6 +1409,31 @@ button:hover, .btn:hover {
   font-weight: 500 !important;
 }
 
+/* --- Button color overrides for match form increment/decrement buttons --- */
+.goal-btn-up,
+.card-btn-up {
+  background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.25) !important;
+}
+
+.goal-btn-down,
+.card-btn-down {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.25) !important;
+}
+
+.goal-btn-up:hover,
+.card-btn-up:hover {
+  background: linear-gradient(135deg, #15803d 0%, #16a34a 100%) !important;
+}
+
+.goal-btn-down:hover,
+.card-btn-down:hover {
+  background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%) !important;
+}
+
 /* --- MODAL & SHEET STYLES --- */
 .modal {
   z-index: 110;

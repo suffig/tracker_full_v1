@@ -615,15 +615,15 @@ function generateMatchFormHTML(edit, dateVal, match, aekSpieler, realSpieler, ae
 			<div class="flex flex-col gap-2 mt-2">
 				<div class="flex items-center gap-2">
 					<label class="text-gray-300 text-lg w-8">🟨</label>
-					<button type="button" class="card-btn card-btn-down bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowa" data-min="0">−</button>
+					<button type="button" class="card-btn card-btn-down bg-red-600 hover:bg-red-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowa" data-min="0">−</button>
 					<input type="number" min="0" max="20" name="yellowa" class="card-input border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-12 min-h-[32px] text-sm text-center" value="${match?.yellowa || 0}" readonly>
-					<button type="button" class="card-btn card-btn-up bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowa" data-max="20">+</button>
+					<button type="button" class="card-btn card-btn-up bg-green-600 hover:bg-green-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowa" data-max="20">+</button>
 				</div>
 				<div class="flex items-center gap-2">
 					<label class="text-gray-300 text-lg w-8">🟥</label>
-					<button type="button" class="card-btn card-btn-down bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="reda" data-min="0">−</button>
+					<button type="button" class="card-btn card-btn-down bg-red-600 hover:bg-red-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="reda" data-min="0">−</button>
 					<input type="number" min="0" max="11" name="reda" class="card-input border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-12 min-h-[32px] text-sm text-center" value="${match?.reda || 0}" readonly>
-					<button type="button" class="card-btn card-btn-up bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="reda" data-max="11">+</button>
+					<button type="button" class="card-btn card-btn-up bg-green-600 hover:bg-green-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="reda" data-max="11">+</button>
 				</div>
 			</div>
 		</div>
@@ -633,15 +633,15 @@ function generateMatchFormHTML(edit, dateVal, match, aekSpieler, realSpieler, ae
 			<div class="flex flex-col gap-2 mt-2">
 				<div class="flex items-center gap-2">
 					<label class="text-gray-300 text-lg w-8">🟨</label>
-					<button type="button" class="card-btn card-btn-down bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowb" data-min="0">−</button>
+					<button type="button" class="card-btn card-btn-down bg-red-600 hover:bg-red-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowb" data-min="0">−</button>
 					<input type="number" min="0" max="20" name="yellowb" class="card-input border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-12 min-h-[32px] text-sm text-center" value="${match?.yellowb || 0}" readonly>
-					<button type="button" class="card-btn card-btn-up bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowb" data-max="20">+</button>
+					<button type="button" class="card-btn card-btn-up bg-green-600 hover:bg-green-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowb" data-max="20">+</button>
 				</div>
 				<div class="flex items-center gap-2">
 					<label class="text-gray-300 text-lg w-8">🟥</label>
-					<button type="button" class="card-btn card-btn-down bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="redb" data-min="0">−</button>
+					<button type="button" class="card-btn card-btn-down bg-red-600 hover:bg-red-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="redb" data-min="0">−</button>
 					<input type="number" min="0" max="11" name="redb" class="card-input border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-12 min-h-[32px] text-sm text-center" value="${match?.redb || 0}" readonly>
-					<button type="button" class="card-btn card-btn-up bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="redb" data-max="11">+</button>
+					<button type="button" class="card-btn card-btn-up bg-green-600 hover:bg-green-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="redb" data-max="11">+</button>
 				</div>
 			</div>
 		</div>
@@ -723,9 +723,9 @@ function attachMatchFormEventHandlers(edit, id, aekSpieler, realSpieler, aekSort
                 <option value="">Spieler wählen</option>
                 ${spielerOpts}
             </select>
-            <button type="button" class="goal-btn goal-btn-down bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="${uniqueId}" data-min="1">−</button>
+            <button type="button" class="goal-btn goal-btn-down bg-red-600 hover:bg-red-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="${uniqueId}" data-min="1">−</button>
             <input type="number" min="1" name="${name}-count" placeholder="Tore" class="goal-input border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-12 min-h-[32px] text-sm text-center flex-shrink-0" value="1" readonly id="${uniqueId}">
-            <button type="button" class="goal-btn goal-btn-up bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="${uniqueId}" data-max="20">+</button>
+            <button type="button" class="goal-btn goal-btn-up bg-green-600 hover:bg-green-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="${uniqueId}" data-max="20">+</button>
             <button type="button" class="remove-goal-btn bg-red-600 hover:bg-red-700 text-white px-2 py-2 rounded-lg min-h-[40px] w-10 flex items-center justify-center transition-all duration-200 flex-shrink-0 hover:scale-105 touch-manipulation" title="Torschütze entfernen">
                 <i class="fas fa-minus text-xs"></i>
             </button>
@@ -918,9 +918,9 @@ function scorerFields(name, arr, spielerOpts) {
                 <option value="">Spieler wählen</option>
                 ${spielerOpts.replace(`value="${g.player}"`, `value="${g.player}" selected`)}
             </select>
-            <button type="button" class="goal-btn goal-btn-down bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="${name}-count-${i}" data-min="1">−</button>
+            <button type="button" class="goal-btn goal-btn-down bg-red-600 hover:bg-red-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="${name}-count-${i}" data-min="1">−</button>
             <input type="number" min="1" name="${name}-count" placeholder="Tore" class="goal-input border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-12 min-h-[32px] text-sm text-center flex-shrink-0" value="${g.count||1}" readonly id="${name}-count-${i}">
-            <button type="button" class="goal-btn goal-btn-up bg-gray-600 hover:bg-gray-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="${name}-count-${i}" data-max="20">+</button>
+            <button type="button" class="goal-btn goal-btn-up bg-green-600 hover:bg-green-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="${name}-count-${i}" data-max="20">+</button>
             <button type="button" class="remove-goal-btn bg-red-600 hover:bg-red-700 text-white px-2 py-2 rounded-lg min-h-[40px] w-10 flex items-center justify-center transition-all duration-200 flex-shrink-0 ${arr.length===1 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'} touch-manipulation" title="Torschütze entfernen" ${arr.length===1 ? 'disabled' : ''}>
                 <i class="fas fa-minus text-xs"></i>
             </button>
@@ -1110,7 +1110,7 @@ async function submitMatchForm(event, id) {
     const matchId = inserted?.id;
 
     // Nach Insert: ALLE Daten laden (damit matches aktuell ist)
-    await loadAllData(() => {});
+    await matchesData.loadAllData(() => {});
 
     // Hole App-Matchnummer (laufende Nummer)
     const appMatchNr = getAppMatchNumber(matchId);

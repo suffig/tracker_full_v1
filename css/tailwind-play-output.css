@@ -1660,6 +1660,12 @@ button:active, a:active {
     touch-action: manipulation;
   }
   
+  /* Smaller height for specific utility buttons */
+  #add-trans-btn {
+    min-height: 40px !important;
+    padding: 0.5rem 1rem !important;
+  }
+  
   /* Larger touch targets for small buttons */
   .card-btn, .close-modal-btn, .remove-goal-btn {
     min-width: 44px !important;

@@ -169,8 +169,8 @@ function renderTransactions() {
 
     // Matches sortieren wie Übersicht (neueste oben)
     let matchOrder = [];
-    if (typeof matches !== "undefined" && Array.isArray(matches)) {
-        matchOrder = matches.slice().sort((a, b) => new Date(b.date) - new Date(a.date) || b.id - a.id);
+    if (typeof matches !== "undefined" && matches.matches && Array.isArray(matches.matches)) {
+        matchOrder = matches.matches.slice().sort((a, b) => new Date(b.date) - new Date(a.date) || b.id - a.id);
     }
 
     function getAppMatchNumber(matchId) {

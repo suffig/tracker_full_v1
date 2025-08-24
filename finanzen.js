@@ -324,23 +324,23 @@ function renderTransactions() {
             const teamColorClass = t.team === 'AEK' ? 'border-blue-500 bg-blue-900' : 
                                    t.team === 'Real' ? 'border-red-500 bg-red-900' : 
                                    'border-gray-400 bg-gray-700';
-            const teamTextClass = t.team === 'AEK' ? 'text-blue-300' : 
-                                   t.team === 'Real' ? 'text-red-300' : 
-                                   'text-gray-300';
+            const teamTextClass = t.team === 'AEK' ? 'text-blue-200' : 
+                                   t.team === 'Real' ? 'text-red-200' : 
+                                   'text-gray-200';
             html += `
                 <div class="rounded-lg p-4 shadow border-l-4 ${teamColorClass}">
                     <div class="flex justify-between items-start mb-2">
-                        <div class="text-sm text-gray-400">${new Date(t.date).toLocaleDateString('de-DE')}</div>
-                        <div class="text-lg font-bold ${t.amount >= 0 ? 'text-green-400' : 'text-red-400'}">
+                        <div class="text-sm font-medium text-gray-300">${new Date(t.date).toLocaleDateString('de-DE')}</div>
+                        <div class="text-lg font-bold ${t.amount >= 0 ? 'text-green-300' : 'text-red-300'}">
                             ${t.amount >= 0 ? '+' : ''}${t.amount.toLocaleString('de-DE')}€
                         </div>
                     </div>
-                    <div class="text-base font-semibold text-gray-100 mb-1">${t.type}</div>
+                    <div class="text-base font-semibold text-white mb-1">${t.type}</div>
                     <div class="text-sm mb-1 flex items-center">
                         <span class="${getTeamIndicatorClass(t.team)}"></span>
                         <span class="font-semibold ${teamTextClass}">${t.team}</span>
                     </div>
-                    ${t.info ? `<div class="text-sm text-gray-300">${t.info}</div>` : ''}
+                    ${t.info ? `<div class="text-sm font-medium text-gray-200">${t.info}</div>` : ''}
                 </div>
             `;
         });

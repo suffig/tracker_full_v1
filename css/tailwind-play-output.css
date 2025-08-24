@@ -2081,6 +2081,27 @@ button:active, a:active {
     border-radius: 12px;
     font-size: 1rem;
     font-weight: 600;
+  }
+  
+  /* Enhanced loading indicator for mobile visibility */
+  #tab-loader {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+  
+  /* Fallback for older browsers without backdrop-filter support */
+  @supports not (backdrop-filter: blur(8px)) {
+    #tab-loader {
+      background-color: rgba(0, 0, 0, 0.7) !important;
+    }
+  }
+  
+  /* iOS Safari backdrop-filter optimization */
+  @supports (-webkit-backdrop-filter: blur(8px)) {
+    #tab-loader {
+      -webkit-backdrop-filter: blur(8px);
+    }
+  }
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   }
 }

@@ -12,8 +12,8 @@ class MatchesDataManager {
         this.realMadrid = [];
         this.bans = [];
         this.finances = {
-            aekAthen: { balance: 0 },
-            realMadrid: { balance: 0 }
+            aekAthen: { balance: 0, debt: 0 },
+            realMadrid: { balance: 0, debt: 0 }
         };
         this.spielerDesSpiels = [];
         this.transactions = [];
@@ -56,8 +56,8 @@ class MatchesDataManager {
             // Process finances
             const financesData = data.finances || [];
             this.finances = {
-                aekAthen: financesData.find(f => f.team === "AEK") || { balance: 0 },
-                realMadrid: financesData.find(f => f.team === "Real") || { balance: 0 }
+                aekAthen: financesData.find(f => f.team === "AEK") || { balance: 0, debt: 0 },
+                realMadrid: financesData.find(f => f.team === "Real") || { balance: 0, debt: 0 }
             };
             
             this.spielerDesSpiels = data.spieler_des_spiels || [];
@@ -109,7 +109,7 @@ class MatchesDataManager {
         this.aekAthen = [];
         this.realMadrid = [];
         this.bans = [];
-        this.finances = { aekAthen: { balance: 0 }, realMadrid: { balance: 0 } };
+        this.finances = { aekAthen: { balance: 0, debt: 0 }, realMadrid: { balance: 0, debt: 0 } };
         this.spielerDesSpiels = [];
         this.transactions = [];
         this.matchesInitialized = false;
@@ -1200,8 +1200,8 @@ async function submitMatchForm(event, id) {
 
     if (winner && loser) {
         const debts = {
-            AEK: finances.aekAthen.debt || 0,
-            Real: finances.realMadrid.debt || 0,
+            AEK: matchesData.finances.aekAthen.debt || 0,
+            Real: matchesData.finances.realMadrid.debt || 0,
         };
         const aekSds = manofthematch && matchesData.aekAthen.find(p => p.name === manofthematch) ? 1 : 0;
         const realSds = manofthematch && matchesData.realMadrid.find(p => p.name === manofthematch) ? 1 : 0;
@@ -1351,7 +1351,7 @@ export function resetMatchesState() {
     aekAthen = [];
     realMadrid = [];
     bans = [];
-    finances = { aekAthen: { balance: 0 }, realMadrid: { balance: 0 } };
+    finances = { aekAthen: { balance: 0, debt: 0 }, realMadrid: { balance: 0, debt: 0 } };
     spielerDesSpiels = [];
     transactions = [];
     matchesInitialized = false;

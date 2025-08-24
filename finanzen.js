@@ -106,7 +106,7 @@ function renderFinanzenTabInner(containerId = "app") {
                 </svg>
                 Transaktionen
             </h3>
-            <button id="add-trans-btn" class="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto px-3 py-2 rounded-lg text-sm flex items-center justify-center gap-2 font-semibold transition shadow">
+            <button id="add-trans-btn" class="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto px-3 py-1 rounded-lg text-sm flex items-center justify-center gap-2 font-semibold transition shadow">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 <span>Hinzufügen</span>
             </button>
@@ -122,6 +122,7 @@ function renderFinanzenTabInner(containerId = "app") {
 
 let transactionGroups = [];
 let selectedDateIdx = 0;
+let collapsedMatches = new Set(); // Track which matches are collapsed
 
 function groupTransactionsByDate(transactions) {
     const groups = {};
@@ -261,34 +262,40 @@ function renderTransactions() {
         const appNr = getAppMatchNumber(match.id);
         const matchInfo = match ? ` - AEK ${match.goalsa || 0}:${match.goalsb || 0} Real (${new Date(match.date).toLocaleDateString('de-DE')})` : '';
         const colorScheme = getMatchColorScheme(appNr || 1);
+        const isCollapsed = collapsedMatches.has(match.id);
         
         html += `
-        <div class="border-2 ${colorScheme.container} rounded-lg mb-3 p-3 shadow-lg">
-            <div class="font-bold ${colorScheme.header} pl-2 mb-2 flex items-center justify-between">
+        <div class="border-2 ${colorScheme.container} rounded-lg mb-3 shadow-lg">
+            <button id="match-toggle-${match.id}" class="w-full p-3 flex items-center justify-between cursor-pointer hover:bg-opacity-80 transition-all duration-200 rounded-t-lg" onclick="toggleMatchTransactions(${match.id})">
                 <div class="flex items-center">
                     <div class="w-3 h-3 bg-${colorScheme.accent} rounded-full mr-2 flex-shrink-0"></div>
-                    <div>
-                        <div class="text-lg font-extrabold">Match #${appNr}</div>
-                        <div class="text-xs font-normal opacity-90">${matchInfo}</div>
+                    <div class="text-left">
+                        <div class="text-lg font-extrabold ${colorScheme.header}">Match #${appNr}</div>
+                        <div class="text-xs font-normal opacity-90 ${colorScheme.header}">${matchInfo}</div>
                     </div>
                 </div>
-                <div class="text-xs bg-${colorScheme.accent} text-white px-2 py-1 rounded-full font-semibold">
-                    ${txs.length} Transaktion${txs.length !== 1 ? 'en' : ''}
+                <div class="flex items-center gap-2">
+                    <div class="text-xs bg-${colorScheme.accent} text-white px-2 py-1 rounded-full font-semibold">
+                        ${txs.length} Transaktion${txs.length !== 1 ? 'en' : ''}
+                    </div>
+                    <span class="text-lg font-bold ${colorScheme.header} transition-transform duration-200 ${isCollapsed ? '' : 'rotate-90'}">▶</span>
                 </div>
-            </div>
-            <div class="overflow-x-auto">
-                <!-- Desktop Table View -->
-                <table class="hidden md:table w-full text-sm dark:bg-gray-800 dark:text-gray-100 bg-gray-800 rounded-lg overflow-hidden shadow">
-                    <thead class="bg-gray-700 dark:bg-gray-700">
-                        <tr>
-                            <th class="p-3 text-left font-semibold">Datum</th>
-                            <th class="p-3 text-left font-semibold">Typ</th>
-                            <th class="p-3 text-left font-semibold">Team</th>
-                            <th class="p-3 text-left font-semibold">Info</th>
-                            <th class="p-3 text-left font-semibold">Betrag (€)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            </button>
+            <div id="match-content-${match.id}" class="transition-all duration-300 overflow-hidden ${isCollapsed ? 'max-h-0' : 'max-h-none'}" style="${isCollapsed ? 'display:none;' : ''}">
+                <div class="p-3 pt-0">
+                    <div class="overflow-x-auto">
+                        <!-- Desktop Table View -->
+                        <table class="hidden md:table w-full text-sm dark:bg-gray-800 dark:text-gray-100 bg-gray-800 rounded-lg overflow-hidden shadow">
+                            <thead class="bg-gray-700 dark:bg-gray-700">
+                                <tr>
+                                    <th class="p-3 text-left font-semibold">Datum</th>
+                                    <th class="p-3 text-left font-semibold">Typ</th>
+                                    <th class="p-3 text-left font-semibold">Team</th>
+                                    <th class="p-3 text-left font-semibold">Info</th>
+                                    <th class="p-3 text-left font-semibold">Betrag (€)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
         `;
         txs.forEach(t => {
             html += `
@@ -307,11 +314,11 @@ function renderTransactions() {
             `;
         });
         html += `
-                    </tbody>
-                </table>
-                
-                <!-- Mobile Card View with enhanced team colors -->
-                <div class="md:hidden space-y-3">
+                            </tbody>
+                        </table>
+                        
+                        <!-- Mobile Card View with enhanced team colors -->
+                        <div class="md:hidden space-y-3">
         `;
         txs.forEach(t => {
             const teamColorClass = t.team === 'AEK' ? 'border-blue-500 bg-blue-900' : 
@@ -338,6 +345,8 @@ function renderTransactions() {
             `;
         });
         html += `
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -444,6 +453,19 @@ function renderTransactions() {
         };
     }
 }
+
+// Toggle function for collapsible match transactions
+function toggleMatchTransactions(matchId) {
+    if (collapsedMatches.has(matchId)) {
+        collapsedMatches.delete(matchId);
+    } else {
+        collapsedMatches.add(matchId);
+    }
+    renderTransactions(); // Re-render to show/hide content
+}
+
+// Make function globally available
+window.toggleMatchTransactions = toggleMatchTransactions;
 
 function openTransForm() {
     showModal(`

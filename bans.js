@@ -1,5 +1,6 @@
 import { showModal, hideModal, showSuccessAndCloseModal } from './modal.js';
 import { supabase } from './supabaseClient.js';
+import { ErrorHandler } from './utils.js';
 
 // --- Helper-Funktion: Spieler für Team laden ---
 async function getPlayersByTeam(team) {
@@ -27,13 +28,13 @@ export async function loadBansAndRender(renderFn = renderBansLists) {
         supabase.from('players').select('*')
     ]);
     if (errorBans) {
-        alert('Fehler beim Laden der Sperren: ' + errorBans.message);
+        ErrorHandler.showUserError(`Fehler beim Laden der Sperren: ${errorBans.message}`, "error");
         bans = [];
     } else {
         bans = bansData || [];
     }
     if (errorPlayers) {
-        alert('Fehler beim Laden der Spieler: ' + errorPlayers.message);
+        ErrorHandler.showUserError(`Fehler beim Laden der Spieler: ${errorPlayers.message}`, "error");
         playersCache = [];
     } else {
         playersCache = playersData || [];
@@ -154,7 +155,7 @@ async function saveBan(ban) {
                 reason: ban.reason
             })
             .eq('id', ban.id);
-        if (error) alert('Fehler beim Speichern: ' + error.message);
+        if (error) ErrorHandler.showUserError(`Fehler beim Speichern: ${error.message}`, "error");
     } else {
         // Insert
         const { error } = await supabase
@@ -167,7 +168,7 @@ async function saveBan(ban) {
                 matchesserved: ban.matchesserved || 0,
                 reason: ban.reason
             }]);
-        if (error) alert('Fehler beim Anlegen: ' + error.message);
+        if (error) ErrorHandler.showUserError(`Fehler beim Anlegen: ${error.message}`, "error");
     }
 }
 

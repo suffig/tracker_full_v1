@@ -1,6 +1,7 @@
 import { showModal, hideModal, showSuccessAndCloseModal } from './modal.js';
 import { supabase } from './supabaseClient.js';
 import { matches } from './matches.js';
+import { ErrorHandler } from './utils.js';
 
 let finances = {
     aekAthen: { balance: 0, debt: 0 },
@@ -12,7 +13,7 @@ let transactions = [];
 async function loadFinancesAndTransactions(renderFn = renderFinanzenTabInner) {
     const { data: finData, error: finError } = await supabase.from('finances').select('*');
     if (finError) {
-        alert("Fehler beim Laden der Finanzen: " + finError.message);
+        ErrorHandler.showUserError(`Fehler beim Laden der Finanzen: ${finError.message}`, "error");
     }
     if (finData && finData.length) {
         finances = {
@@ -28,7 +29,7 @@ async function loadFinancesAndTransactions(renderFn = renderFinanzenTabInner) {
 
     const { data: transData, error: transError } = await supabase.from('transactions').select('*').order('id', { ascending: false });
     if (transError) {
-        alert("Fehler beim Laden der Transaktionen: " + transError.message);
+        ErrorHandler.showUserError(`Fehler beim Laden der Transaktionen: ${transError.message}`, "error");
     }
     transactions = transData || [];
     console.log('Loaded transactions:', transactions.length, transactions);
@@ -47,7 +48,7 @@ async function saveTransaction(trans) {
         match_id: trans.match_id || null
     }]);
     if (insertError) {
-        alert("Fehler beim Speichern der Transaktion: " + insertError.message);
+        ErrorHandler.showUserError(`Fehler beim Speichern der Transaktion: ${insertError.message}`, "error");
         return;
     }
     const teamKey = trans.team === "AEK" ? "aekAthen" : "realMadrid";
@@ -61,7 +62,7 @@ async function saveTransaction(trans) {
     }
     const { error: updateError } = await supabase.from('finances').update(updateObj).eq('team', trans.team);
     if (updateError) {
-        alert("Fehler beim Aktualisieren der Finanzen: " + updateError.message);
+        ErrorHandler.showUserError(`Fehler beim Aktualisieren der Finanzen: ${updateError.message}`, "error");
     }
 }
 
@@ -119,7 +120,8 @@ function groupTransactionsByDate(transactions) {
             ...t,
             date: dateField,
             info: t.info || t.description || 'Keine Beschreibung',
-            type: t.type || 'Sonstiges'
+            type: t.type || 'Sonstiges',
+            amount: typeof t.amount === 'number' ? t.amount : (parseFloat(t.amount) || 0)
         };
         groups[dateField].push(normalizedTransaction);
     }

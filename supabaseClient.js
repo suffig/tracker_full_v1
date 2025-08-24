@@ -392,17 +392,86 @@ const createFallbackClient = () => {
           if (sampleData[table]) {
             sampleData[table].push(newItem);
           }
-          return Promise.resolve({ data: [newItem], error: null });
+          
+          // Return a chainable object that supports .select()
+          return {
+            select: (columns = '*') => {
+              console.warn('Supabase insert().select() not available in demo mode - simulating success');
+              return {
+                single: () => {
+                  console.warn('Supabase insert().select().single() not available in demo mode - simulating success');
+                  return Promise.resolve({ data: newItem, error: null });
+                },
+                // Make select result thenable for backward compatibility
+                then: (resolve, reject) => {
+                  Promise.resolve({ data: [newItem], error: null }).then(resolve, reject);
+                },
+                catch: (reject) => {
+                  Promise.resolve({ data: [newItem], error: null }).catch(reject);
+                },
+                finally: (callback) => {
+                  Promise.resolve({ data: [newItem], error: null }).finally(callback);
+                }
+              };
+            },
+            single: () => {
+              console.warn('Supabase insert().single() not available in demo mode - simulating success');
+              return Promise.resolve({ data: newItem, error: null });
+            },
+            // Make it thenable for backward compatibility
+            then: (resolve, reject) => {
+              Promise.resolve({ data: [newItem], error: null }).then(resolve, reject);
+            },
+            catch: (reject) => {
+              Promise.resolve({ data: [newItem], error: null }).catch(reject);
+            },
+            finally: (callback) => {
+              Promise.resolve({ data: [newItem], error: null }).finally(callback);
+            }
+          };
         },
         update: (data) => {
           console.warn('Supabase update not available in demo mode - simulating success');
-          const filteredData = filterData(table, queryState);
-          queryState = {};
-          // Update the sample data
-          filteredData.forEach(item => {
-            Object.assign(item, data);
-          });
-          return Promise.resolve({ data: filteredData, error: null });
+          
+          // Return a chainable object that supports .eq()
+          return {
+            eq: (column, value) => {
+              console.warn('Supabase update().eq() not available in demo mode - simulating success');
+              // Filter and update matching items
+              const filteredData = filterData(table, queryState);
+              queryState = {};
+              const matchingItems = filteredData.filter(item => item[column] === value);
+              matchingItems.forEach(item => {
+                Object.assign(item, data);
+              });
+              return Promise.resolve({ data: matchingItems, error: null });
+            },
+            // Make it thenable for backward compatibility
+            then: (resolve, reject) => {
+              const filteredData = filterData(table, queryState);
+              queryState = {};
+              filteredData.forEach(item => {
+                Object.assign(item, data);
+              });
+              Promise.resolve({ data: filteredData, error: null }).then(resolve, reject);
+            },
+            catch: (reject) => {
+              const filteredData = filterData(table, queryState);
+              queryState = {};
+              filteredData.forEach(item => {
+                Object.assign(item, data);
+              });
+              Promise.resolve({ data: filteredData, error: null }).catch(reject);
+            },
+            finally: (callback) => {
+              const filteredData = filterData(table, queryState);
+              queryState = {};
+              filteredData.forEach(item => {
+                Object.assign(item, data);
+              });
+              Promise.resolve({ data: filteredData, error: null }).finally(callback);
+            }
+          };
         },
         delete: () => {
           console.warn('Supabase delete not available in demo mode - simulating success');

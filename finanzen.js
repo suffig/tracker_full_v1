@@ -77,23 +77,38 @@ function renderFinanzenTabInner(containerId = "app") {
         <div class="mb-4">
             <h2 class="text-lg font-semibold text-slate-100">Finanzen</h2>
         </div>
-        <div class="flex flex-col sm:flex-row sm:space-x-8 space-y-2 sm:space-y-0 mb-6">
-            <div class="bg-blue-700 text-blue-100 rounded-lg p-4 flex-1 min-w-0 border border-blue-600 shadow-lg">
-                <b>AEK</b><br>
-                Kontostand: <span class="font-bold text-blue-200">${(finances.aekAthen.balance || 0).toLocaleString('de-DE')} €</span><br>
-                Echtgeldschulden: <span class="font-bold text-blue-200">${(finances.aekAthen.debt || 0).toLocaleString('de-DE')} €</span>
+        <div class="flex flex-col sm:flex-row gap-3 mb-6">
+            <div class="bg-blue-700 text-blue-100 rounded-lg p-3 flex-1 min-w-0 border border-blue-600 shadow-lg">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-3 h-3 bg-blue-400 rounded-full"></div>
+                    <span class="font-bold text-lg">AEK</span>
+                </div>
+                <div class="space-y-1 text-sm">
+                    <div>Kontostand: <span class="font-bold text-blue-200">${(finances.aekAthen.balance || 0).toLocaleString('de-DE')} €</span></div>
+                    <div>Schulden: <span class="font-bold text-blue-200">${(finances.aekAthen.debt || 0).toLocaleString('de-DE')} €</span></div>
+                </div>
             </div>
-            <div class="bg-red-700 text-red-100 rounded-lg p-4 flex-1 min-w-0 border border-red-600 shadow-lg">
-                <b>Real</b><br>
-                Kontostand: <span class="font-bold text-red-200">${(finances.realMadrid.balance || 0).toLocaleString('de-DE')} €</span><br>
-                Echtgeldschulden: <span class="font-bold text-red-200">${(finances.realMadrid.debt || 0).toLocaleString('de-DE')} €</span>
+            <div class="bg-red-700 text-red-100 rounded-lg p-3 flex-1 min-w-0 border border-red-600 shadow-lg">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-3 h-3 bg-red-400 rounded-full"></div>
+                    <span class="font-bold text-lg">Real</span>
+                </div>
+                <div class="space-y-1 text-sm">
+                    <div>Kontostand: <span class="font-bold text-red-200">${(finances.realMadrid.balance || 0).toLocaleString('de-DE')} €</span></div>
+                    <div>Schulden: <span class="font-bold text-red-200">${(finances.realMadrid.debt || 0).toLocaleString('de-DE')} €</span></div>
+                </div>
             </div>
         </div>
-        <div class="mb-4 flex flex-col sm:flex-row sm:justify-between items-stretch gap-2">
-            <h3 class="text-md font-semibold text-slate-100">Transaktionen</h3>
-            <button id="add-trans-btn" class="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto px-4 py-3 rounded-lg text-base flex items-center justify-center gap-2 font-semibold transition shadow">
-                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                <span>Transaktion hinzufügen</span>
+        <div class="mb-3 flex flex-col sm:flex-row sm:justify-between items-stretch gap-2">
+            <h3 class="text-lg font-semibold text-slate-100 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Transaktionen
+            </h3>
+            <button id="add-trans-btn" class="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto px-3 py-2 rounded-lg text-sm flex items-center justify-center gap-2 font-semibold transition shadow">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <span>Hinzufügen</span>
             </button>
         </div>
         <div class="overflow-x-auto w-full" style="max-width:100vw;">
@@ -248,16 +263,16 @@ function renderTransactions() {
         const colorScheme = getMatchColorScheme(appNr || 1);
         
         html += `
-        <div class="border-2 ${colorScheme.container} rounded-lg mb-4 p-3 shadow-lg">
-            <div class="font-bold ${colorScheme.header} pl-2 mb-3 text-lg flex items-center justify-between">
+        <div class="border-2 ${colorScheme.container} rounded-lg mb-3 p-3 shadow-lg">
+            <div class="font-bold ${colorScheme.header} pl-2 mb-2 flex items-center justify-between">
                 <div class="flex items-center">
-                    <div class="w-4 h-4 bg-${colorScheme.accent} rounded-full mr-3 flex-shrink-0"></div>
+                    <div class="w-3 h-3 bg-${colorScheme.accent} rounded-full mr-2 flex-shrink-0"></div>
                     <div>
-                        <div class="text-xl font-extrabold">Match #${appNr}</div>
-                        <div class="text-sm font-normal opacity-90">${matchInfo}</div>
+                        <div class="text-lg font-extrabold">Match #${appNr}</div>
+                        <div class="text-xs font-normal opacity-90">${matchInfo}</div>
                     </div>
                 </div>
-                <div class="text-sm bg-${colorScheme.accent} text-white px-3 py-1 rounded-full font-semibold">
+                <div class="text-xs bg-${colorScheme.accent} text-white px-2 py-1 rounded-full font-semibold">
                     ${txs.length} Transaktion${txs.length !== 1 ? 'en' : ''}
                 </div>
             </div>
@@ -332,16 +347,16 @@ function renderTransactions() {
     // Normale Transaktionen (ohne Match)
     if (nonMatchTransactions.length) {
         html += `
-        <div class="border-2 border-slate-500 bg-slate-600 rounded-lg mb-4 p-3 shadow-lg">
-            <div class="font-bold text-slate-100 pl-2 mb-3 text-lg flex items-center justify-between">
+        <div class="border-2 border-slate-500 bg-slate-600 rounded-lg mb-3 p-3 shadow-lg">
+            <div class="font-bold text-slate-100 pl-2 mb-2 flex items-center justify-between">
                 <div class="flex items-center">
-                    <div class="w-4 h-4 bg-slate-400 rounded-full mr-3 flex-shrink-0"></div>
+                    <div class="w-3 h-3 bg-slate-400 rounded-full mr-2 flex-shrink-0"></div>
                     <div>
-                        <div class="text-xl font-extrabold">Sonstige Transaktionen</div>
-                        <div class="text-sm font-normal opacity-90">Nicht match-bezogene Buchungen</div>
+                        <div class="text-lg font-extrabold">Sonstige Transaktionen</div>
+                        <div class="text-xs font-normal opacity-90">Nicht match-bezogene Buchungen</div>
                     </div>
                 </div>
-                <div class="text-sm bg-slate-400 text-slate-900 px-3 py-1 rounded-full font-semibold">
+                <div class="text-xs bg-slate-400 text-slate-900 px-2 py-1 rounded-full font-semibold">
                     ${nonMatchTransactions.length} Buchung${nonMatchTransactions.length !== 1 ? 'en' : ''}
                 </div>
             </div>

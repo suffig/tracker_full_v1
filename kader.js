@@ -88,14 +88,14 @@ export function renderKaderTab(containerId = "app") {
     loadPlayersAndFinances(renderPlayerLists);
 
     app.innerHTML = `
-        <div class="w-full px-2">
-            <div class="flex flex-col sm:flex-row justify-between mb-4 gap-2">
-                <h2 class="text-lg font-semibold dark:text-white">Team-Kader</h2>
+        <div class="modern-grid">
+            <div class="modern-card-header">
+                <h2 class="modern-card-title">👥 Team-Kader</h2>
             </div>
-            <div class="space-y-4">
-                ${accordionPanelHtml('AEK', 'aek', 'bg-blue-50 dark:bg-blue-900', 'text-blue-700 dark:text-blue-200')}
-                ${accordionPanelHtml('Real', 'real', 'bg-red-50 dark:bg-red-900', 'text-red-700 dark:text-red-200')}
-                ${accordionPanelHtml('Ehemalige', 'ehemalige', 'bg-gray-700 dark:bg-gray-700', 'text-gray-700 dark:text-gray-200')}
+            <div class="modern-accordion">
+                ${accordionPanelHtml('AEK', 'aek', 'modern-accordion-item aek-theme', 'text-blue-200')}
+                ${accordionPanelHtml('Real', 'real', 'modern-accordion-item real-theme', 'text-red-200')}
+                ${accordionPanelHtml('Ehemalige', 'ehemalige', 'modern-accordion-item', 'text-gray-200')}
             </div>
         </div>
     `;
@@ -109,21 +109,20 @@ export function renderKaderTab(containerId = "app") {
 
 function accordionPanelHtml(team, key, bgClass, textClass) {
     const isOpen = openPanel === key;
+    const teamIcon = key === 'aek' ? '🔵' : key === 'real' ? '🔴' : '📋';
     return `
-        <div class="${bgClass} rounded-lg border border-gray-300">
-            <button id="panel-toggle-${key}" class="flex justify-between items-center w-full px-3 py-3 ${textClass} font-medium transition" style="font-size:1.1rem;">
-                <span>${team}</span>
-                <span class="ml-2">${isOpen ? "▼" : "▶"}</span>
+        <div class="${bgClass}">
+            <button id="panel-toggle-${key}" class="modern-accordion-trigger ${isOpen ? 'active' : ''}">
+                <span>${teamIcon} ${team}</span>
+                <span class="modern-accordion-icon">${isOpen ? "▼" : "▶"}</span>
             </button>
-            <div id="panel-content-${key}" class="transition-all duration-200" style="${isOpen ? '' : 'display:none;'}">
-                <div class="pt-2 pb-1">
-                    <button id="add-player-${key}" class="bg-sky-600 hover:bg-sky-700 text-white w-full px-4 py-3 rounded-lg text-base flex items-center justify-center gap-2 font-semibold transition shadow mb-2">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                        <span>Spieler hinzufügen</span>
-                    </button>
-                    <div id="team-${key}-players" class="space-y-2 mt-2"></div>
-                    ${team !== 'Ehemalige' ? `<div class="text-xs mt-2 ${textClass}">Gesamter Marktwert: <span id="${key}-marktwert"></span></div>` : ''}
-                </div>
+            <div id="panel-content-${key}" class="modern-accordion-content" style="${isOpen ? '' : 'display:none;'}">
+                <button id="add-player-${key}" class="modern-btn modern-btn-primary w-full mb-4">
+                    <span>➕</span>
+                    <span>Spieler hinzufügen</span>
+                </button>
+                <div id="team-${key}-players" class="modern-grid"></div>
+                ${team !== 'Ehemalige' ? `<div class="mt-4 text-sm ${textClass}">💰 Gesamter Marktwert: <span id="${key}-marktwert" class="font-bold"></span></div>` : ''}
             </div>
         </div>
     `;

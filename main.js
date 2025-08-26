@@ -342,17 +342,18 @@ function showTabLoader(show = true) {
     }
 }
 
-// --- Bottom Navbar Indicator ---
+// --- Modern Bottom Navbar Active State ---
 function updateBottomNavActive(tab) {
     try {
-        document.querySelectorAll('.nav-indicator').forEach(ind => {
-            ind.className = 'nav-indicator';
+        // Remove active class from all nav items
+        document.querySelectorAll('.modern-nav-item').forEach(item => {
+            item.classList.remove('active');
         });
         
+        // Add active class to current tab
         const navElement = document.getElementById(`nav-${tab}`);
-        const indicator = navElement?.querySelector('.nav-indicator');
-        if (indicator) {
-            indicator.classList.add('active', `indicator-${tab}`);
+        if (navElement) {
+            navElement.classList.add('active');
         }
     } catch (error) {
         console.error('Error updating bottom nav:', error);
@@ -532,36 +533,40 @@ async function renderLoginArea() {
             if (document.getElementById('email')) emailValue = document.getElementById('email').value;
             if (document.getElementById('pw')) pwValue = document.getElementById('pw').value;
             loginDiv.innerHTML = `
-                <div class="min-h-screen bg-gray-900 flex flex-col items-center justify-center px-4 py-8">
-                    <div class="w-full">
-                        <div class="flex flex-col items-center mb-8">
-                            <img src="assets/logo.png" alt="FIFA Tracker Logo" class="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 mb-4" loading="eager" decoding="async" />
-                            <h1 class="text-2xl sm:text-3xl font-bold text-gray-100 text-center">FIFA Statistik-Tracker</h1>
-                            <p class="text-gray-600 text-center mt-2">Melden Sie sich an, um fortzufahren</p>
+                <div class="modern-login">
+                    <div class="modern-login-card">
+                        <div class="modern-login-header">
+                            <img src="assets/logo.png" alt="FIFA Tracker Logo" class="modern-login-logo" loading="eager" decoding="async" />
+                            <h1 class="modern-login-title">FIFA Stats Tracker</h1>
+                            <p class="modern-login-subtitle">Melden Sie sich an, um fortzufahren</p>
                         </div>
-                        <form id="loginform" class="login-area flex flex-col gap-6">
-                            <div class="space-y-4">
+                        <form id="loginform" class="modern-form">
+                            <div class="modern-input-group">
+                                <label for="email" class="modern-label">E-Mail</label>
                                 <input 
                                     type="email" 
                                     id="email" 
                                     required 
-                                    placeholder="E-Mail" 
+                                    placeholder="ihre@email.com" 
                                     autocomplete="email"
-                                    class="w-full rounded-lg border-2 border-gray-600 bg-gray-800 text-white placeholder-gray-400 px-4 py-4 text-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 outline-none" 
+                                    class="modern-input" 
                                     value="${emailValue}" />
+                            </div>
+                            <div class="modern-input-group">
+                                <label for="pw" class="modern-label">Passwort</label>
                                 <input 
                                     type="password" 
                                     id="pw" 
                                     required 
-                                    placeholder="Passwort" 
+                                    placeholder="••••••••" 
                                     autocomplete="current-password"
-                                    class="w-full rounded-lg border-2 border-gray-600 bg-gray-800 text-white placeholder-gray-400 px-4 py-4 text-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 outline-none" 
+                                    class="modern-input" 
                                     value="${pwValue}" />
                             </div>
                             <button
                                 type="submit"
-                                class="login-btn w-full bg-blue-600 text-white font-bold text-xl py-4 rounded-xl shadow-lg hover:bg-blue-700 active:scale-95 transition-all duration-150 outline-none ring-2 ring-transparent focus:ring-blue-300 border-2 border-blue-600 hover:border-blue-700 min-h-[56px]">
-                                <i class="fas fa-sign-in-alt mr-2"></i> Anmelden
+                                class="modern-btn modern-btn-primary modern-btn-lg login-btn">
+                                🔑 Anmelden
                             </button>
                         </form>
                     </div>

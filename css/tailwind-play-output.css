@@ -2013,15 +2013,50 @@ button:active, a:active {
     font-size: 14px !important;
   }
   
-  /* Improved card buttons visibility */
-  .player-card button {
-    min-width: 40px !important;
-    min-height: 40px !important;
+  /* Improved card buttons visibility and touch targets */
+  .player-card button,
+  .transaction-card button,
+  .match-card button {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    padding: 0.75rem !important;
+    font-size: 0.9rem !important;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   
   /* Enhanced modal overlay visibility */
   .modal-content {
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8) !important;
+    margin: 1rem;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  
+  /* Better form inputs for mobile */
+  .form-input,
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  select,
+  textarea {
+    min-height: 48px !important;
+    font-size: 16px !important; /* Prevent zoom on iOS */
+    padding: 0.875rem 1rem !important;
+  }
+  
+  /* Enhanced button sizing for mobile */
+  .btn {
+    min-height: 48px !important;
+    padding: 0.875rem 1.5rem !important;
+    font-size: 0.95rem !important;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .btn-sm {
+    min-height: 44px !important;
+    padding: 0.75rem 1.25rem !important;
   }
 }
 #bottom-nav {
@@ -2030,47 +2065,71 @@ button:active, a:active {
 }
 .dark { color-scheme: dark; }
 
-/* --- General text descriptions should be black --- */
+/* --- COMPREHENSIVE TEXT CONTRAST FIXES --- */
+/* Fix all gray text that might be hard to read on light backgrounds */
 .text-description, 
 label, 
 .text-gray-700,
 .text-gray-800,
 .text-gray-900,
-p:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400),
-div:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400) > .text-sm:not(.text-white):not(.text-red-400):not(.text-blue-400) {
-  color: #000000 !important;
+p:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400):not(.text-yellow-400),
+div:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400) > .text-sm:not(.text-white):not(.text-red-400):not(.text-blue-400),
+.empty-state-text,
+.no-data-text {
+  color: #1f2937 !important; /* Dark gray for better contrast */
 }
 
-/* --- Transaction overview improvements --- */
-.transaction-container .text-gray-200 {
-  color: #000000 !important;
+/* Specific fixes for light backgrounds */
+.bg-white .text-gray-700,
+.bg-gray-50 .text-gray-700,
+.bg-gray-100 .text-gray-700 {
+  color: #374151 !important;
 }
 
-.transaction-container .text-gray-700 {
-  color: #000000 !important;
+/* Dark mode text should remain light */
+.dark .text-gray-700,
+.dark .text-gray-800,
+.dark .text-gray-900 {
+  color: #d1d5db !important;
 }
 
+/* --- TRANSACTION TEXT VISIBILITY FIXES --- */
+.transaction-container .text-gray-200,
+.transaction-container .text-gray-300,
+.transaction-container .text-gray-400 {
+  color: #374151 !important; /* Darker for better contrast */
+}
+
+.transaction-container .text-gray-700,
+.transaction-container .text-gray-800,
 .transaction-container .text-gray-900 {
-  color: #000000 !important;
+  color: #1f2937 !important; /* Even darker for maximum readability */
 }
 
 /* Enhanced transaction card styling */
 .transaction-card {
   background: #ffffff !important;
-  color: #000000 !important;
+  color: #1f2937 !important;
   border: 1px solid #e5e7eb !important;
 }
 
 .transaction-card .text-gray-200,
+.transaction-card .text-gray-300,
+.transaction-card .text-gray-400,
+.transaction-card .text-gray-500,
+.transaction-card .text-gray-600,
 .transaction-card .text-gray-700,
+.transaction-card .text-gray-800,
 .transaction-card .text-gray-900 {
-  color: #000000 !important;
+  color: #374151 !important; /* Consistent dark text for cards */
 }
 
-/* Fix description text to be black */
+/* Fix description text to be readable */
 .transaction-info,
-.transaction-description {
-  color: #000000 !important;
+.transaction-description,
+.description-text,
+.info-text {
+  color: #374151 !important;
 }
 
 /* --- ADDITIONAL READABILITY IMPROVEMENTS --- */

@@ -217,13 +217,17 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.5rem;
+  padding: 0.75rem 0.5rem;
   border-radius: var(--radius-lg);
   text-decoration: none;
   color: var(--text-muted);
   transition: all var(--transition-fast);
-  min-width: 60px;
+  min-width: 64px;
+  min-height: 48px;
   position: relative;
+  /* Improved touch targets for mobile */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .nav-item:hover {
@@ -251,11 +255,13 @@ body {
 .nav-icon {
   font-size: 1.5rem;
   margin-bottom: 0.25rem;
+  line-height: 1;
 }
 
 .nav-label {
   font-size: 0.75rem;
   font-weight: 500;
+  line-height: 1;
 }
 
 /* --- MODERN CARDS --- */
@@ -317,6 +323,11 @@ body {
   outline: none;
   position: relative;
   overflow: hidden;
+  /* Improved mobile touch targets */
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn:focus-visible {
@@ -527,6 +538,50 @@ body {
   
   .header-title {
     display: none;
+  }
+  
+  /* Improved mobile button sizing */
+  .btn {
+    min-height: 48px;
+    padding: 0.875rem 1.75rem;
+    font-size: 0.9rem;
+  }
+  
+  .btn-sm {
+    min-height: 44px;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8rem;
+  }
+  
+  /* Better mobile cards */
+  .modern-card {
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Improved mobile form elements */
+  .form-input {
+    min-height: 48px;
+    padding: 0.875rem 1rem;
+    font-size: 1rem; /* Prevent zoom on iOS */
+  }
+  
+  /* Enhanced bottom navigation for mobile */
+  .modern-bottom-nav {
+    padding: 1rem 0 calc(1rem + env(safe-area-inset-bottom, 0px));
+  }
+  
+  .nav-item {
+    min-height: 52px;
+    padding: 0.875rem 0.5rem;
+  }
+  
+  .nav-icon {
+    font-size: 1.75rem;
+  }
+  
+  .nav-label {
+    font-size: 0.8rem;
   }
 }
 

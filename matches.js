@@ -758,7 +758,7 @@ function attachMatchFormEventHandlers(edit, id, aekSpieler, realSpieler, aekSort
         updateTotalGoals(); // Update total when adding scorer
         
         // Set up goal buttons for the newly added row
-        setupGoalButtons();
+        setupGoalButtons(updateTotalGoals);
     }
     document.querySelectorAll("#scorersA .remove-goal-btn").forEach(btn => {
         btn.onclick = function() {
@@ -827,11 +827,11 @@ function attachMatchFormEventHandlers(edit, id, aekSpieler, realSpieler, aekSort
         if (goalsAInput) goalsAInput.value = totalAekGoals;
         if (goalsBInput) goalsBInput.value = totalRealGoals;
         
-        // Update scorer field visibility
+        // Keep scorer fields always visible - don't hide them based on goal count
         const scorersABlock = document.getElementById('scorersA-block');
         const scorersBBlock = document.getElementById('scorersB-block');
-        scorersABlock.style.display = totalAekGoals > 0 ? '' : 'none';
-        scorersBBlock.style.display = totalRealGoals > 0 ? '' : 'none';
+        if (scorersABlock) scorersABlock.style.display = '';
+        if (scorersBBlock) scorersBBlock.style.display = '';
     }
     
     // Replace the old event listeners with the new auto-calculation
@@ -879,7 +879,7 @@ function attachMatchFormEventHandlers(edit, id, aekSpieler, realSpieler, aekSort
         console.error('Team filter buttons not found:', { aekBtn, realBtn });
     }
 	setupCardButtons();
-	setupGoalButtons();
+	setupGoalButtons(updateTotalGoals);
     
     // Add form submit handler - this was missing and caused the primary issue
     const matchForm = document.getElementById('match-form');
@@ -937,7 +937,7 @@ function setupCardButtons() {
 
 // Add event listeners for goal increment/decrement buttons
 let goalButtonsInitialized = false;
-function setupGoalButtons() {
+function setupGoalButtons(updateTotalGoalsCallback = null) {
     // Reset the flag to allow re-initialization for dynamically added elements
     goalButtonsInitialized = false;
     
@@ -959,7 +959,7 @@ function setupGoalButtons() {
                 const current = parseInt(input.value) || 1;
                 if (current < max) {
                     input.value = current + 1;
-                    updateTotalGoals(); // Update total goals when changing scorer count
+                    if (updateTotalGoalsCallback) updateTotalGoalsCallback(); // Update total goals when changing scorer count
                 }
             }
         });
@@ -975,7 +975,7 @@ function setupGoalButtons() {
                 const current = parseInt(input.value) || 1;
                 if (current > min) {
                     input.value = current - 1;
-                    updateTotalGoals(); // Update total goals when changing scorer count
+                    if (updateTotalGoalsCallback) updateTotalGoalsCallback(); // Update total goals when changing scorer count
                 }
             }
         });

@@ -330,17 +330,17 @@ function renderTransactions() {
             html += `
                 <div class="rounded-lg p-4 shadow border-l-4 ${teamColorClass}">
                     <div class="flex justify-between items-start mb-2">
-                        <div class="text-sm font-medium text-gray-700">${new Date(t.date).toLocaleDateString('de-DE')}</div>
+                    <div class="text-sm transaction-description">${new Date(t.date).toLocaleDateString('de-DE')}</div>
                         <div class="text-lg font-bold ${t.amount >= 0 ? 'text-green-700' : 'text-red-700'}">
                             ${t.amount >= 0 ? '+' : ''}${t.amount.toLocaleString('de-DE')}€
                         </div>
                     </div>
-                    <div class="text-base font-semibold text-gray-900 mb-1">${t.type}</div>
+                    <div class="text-base font-semibold transaction-description mb-1">${t.type}</div>
                     <div class="text-sm mb-1 flex items-center">
                         <span class="${getTeamIndicatorClass(t.team)}"></span>
                         <span class="font-semibold ${teamTextClass}">${t.team}</span>
                     </div>
-                    ${t.info ? `<div class="text-sm font-medium text-gray-200">${t.info}</div>` : ''}
+                    ${t.info ? `<div class="text-sm font-medium transaction-info">${t.info}</div>` : ''}
                 </div>
             `;
         });
@@ -407,14 +407,14 @@ function renderTransactions() {
             html += `
                 <div class="bg-gray-50 rounded-lg p-4 shadow border-l-4 ${t.team === 'AEK' ? 'border-blue-400' : t.team === 'Real' ? 'border-red-400' : 'border-gray-400'}">
                     <div class="flex justify-between items-start mb-2">
-                        <div class="text-sm text-gray-700">${new Date(t.date).toLocaleDateString('de-DE')}</div>
+                        <div class="text-sm transaction-description">${new Date(t.date).toLocaleDateString('de-DE')}</div>
                         <div class="text-lg font-bold ${t.amount >= 0 ? 'text-green-700' : 'text-red-700'}">
                             ${t.amount >= 0 ? '+' : ''}${t.amount.toLocaleString('de-DE')}€
                         </div>
                     </div>
-                    <div class="text-base font-semibold text-gray-900 mb-1">${t.type}</div>
-                    <div class="text-sm text-gray-800 mb-1">Team: <span class="font-semibold ${t.team === 'AEK' ? 'text-blue-900' : t.team === 'Real' ? 'text-red-900' : 'text-gray-900'}">${t.team}</span></div>
-                    ${t.info ? `<div class="text-sm text-gray-700">${t.info}</div>` : ''}
+                    <div class="text-base font-semibold transaction-description mb-1">${t.type}</div>
+                    <div class="text-sm transaction-description mb-1">Team: <span class="font-semibold ${t.team === 'AEK' ? 'text-blue-900' : t.team === 'Real' ? 'text-red-900' : 'text-gray-900'}">${t.team}</span></div>
+                    ${t.info ? `<div class="text-sm transaction-info">${t.info}</div>` : ''}
                 </div>
             `;
         });

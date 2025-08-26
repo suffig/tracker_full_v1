@@ -151,7 +151,7 @@ function renderTransactions() {
     const container = document.getElementById('transactions-list');
     console.log('renderTransactions called with:', transactions.length, 'transactions');
     if (!transactions.length) {
-        container.innerHTML = `<div class="text-gray-700 text-sm">Keine Transaktionen vorhanden.</div>`;
+        container.innerHTML = `<div class="text-slate-800 dark:text-slate-200 text-sm font-medium">Keine Transaktionen vorhanden.</div>`;
         return;
     }
 
@@ -162,7 +162,7 @@ function renderTransactions() {
 
     // Check if we have any valid transaction groups (transactions with dates)
     if (transactionGroups.length === 0) {
-        container.innerHTML = `<div class="text-gray-700 text-sm">Keine gültigen Transaktionen mit Datum vorhanden.</div>`;
+        container.innerHTML = `<div class="text-slate-800 dark:text-slate-200 text-sm font-medium">Keine gültigen Transaktionen mit Datum vorhanden.</div>`;
         return;
     }
 

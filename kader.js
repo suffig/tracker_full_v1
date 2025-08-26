@@ -136,7 +136,7 @@ function accordionPanelHtml(team, key, gradientClass, teamKey) {
                         <i class="fas fa-plus"></i>
                         <span>Neuen Spieler hinzufügen</span>
                     </button>
-                    <div id="team-${key}-players" class="grid gap-4"></div>
+                    <div id="team-${key}-players" class="grid gap-4 ${key === 'ehemalige' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : ''}"></div>
                 </div>
             ` : ''}
         </div>

@@ -2374,8 +2374,27 @@ div:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400)
 .modal-content p,
 .modal-content div > .text-sm,
 .modal-content b,
-.modal-content span:not(.text-blue-400):not(.text-red-400):not(.text-white):not(.bg-blue-400):not(.bg-red-400) {
+.modal-content span:not(.text-blue-400):not(.text-red-400):not(.text-white):not(.bg-blue-400):not(.bg-red-400),
+.modal-content h2,
+.modal-content h3,
+.modal-content h4,
+.modal-content .text-black,
+.modal-content .text-gray-600,
+.modal-content button[type="button"],
+.modal-content .scorer-row > *,
+.modal-content .flex > .text-sm {
   color: #f1f5f9 !important; /* Light text for dark modal background */
+}
+
+/* Improve button contrast in modals */
+.modal-content button:not(.bg-blue-600):not(.bg-red-600):not(.bg-green-600) {
+  background-color: #4b5563 !important;
+  color: #f9fafb !important;
+  border-color: #6b7280 !important;
+}
+
+.modal-content button:hover:not(.bg-blue-600):not(.bg-red-600):not(.bg-green-600) {
+  background-color: #374151 !important;
 }
 
 /* Ensure form input text remains readable */
@@ -2390,6 +2409,59 @@ div:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400)
 .modal-content input::placeholder,
 .modal-content select::placeholder,
 .modal-content textarea::placeholder {
+  color: #9ca3af !important;
+}
+
+/* --- LOGOUT BUTTON IN NAVIGATION --- */
+.logout-nav {
+  background: none !important;
+  border: none !important;
+  cursor: pointer !important;
+  opacity: 0.7 !important;
+  transition: opacity 0.2s ease !important;
+}
+
+.logout-nav:hover {
+  opacity: 1 !important;
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  color: #ef4444 !important;
+}
+
+.logout-nav .nav-icon {
+  color: #9ca3af !important;
+}
+
+.logout-nav:hover .nav-icon {
+  color: #ef4444 !important;
+}
+
+.logout-nav .nav-label {
+  color: #9ca3af !important;
+}
+
+.logout-nav:hover .nav-label {
+  color: #ef4444 !important;
+}
+
+/* --- BETTER TEXT CONTRAST FOR FORMS --- */
+form label,
+form .text-description,
+form h3,
+form .font-semibold {
+  color: #f1f5f9 !important;
+}
+
+form input,
+form select,
+form textarea {
+  background-color: #374151 !important;
+  color: #f9fafb !important;
+  border-color: #4b5563 !important;
+}
+
+form input::placeholder,
+form select::placeholder,
+form textarea::placeholder {
   color: #9ca3af !important;
 }
 

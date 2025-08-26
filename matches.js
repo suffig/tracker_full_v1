@@ -474,6 +474,19 @@ function getSdsCount(playerName, team) {
 // Optimized match form with better error handling and validation
 function openMatchForm(id) {
     try {
+        // Disable the add match button to prevent double-clicking
+        const addMatchBtn = document.getElementById("add-match-btn");
+        if (addMatchBtn) {
+            addMatchBtn.disabled = true;
+            addMatchBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            setTimeout(() => {
+                if (addMatchBtn) {
+                    addMatchBtn.disabled = false;
+                    addMatchBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            }, 2000); // Re-enable after 2 seconds
+        }
+        
         let match = null, edit = false;
         
         if (typeof id === "number") {
@@ -523,11 +536,11 @@ function openMatchForm(id) {
         const filterButtonHTML = `
             <div class="mb-3 flex gap-2">
                 <button type="button" id="sds-filter-aek" class="sds-filter-btn bg-gray-600 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 border-2 border-transparent flex items-center gap-2 min-h-[40px] flex-1 justify-center touch-manipulation">
-                    <span class="w-3 h-3 bg-blue-400 rounded-full flex-shrink-0 indicator-circle"></span>
+                    <span class="w-4 h-4 md:w-3 md:h-3 bg-blue-400 rounded-full flex-shrink-0 indicator-circle"></span>
                     <span>AEK</span>
                 </button>
                 <button type="button" id="sds-filter-real" class="sds-filter-btn bg-gray-600 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 border-2 border-transparent flex items-center gap-2 min-h-[40px] flex-1 justify-center touch-manipulation">
-                    <span class="w-3 h-3 bg-red-400 rounded-full flex-shrink-0 indicator-circle"></span>
+                    <span class="w-4 h-4 md:w-3 md:h-3 bg-red-400 rounded-full flex-shrink-0 indicator-circle"></span>
                     <span>Real</span>
                 </button>
             </div>
@@ -575,9 +588,9 @@ function generateMatchFormHTML(edit, dateVal, match, aekSpieler, realSpieler, ae
                 <div class="flex flex-col items-center">
                     <span class="font-bold text-blue-400 text-sm mb-1">AEK</span>
                 </div>
-                <input type="number" min="0" max="50" name="goalsa" class="border border-slate-600 bg-slate-700 text-slate-100 rounded-lg p-2 w-14 min-h-[40px] text-center text-lg font-bold focus:ring-2 focus:ring-sky-500 focus:border-transparent" required placeholder="0" value="${match ? match.goalsa : ""}">
+                <input type="number" min="0" max="50" name="goalsa" class="border border-slate-600 bg-slate-500 text-slate-300 rounded-lg p-2 w-14 min-h-[40px] text-center text-lg font-bold cursor-not-allowed" readonly placeholder="0" value="${match ? match.goalsa : ""}" title="Wird automatisch aus den Torschützen berechnet">
                 <span class="font-bold text-lg text-slate-300 mx-1">:</span>
-                <input type="number" min="0" max="50" name="goalsb" class="border border-slate-600 bg-slate-700 text-slate-100 rounded-lg p-2 w-14 min-h-[40px] text-center text-lg font-bold focus:ring-2 focus:ring-sky-500 focus:border-transparent" required placeholder="0" value="${match ? match.goalsb : ""}">
+                <input type="number" min="0" max="50" name="goalsb" class="border border-slate-600 bg-slate-500 text-slate-300 rounded-lg p-2 w-14 min-h-[40px] text-center text-lg font-bold cursor-not-allowed" readonly placeholder="0" value="${match ? match.goalsb : ""}" title="Wird automatisch aus den Torschützen berechnet">>
                 <div class="flex flex-col items-center">
                     <span class="font-bold text-red-400 text-sm mb-1">Real</span>
                 </div>
@@ -652,11 +665,11 @@ function generateMatchFormHTML(edit, dateVal, match, aekSpieler, realSpieler, ae
             <!-- Team Filter Toggle with enhanced visual indicators -->
             <div class="mb-3 flex gap-2">
                 <button type="button" id="sds-filter-aek" class="sds-filter-btn bg-gray-600 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 border-2 border-transparent flex items-center gap-2 min-h-[40px] flex-1 justify-center touch-manipulation">
-                    <span class="w-3 h-3 bg-blue-400 rounded-full flex-shrink-0 indicator-circle"></span>
+                    <span class="w-4 h-4 md:w-3 md:h-3 bg-blue-400 rounded-full flex-shrink-0 indicator-circle"></span>
                     <span>AEK</span>
                 </button>
                 <button type="button" id="sds-filter-real" class="sds-filter-btn bg-gray-600 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 border-2 border-transparent flex items-center gap-2 min-h-[40px] flex-1 justify-center touch-manipulation">
-                    <span class="w-3 h-3 bg-red-400 rounded-full flex-shrink-0 indicator-circle"></span>
+                    <span class="w-4 h-4 md:w-3 md:h-3 bg-red-400 rounded-full flex-shrink-0 indicator-circle"></span>
                     <span>Real</span>
                 </button>
             </div>
@@ -731,10 +744,18 @@ function attachMatchFormEventHandlers(edit, id, aekSpieler, realSpieler, aekSort
             </button>
         `;
         div.querySelector('.remove-goal-btn').onclick = function() {
-            if(container.querySelectorAll('.scorer-row').length > 1)
+            if(container.querySelectorAll('.scorer-row').length > 1) {
                 div.remove();
+                updateTotalGoals(); // Update total when removing scorer
+            }
         };
+        
+        // Add event listeners for player selection changes
+        const playerSelect = div.querySelector('select[name="' + name + '-player"]');
+        playerSelect.addEventListener('change', updateTotalGoals);
+        
         container.appendChild(div);
+        updateTotalGoals(); // Update total when adding scorer
         
         // Set up goal buttons for the newly added row
         setupGoalButtons();
@@ -742,16 +763,28 @@ function attachMatchFormEventHandlers(edit, id, aekSpieler, realSpieler, aekSort
     document.querySelectorAll("#scorersA .remove-goal-btn").forEach(btn => {
         btn.onclick = function() {
             const parent = document.getElementById('scorersA');
-            if(parent.querySelectorAll('.scorer-row').length > 1)
+            if(parent.querySelectorAll('.scorer-row').length > 1) {
                 btn.closest('.scorer-row').remove();
+                updateTotalGoals(); // Update total when removing existing scorer
+            }
         };
     });
     document.querySelectorAll("#scorersB .remove-goal-btn").forEach(btn => {
         btn.onclick = function() {
             const parent = document.getElementById('scorersB');
-            if(parent.querySelectorAll('.scorer-row').length > 1)
+            if(parent.querySelectorAll('.scorer-row').length > 1) {
                 btn.closest('.scorer-row').remove();
+                updateTotalGoals(); // Update total when removing existing scorer
+            }
         };
+    });
+    
+    // Add event listeners to existing player selects
+    document.querySelectorAll('#scorersA select[name="goalslista-player"]').forEach(select => {
+        select.addEventListener('change', updateTotalGoals);
+    });
+    document.querySelectorAll('#scorersB select[name="goalslistb-player"]').forEach(select => {
+        select.addEventListener('change', updateTotalGoals);
     });
     document.getElementById("addScorerA").onclick = () => addScorerHandler("scorersA", "goalslista", aekSpieler);
     document.getElementById("addScorerB").onclick = () => addScorerHandler("scorersB", "goalslistb", realSpieler);
@@ -764,9 +797,47 @@ function attachMatchFormEventHandlers(edit, id, aekSpieler, realSpieler, aekSort
         scorersABlock.style.display = goalsA > 0 ? '' : 'none';
         scorersBBlock.style.display = goalsB > 0 ? '' : 'none';
     }
-    document.querySelector('input[name="goalsa"]').addEventListener('input', toggleScorerFields);
-    document.querySelector('input[name="goalsb"]').addEventListener('input', toggleScorerFields);
-    toggleScorerFields();
+    
+    // Function to auto-calculate total goals from goal scorers
+    function updateTotalGoals() {
+        // Calculate AEK goals
+        const aekScorerRows = document.querySelectorAll('#scorersA .scorer-row');
+        let totalAekGoals = 0;
+        aekScorerRows.forEach(row => {
+            const playerSelect = row.querySelector('select[name="goalslista-player"]');
+            const goalInput = row.querySelector('input[name="goalslista-count"]');
+            if (playerSelect && playerSelect.value && goalInput && goalInput.value) {
+                totalAekGoals += parseInt(goalInput.value) || 0;
+            }
+        });
+        
+        // Calculate Real goals
+        const realScorerRows = document.querySelectorAll('#scorersB .scorer-row');
+        let totalRealGoals = 0;
+        realScorerRows.forEach(row => {
+            const playerSelect = row.querySelector('select[name="goalslistb-player"]');
+            const goalInput = row.querySelector('input[name="goalslistb-count"]');
+            if (playerSelect && playerSelect.value && goalInput && goalInput.value) {
+                totalRealGoals += parseInt(goalInput.value) || 0;
+            }
+        });
+        
+        // Update the main goal fields
+        const goalsAInput = document.querySelector('input[name="goalsa"]');
+        const goalsBInput = document.querySelector('input[name="goalsb"]');
+        if (goalsAInput) goalsAInput.value = totalAekGoals;
+        if (goalsBInput) goalsBInput.value = totalRealGoals;
+        
+        // Update scorer field visibility
+        const scorersABlock = document.getElementById('scorersA-block');
+        const scorersBBlock = document.getElementById('scorersB-block');
+        scorersABlock.style.display = totalAekGoals > 0 ? '' : 'none';
+        scorersBBlock.style.display = totalRealGoals > 0 ? '' : 'none';
+    }
+    
+    // Replace the old event listeners with the new auto-calculation
+    // Note: We remove the old manual input listeners since goals are now auto-calculated
+    updateTotalGoals(); // Initialize the totals when form opens
 	
 	    // Add event listeners for team filter buttons with error checking
     const aekBtn = document.getElementById('sds-filter-aek');
@@ -886,6 +957,7 @@ function setupGoalButtons() {
                 const current = parseInt(input.value) || 1;
                 if (current < max) {
                     input.value = current + 1;
+                    updateTotalGoals(); // Update total goals when changing scorer count
                 }
             }
         });
@@ -901,6 +973,7 @@ function setupGoalButtons() {
                 const current = parseInt(input.value) || 1;
                 if (current > min) {
                     input.value = current - 1;
+                    updateTotalGoals(); // Update total goals when changing scorer count
                 }
             }
         });

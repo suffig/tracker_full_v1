@@ -202,6 +202,9 @@ body {
   padding: 0.75rem 0 calc(0.75rem + env(safe-area-inset-bottom, 0px));
   z-index: 100;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  /* Improved mobile layout */
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .nav-container {
@@ -210,7 +213,9 @@ body {
   align-items: center;
   max-width: 600px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 0.5rem;
+  /* Allow slight overflow on very small screens */
+  min-width: fit-content;
 }
 
 .nav-item {
@@ -222,12 +227,16 @@ body {
   text-decoration: none;
   color: var(--text-muted);
   transition: all var(--transition-fast);
-  min-width: 64px;
+  min-width: 44px; /* Reduced from 64px for mobile */
   min-height: 48px;
   position: relative;
   /* Improved touch targets for mobile */
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  /* Flex properties for equal spacing */
+  flex: 1 1 auto;
+  max-width: 80px;
+}
 }
 
 .nav-item:hover {
@@ -568,20 +577,37 @@ body {
   
   /* Enhanced bottom navigation for mobile */
   .modern-bottom-nav {
-    padding: 1rem 0 calc(1rem + env(safe-area-inset-bottom, 0px));
+    padding: 0.75rem 0 calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  }
+  
+  .nav-container {
+    padding: 0 0.25rem;
+    gap: 0.125rem;
   }
   
   .nav-item {
     min-height: 52px;
-    padding: 0.875rem 0.5rem;
+    padding: 0.625rem 0.25rem;
+    min-width: 40px;
+    max-width: 60px;
+    font-size: 0.75rem;
   }
   
   .nav-icon {
-    font-size: 1.75rem;
+    font-size: 1.25rem;
+    margin-bottom: 0.125rem;
   }
   
   .nav-label {
-    font-size: 0.8rem;
+    font-size: 0.65rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+  
+  /* Special handling for logout button */
+  .logout-nav {
+    border-left: 1px solid var(--border-light);
+    margin-left: 0.25rem;
   }
 }
 

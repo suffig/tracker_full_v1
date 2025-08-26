@@ -641,6 +641,120 @@ async function renderLoginArea() {
     }
 }
 
+// Separate functions for showing main app vs login form
+async function showMainApp() {
+    console.log("✅ Showing main app");
+    const loginDiv = document.getElementById('login-area');
+    const appContainer = document.querySelector('.app-container');
+    const logoutBtn = document.getElementById('logout-btn');
+    
+    if (loginDiv) loginDiv.innerHTML = "";
+    if (appContainer) appContainer.style.display = '';
+    if (logoutBtn) logoutBtn.style.display = "";
+    
+    setupLogoutButton();
+    setupTabButtons();
+    connectionMonitor.addListener(updateConnectionStatus);
+    
+    if (!tabButtonsInitialized) {
+        switchTab(currentTab);
+    } else {
+        renderCurrentTab();
+    }
+    subscribeAllLiveSync();
+}
+
+async function showLoginForm() {
+    console.log("❌ Showing login form");
+    const loginDiv = document.getElementById('login-area');
+    const appContainer = document.querySelector('.app-container');
+    const logoutBtn = document.getElementById('logout-btn');
+    
+    if (appContainer) appContainer.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = "none";
+    
+    // Preserve existing form values if they exist
+    let emailValue = "";
+    let pwValue = "";
+    if (document.getElementById('email')) emailValue = document.getElementById('email').value;
+    if (document.getElementById('pw')) pwValue = document.getElementById('pw').value;
+    
+    if (loginDiv) {
+        loginDiv.innerHTML = `
+            <div class="login-container">
+                <div class="login-card fade-in">
+                    <div class="login-logo">
+                        <div class="login-logo-icon">
+                            <i class="fas fa-futbol"></i>
+                        </div>
+                        <h1 class="login-title">FIFA Tracker</h1>
+                        <p class="login-subtitle">Melden Sie sich an, um fortzufahren</p>
+                    </div>
+                    
+                    <form id="loginform" class="space-y-6">
+                        <div class="form-group">
+                            <label for="email" class="form-label">E-Mail-Adresse</label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                required 
+                                placeholder="ihre@email.com" 
+                                class="form-input"
+                                value="${emailValue}" />
+                        </div>
+                        <div class="form-group">
+                            <label for="pw" class="form-label">Passwort</label>
+                            <input 
+                                type="password" 
+                                id="pw" 
+                                name="password" 
+                                required 
+                                placeholder="Ihr Passwort" 
+                                class="form-input"
+                                value="${pwValue}" />
+                        </div>
+                        <button
+                            type="submit"
+                            class="btn btn-primary btn-lg w-full">
+                            <i class="fas fa-sign-in-alt"></i> Anmelden
+                        </button>
+                    </form>
+                </div>
+            </div>
+        `;
+        
+        // Setup form handler
+        const form = document.getElementById('loginform');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('pw').value;
+                
+                console.log(`🔑 Attempting login with: ${email}`);
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.textContent = 'Anmelden...';
+                    submitBtn.disabled = true;
+                }
+                
+                try {
+                    await signIn(email, password);
+                    console.log('✅ Login successful, waiting for auth state change');
+                } catch (error) {
+                    console.error('Login error:', error);
+                } finally {
+                    if (submitBtn) {
+                        submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmelden';
+                        submitBtn.disabled = false;
+                    }
+                }
+            });
+        }
+    }
+}
+
 // Enhanced auth state change listener
 supabase.auth.onAuthStateChange(async (event, session) => {
     console.log(`🔐 Auth state changed: ${event}`, session?.user?.email || 'No user');
@@ -648,7 +762,11 @@ supabase.auth.onAuthStateChange(async (event, session) => {
     // Add a small delay to ensure DOM is ready
     setTimeout(async () => {
         try {
-            await renderLoginArea();
+            if (event === 'SIGNED_IN' && session) {
+                await showMainApp();
+            } else {
+                await showLoginForm();
+            }
         } catch (error) {
             console.error('Error handling auth state change:', error);
         }

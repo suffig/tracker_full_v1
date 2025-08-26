@@ -40,11 +40,11 @@ export async function renderSpielerTab(containerId = "app") {
 
     // Hilfsfunktion für bessere Kontraste in Top 3 Cards
     function getCardClassForTop3(team, position) {
-        if (team === "Ehemalige") return "text-slate-100 font-bold";
-        if (team === "AEK") return "text-blue-100 font-bold"; 
+        if (team === "Ehemalige") return "text-white font-bold drop-shadow-md";
+        if (team === "AEK") return "text-white font-bold drop-shadow-md"; 
         // Für Real Madrid: bei Gold/Bronze dunkler rot, bei Silber helleres rot für besseren Kontrast
-        if (position === 1) return "text-red-100 font-bold"; // Silber background
-        return "text-red-100 font-bold"; // Gold/Bronze background
+        if (position === 1) return "text-white font-bold drop-shadow-md"; // Silber background
+        return "text-white font-bold drop-shadow-md"; // Gold/Bronze background
     }
 
     function getBadge(idx) {

@@ -2044,6 +2044,49 @@ button:active, a:active {
 }
 .dark { color-scheme: dark; }
 
+/* --- General text descriptions should be black --- */
+.text-description, 
+label, 
+.text-gray-700,
+.text-gray-800,
+.text-gray-900,
+p:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400),
+div:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400) > .text-sm:not(.text-white):not(.text-red-400):not(.text-blue-400) {
+  color: #000000 !important;
+}
+
+/* --- Transaction overview improvements --- */
+.transaction-container .text-gray-200 {
+  color: #000000 !important;
+}
+
+.transaction-container .text-gray-700 {
+  color: #000000 !important;
+}
+
+.transaction-container .text-gray-900 {
+  color: #000000 !important;
+}
+
+/* Enhanced transaction card styling */
+.transaction-card {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.transaction-card .text-gray-200,
+.transaction-card .text-gray-700,
+.transaction-card .text-gray-900 {
+  color: #000000 !important;
+}
+
+/* Fix description text to be black */
+.transaction-info,
+.transaction-description {
+  color: #000000 !important;
+}
+
 /* --- MOBILE ENHANCEMENTS --- */
 @media (max-width: 768px) {
   .player-card {

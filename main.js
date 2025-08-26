@@ -547,7 +547,7 @@ async function renderLoginArea() {
                                     required 
                                     placeholder="E-Mail" 
                                     autocomplete="email"
-                                    class="w-full rounded-lg border-2 border-gray-600 bg-gray-800 text-gray-100 placeholder-gray-400 px-4 py-4 text-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 outline-none" 
+                                    class="w-full rounded-lg border-2 border-gray-600 bg-gray-800 text-white placeholder-gray-400 px-4 py-4 text-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 outline-none" 
                                     value="${emailValue}" />
                                 <input 
                                     type="password" 
@@ -555,7 +555,7 @@ async function renderLoginArea() {
                                     required 
                                     placeholder="Passwort" 
                                     autocomplete="current-password"
-                                    class="w-full rounded-lg border-2 border-gray-600 bg-gray-800 text-gray-100 placeholder-gray-400 px-4 py-4 text-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 outline-none" 
+                                    class="w-full rounded-lg border-2 border-gray-600 bg-gray-800 text-white placeholder-gray-400 px-4 py-4 text-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 outline-none" 
                                     value="${pwValue}" />
                             </div>
                             <button

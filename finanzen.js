@@ -122,7 +122,7 @@ function renderFinanzenTabInner(containerId = "app") {
 
 let transactionGroups = [];
 let selectedDateIdx = 0;
-let collapsedMatches = new Set(); // Track which matches are collapsed
+let collapsedMatches = new Set(); // Track which matches are collapsed - matches are collapsed by default
 
 function groupTransactionsByDate(transactions) {
     const groups = {};
@@ -262,7 +262,7 @@ function renderTransactions() {
         const appNr = getAppMatchNumber(match.id);
         const matchInfo = match ? ` - AEK ${match.goalsa || 0}:${match.goalsb || 0} Real (${new Date(match.date).toLocaleDateString('de-DE')})` : '';
         const colorScheme = getMatchColorScheme(appNr || 1);
-        const isCollapsed = collapsedMatches.has(match.id);
+        const isCollapsed = !collapsedMatches.has(match.id); // Reverse logic: collapsed by default unless explicitly expanded
         
         html += `
         <div class="border-2 ${colorScheme.container} rounded-lg mb-3 shadow-lg">
@@ -285,14 +285,14 @@ function renderTransactions() {
                 <div class="p-3 pt-0">
                     <div class="overflow-x-auto">
                         <!-- Desktop Table View -->
-                        <table class="hidden md:table w-full text-sm dark:bg-gray-800 dark:text-gray-100 bg-gray-800 rounded-lg overflow-hidden shadow">
-                            <thead class="bg-gray-700 dark:bg-gray-700">
+                        <table class="hidden md:table w-full text-sm dark:bg-gray-100 dark:text-gray-900 bg-gray-100 text-gray-900 rounded-lg overflow-hidden shadow">
+                            <thead class="bg-gray-200 dark:bg-gray-200">
                                 <tr>
-                                    <th class="p-3 text-left font-semibold">Datum</th>
-                                    <th class="p-3 text-left font-semibold">Typ</th>
-                                    <th class="p-3 text-left font-semibold">Team</th>
-                                    <th class="p-3 text-left font-semibold">Info</th>
-                                    <th class="p-3 text-left font-semibold">Betrag (€)</th>
+                                    <th class="p-3 text-left font-semibold text-gray-900">Datum</th>
+                                    <th class="p-3 text-left font-semibold text-gray-900">Typ</th>
+                                    <th class="p-3 text-left font-semibold text-gray-900">Team</th>
+                                    <th class="p-3 text-left font-semibold text-gray-900">Info</th>
+                                    <th class="p-3 text-left font-semibold text-gray-900">Betrag (€)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -321,21 +321,21 @@ function renderTransactions() {
                         <div class="md:hidden space-y-3">
         `;
         txs.forEach(t => {
-            const teamColorClass = t.team === 'AEK' ? 'border-blue-500 bg-blue-900' : 
-                                   t.team === 'Real' ? 'border-red-500 bg-red-900' : 
-                                   'border-gray-400 bg-gray-700';
-            const teamTextClass = t.team === 'AEK' ? 'text-blue-200' : 
-                                   t.team === 'Real' ? 'text-red-200' : 
-                                   'text-gray-200';
+            const teamColorClass = t.team === 'AEK' ? 'border-blue-500 bg-blue-50' : 
+                                   t.team === 'Real' ? 'border-red-500 bg-red-50' : 
+                                   'border-gray-400 bg-gray-50';
+            const teamTextClass = t.team === 'AEK' ? 'text-blue-800' : 
+                                   t.team === 'Real' ? 'text-red-800' : 
+                                   'text-gray-800';
             html += `
                 <div class="rounded-lg p-4 shadow border-l-4 ${teamColorClass}">
                     <div class="flex justify-between items-start mb-2">
-                        <div class="text-sm font-medium text-gray-300">${new Date(t.date).toLocaleDateString('de-DE')}</div>
-                        <div class="text-lg font-bold ${t.amount >= 0 ? 'text-green-300' : 'text-red-300'}">
+                        <div class="text-sm font-medium text-gray-700">${new Date(t.date).toLocaleDateString('de-DE')}</div>
+                        <div class="text-lg font-bold ${t.amount >= 0 ? 'text-green-700' : 'text-red-700'}">
                             ${t.amount >= 0 ? '+' : ''}${t.amount.toLocaleString('de-DE')}€
                         </div>
                     </div>
-                    <div class="text-base font-semibold text-white mb-1">${t.type}</div>
+                    <div class="text-base font-semibold text-gray-900 mb-1">${t.type}</div>
                     <div class="text-sm mb-1 flex items-center">
                         <span class="${getTeamIndicatorClass(t.team)}"></span>
                         <span class="font-semibold ${teamTextClass}">${t.team}</span>
@@ -371,14 +371,14 @@ function renderTransactions() {
             </div>
             <div class="overflow-x-auto">
                 <!-- Desktop Table View -->
-                <table class="hidden md:table w-full text-sm bg-slate-700 text-slate-100 rounded-lg overflow-hidden shadow">
-                    <thead class="bg-slate-600">
+                <table class="hidden md:table w-full text-sm bg-gray-100 text-gray-900 rounded-lg overflow-hidden shadow">
+                    <thead class="bg-gray-200">
                         <tr>
-                            <th class="p-3 text-left font-semibold text-slate-200">Datum</th>
-                            <th class="p-3 text-left font-semibold text-slate-200">Typ</th>
-                            <th class="p-3 text-left font-semibold text-slate-200">Team</th>
-                            <th class="p-3 text-left font-semibold text-slate-200">Info</th>
-                            <th class="p-3 text-left font-semibold text-slate-200">Betrag (€)</th>
+                            <th class="p-3 text-left font-semibold text-gray-900">Datum</th>
+                            <th class="p-3 text-left font-semibold text-gray-900">Typ</th>
+                            <th class="p-3 text-left font-semibold text-gray-900">Team</th>
+                            <th class="p-3 text-left font-semibold text-gray-900">Info</th>
+                            <th class="p-3 text-left font-semibold text-gray-900">Betrag (€)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -405,16 +405,16 @@ function renderTransactions() {
         `;
         nonMatchTransactions.forEach(t => {
             html += `
-                <div class="bg-slate-600 rounded-lg p-4 shadow border-l-4 ${t.team === 'AEK' ? 'border-blue-400' : t.team === 'Real' ? 'border-red-400' : 'border-slate-400'}">
+                <div class="bg-gray-50 rounded-lg p-4 shadow border-l-4 ${t.team === 'AEK' ? 'border-blue-400' : t.team === 'Real' ? 'border-red-400' : 'border-gray-400'}">
                     <div class="flex justify-between items-start mb-2">
-                        <div class="text-sm text-slate-300">${new Date(t.date).toLocaleDateString('de-DE')}</div>
-                        <div class="text-lg font-bold ${t.amount >= 0 ? 'text-green-400' : 'text-red-400'}">
+                        <div class="text-sm text-gray-700">${new Date(t.date).toLocaleDateString('de-DE')}</div>
+                        <div class="text-lg font-bold ${t.amount >= 0 ? 'text-green-700' : 'text-red-700'}">
                             ${t.amount >= 0 ? '+' : ''}${t.amount.toLocaleString('de-DE')}€
                         </div>
                     </div>
-                    <div class="text-base font-semibold text-slate-100 mb-1">${t.type}</div>
-                    <div class="text-sm text-slate-200 mb-1">Team: <span class="font-semibold ${t.team === 'AEK' ? 'text-blue-300' : t.team === 'Real' ? 'text-red-300' : 'text-slate-300'}">${t.team}</span></div>
-                    ${t.info ? `<div class="text-sm text-slate-200">${t.info}</div>` : ''}
+                    <div class="text-base font-semibold text-gray-900 mb-1">${t.type}</div>
+                    <div class="text-sm text-gray-800 mb-1">Team: <span class="font-semibold ${t.team === 'AEK' ? 'text-blue-700' : t.team === 'Real' ? 'text-red-700' : 'text-gray-700'}">${t.team}</span></div>
+                    ${t.info ? `<div class="text-sm text-gray-700">${t.info}</div>` : ''}
                 </div>
             `;
         });
@@ -456,10 +456,11 @@ function renderTransactions() {
 
 // Toggle function for collapsible match transactions
 function toggleMatchTransactions(matchId) {
+    // Reverse logic: now we track expanded matches instead of collapsed ones
     if (collapsedMatches.has(matchId)) {
-        collapsedMatches.delete(matchId);
+        collapsedMatches.delete(matchId); // Remove from expanded set (collapse it)
     } else {
-        collapsedMatches.add(matchId);
+        collapsedMatches.add(matchId); // Add to expanded set (expand it)
     }
     renderTransactions(); // Re-render to show/hide content
 }

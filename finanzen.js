@@ -324,9 +324,9 @@ function renderTransactions() {
             const teamColorClass = t.team === 'AEK' ? 'border-blue-500 bg-blue-50' : 
                                    t.team === 'Real' ? 'border-red-500 bg-red-50' : 
                                    'border-gray-400 bg-gray-50';
-            const teamTextClass = t.team === 'AEK' ? 'text-blue-800' : 
-                                   t.team === 'Real' ? 'text-red-800' : 
-                                   'text-gray-800';
+            const teamTextClass = t.team === 'AEK' ? 'text-blue-900' : 
+                                   t.team === 'Real' ? 'text-red-900' : 
+                                   'text-gray-900';
             html += `
                 <div class="rounded-lg p-4 shadow border-l-4 ${teamColorClass}">
                     <div class="flex justify-between items-start mb-2">
@@ -413,7 +413,7 @@ function renderTransactions() {
                         </div>
                     </div>
                     <div class="text-base font-semibold text-gray-900 mb-1">${t.type}</div>
-                    <div class="text-sm text-gray-800 mb-1">Team: <span class="font-semibold ${t.team === 'AEK' ? 'text-blue-700' : t.team === 'Real' ? 'text-red-700' : 'text-gray-700'}">${t.team}</span></div>
+                    <div class="text-sm text-gray-800 mb-1">Team: <span class="font-semibold ${t.team === 'AEK' ? 'text-blue-900' : t.team === 'Real' ? 'text-red-900' : 'text-gray-900'}">${t.team}</span></div>
                     ${t.info ? `<div class="text-sm text-gray-700">${t.info}</div>` : ''}
                 </div>
             `;

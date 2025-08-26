@@ -790,12 +790,11 @@ function attachMatchFormEventHandlers(edit, id, aekSpieler, realSpieler, aekSort
     document.getElementById("addScorerB").onclick = () => addScorerHandler("scorersB", "goalslistb", realSpieler);
 
     function toggleScorerFields() {
-        const goalsA = parseInt(document.querySelector('input[name="goalsa"]').value) || 0;
-        const goalsB = parseInt(document.querySelector('input[name="goalsb"]').value) || 0;
         const scorersABlock = document.getElementById('scorersA-block');
         const scorersBBlock = document.getElementById('scorersB-block');
-        scorersABlock.style.display = goalsA > 0 ? '' : 'none';
-        scorersBBlock.style.display = goalsB > 0 ? '' : 'none';
+        // Always show scorer fields as requested
+        scorersABlock.style.display = '';
+        scorersBBlock.style.display = '';
     }
     
     // Function to auto-calculate total goals from goal scorers
@@ -889,6 +888,9 @@ function attachMatchFormEventHandlers(edit, id, aekSpieler, realSpieler, aekSort
     } else {
         console.error('Match form not found - cannot bind submit handler');
     }
+    
+    // Ensure scorer fields are visible from the start
+    toggleScorerFields();
 }
     
 

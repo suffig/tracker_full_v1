@@ -1121,8 +1121,9 @@ async function submitMatchForm(event, id) {
     
     document.body.appendChild(saveIndicator);
     
-    // Disable submit button
+    // Disable submit button and change text
     submitBtn.disabled = true;
+    submitBtn.textContent = 'Speichere...';
     
     try {
         const date = form.date.value;
@@ -1151,6 +1152,13 @@ async function submitMatchForm(event, id) {
         const sumA = goalslista.reduce((sum, g) => sum + (g.count || 0), 0);
         if (sumA > goalsa) {
             alert(`Die Summe der Torschützen-Tore für ${teama} (${sumA}) darf nicht größer als die Gesamtanzahl der Tore (${goalsa}) sein!`);
+            // Restore button state and remove indicator
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+            const saveIndicator = document.getElementById('match-save-indicator');
+            if (saveIndicator && saveIndicator.parentNode) {
+                saveIndicator.parentNode.removeChild(saveIndicator);
+            }
             return;
         }
     }
@@ -1160,6 +1168,13 @@ async function submitMatchForm(event, id) {
         const sumB = goalslistb.reduce((sum, g) => sum + (g.count || 0), 0);
         if (sumB > goalsb) {
             alert(`Die Summe der Torschützen-Tore für ${teamb} (${sumB}) darf nicht größer als die Gesamtanzahl der Tore (${goalsb}) sein!`);
+            // Restore button state and remove indicator
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+            const saveIndicator = document.getElementById('match-save-indicator');
+            if (saveIndicator && saveIndicator.parentNode) {
+                saveIndicator.parentNode.removeChild(saveIndicator);
+            }
             return;
         }
     }
@@ -1388,6 +1403,12 @@ async function submitMatchForm(event, id) {
                 saveIndicator.parentNode.removeChild(saveIndicator);
             }
         }, 300);
+    }
+    
+    // Restore button state before closing modal
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
     }
     
     showSuccessAndCloseModal(matchDisplayText);

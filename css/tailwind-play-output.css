@@ -2345,3 +2345,79 @@ div:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400)
         border-radius: 7px !important;
     }
 }
+
+/* --- FIX MODAL TEXT CONTRAST ISSUES --- */
+/* Override the global black text rule for modal form elements */
+.modal-content label,
+.modal-content .text-description,
+.modal-content .text-gray-700,
+.modal-content .text-gray-800,
+.modal-content .text-gray-900,
+.modal-content p,
+.modal-content div > .text-sm,
+.modal-content b,
+.modal-content span:not(.text-blue-400):not(.text-red-400):not(.text-white):not(.bg-blue-400):not(.bg-red-400) {
+  color: #f1f5f9 !important; /* Light text for dark modal background */
+}
+
+/* Ensure form input text remains readable */
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+  background-color: #374151 !important;
+  color: #f9fafb !important;
+  border-color: #4b5563 !important;
+}
+
+.modal-content input::placeholder,
+.modal-content select::placeholder,
+.modal-content textarea::placeholder {
+  color: #9ca3af !important;
+}
+
+/* --- FIX MODAL FULL SCREEN COVERAGE --- */
+.modal {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 1rem !important;
+  /* Remove bottom padding that was causing issues */
+  padding-bottom: 1rem !important;
+}
+
+/* Ensure modal content is properly centered and sized */
+.modal-content {
+  width: 100% !important;
+  max-width: 600px !important;
+  max-height: calc(100vh - 2rem) !important;
+  margin: 0 auto !important;
+}
+
+@media (max-width: 700px) {
+  .modal {
+    padding: 0.5rem !important;
+    /* Ensure full coverage on mobile */
+    padding-bottom: 0.5rem !important;
+    align-items: flex-start !important;
+    padding-top: 1rem !important;
+  }
+  
+  .modal-content {
+    max-width: calc(100vw - 1rem) !important;
+    max-height: calc(100vh - 2rem) !important;
+  }
+}
+
+/* --- IMPROVE SAVE INDICATOR VISIBILITY --- */
+#match-save-indicator {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 99999 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}

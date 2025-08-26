@@ -1595,26 +1595,7 @@ button:hover, .btn:hover {
     color: #dbeafe !important;
     border-color: #1e3a8a !important;
   }
-  .badge-th {
-    background: #166534 !important;
-    color: #bbf7d0 !important;
-    border-color: #16a34a !important;
-  }
-  .badge-def {
-    background: #1e40af !important;
-    color: #bae6fd !important;
-    border-color: #1e3a8a !important;
-  }
-  .badge-mid {
-    background: #ca8a04 !important;
-    color: #fde68a !important;
-    border-color: #facc15 !important;
-  }
-  .badge-att {
-    background: #991b1b !important;
-    color: #fecaca !important;
-    border-color: #b91c1c !important;
-  }
+  /* Badge styles removed - using main gradient definitions for consistency */
 }
 
 /* --- ACCESSIBILITY & UX --- */

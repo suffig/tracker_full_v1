@@ -1307,25 +1307,8 @@
 }
 /*! tailwindcss v4.1.11 | MIT License | https://tailwindcss.com */
 
-/* --- TEAMFARBEN: Real = Rot, AEK = Blau, Ehemalige = Grau --- */
-.bg-real, .cell-real, .text-real, .border-real {
-  background: linear-gradient(135deg, #dc2626, #991b1b) !important;
-  color: #fecaca !important;
-  border-color: #dc2626 !important;
-  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
-}
-.bg-aek, .cell-aek, .text-aek, .border-aek {
-  background: linear-gradient(135deg, #2563eb, #1e3a8a) !important;
-  color: #dbeafe !important;
-  border-color: #2563eb !important;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
-}
-.bg-ehemalige, .cell-ehemalige, .text-ehemalige, .border-ehemalige {
-  background: linear-gradient(135deg, #64748b, #475569) !important;
-  color: #f1f5f9 !important;
-  border-color: #64748b !important;
-  box-shadow: 0 2px 8px rgba(100, 116, 139, 0.2);
-}
+/* --- TEAMFARBEN: Consolidated team colors (Real = Rot, AEK = Blau, Ehemalige = Grau) --- */
+/* Team colors are now defined in the "BETONTE TEAMFARBEN" section below for consistency */
 
 /* --- Positions-Badges (Kader/Teams) --- */
 .badge-th {
@@ -1402,11 +1385,11 @@ button:hover, .btn:hover {
 
 /* --- Spezielle Styles für Torschütze-Buttons --- */
 #addScorerA, #addScorerB {
-  min-height: 36px !important;
+  min-height: 44px !important;
   border-radius: 8px !important;
-  font-size: 0.875rem !important;
-  padding: 0.5rem 1rem !important;
-  font-weight: 500 !important;
+  font-size: 1rem !important;
+  padding: 0.75rem 1rem !important;
+  font-weight: 600 !important;
 }
 
 /* --- Button color overrides for match form increment/decrement buttons --- */
@@ -1529,15 +1512,7 @@ button:hover, .btn:hover {
     border-radius: 12px;
   }
 }
-@media (max-width: 480px) {
-  #bottom-nav {
-    padding-bottom: max(env(safe-area-inset-bottom, 12px), 12px) !important;
-  }
-  button, input[type="submit"] {
-    font-size: 1rem;
-    border-radius: 12px;
-  }
-}
+
 
 /* --- BOTTOM NAVIGATION --- */
 #bottom-nav {
@@ -1652,12 +1627,15 @@ button:active, a:active {
   transition: transform 0.1s ease;
 }
 
-/* Enhanced mobile touch targets */
+/* --- RESPONSIVE MOBILE STYLES --- */
 @media (max-width: 767px) {
+  /* Enhanced touch targets and improved mobile UX */
   button, input[type="submit"], select, .btn {
     min-height: 48px !important;
     min-width: 48px !important;
     touch-action: manipulation;
+    font-size: 1rem;
+    border-radius: 12px;
   }
   
   /* Smaller height for specific utility buttons */
@@ -1672,17 +1650,34 @@ button:active, a:active {
     min-height: 44px !important;
     touch-action: manipulation;
   }
-}
-
-/* --- RESPONSIVE --- */
-@media (max-width: 767px) {
-  #bottom-nav { border-radius: 0 !important; }
-  #bottom-nav a { border-radius: 12px; padding: 12px 0 8px 0; min-height: 60px; }
-  .modal-content { padding: 16px !important; margin: 8px !important; }
-  input, button, select, textarea { min-height: 48px; }
-  h1, h2, h3 { line-height: 1.2; }
   
-  /* Optimize modal form spacing for tablets */
+  /* Bottom navigation optimizations */
+  #bottom-nav { 
+    border-radius: 0 !important; 
+  }
+  #bottom-nav a { 
+    border-radius: 12px; 
+    padding: 12px 0 8px 0; 
+    min-height: 60px; 
+  }
+  
+  /* Modal optimizations */
+  .modal-content { 
+    padding: 16px !important; 
+    margin: 8px !important; 
+  }
+  
+  /* Form elements */
+  input, select, textarea { 
+    min-height: 48px; 
+  }
+  
+  /* Typography */
+  h1, h2, h3 { 
+    line-height: 1.2; 
+  }
+  
+  /* Optimize modal form spacing */
   .modal-content .space-y-6 > * + * {
     margin-top: 1rem !important;
   }
@@ -1713,7 +1708,17 @@ button:active, a:active {
   .p-6 { padding: 1.5rem; }
   .gap-4 { gap: 1rem; }
   .gap-6 { gap: 1rem; }
+  /* Bottom navigation safe area and spacing */
+  #bottom-nav {
+    padding-bottom: max(env(safe-area-inset-bottom, 12px), 12px) !important;
+  }
   #bottom-nav a { padding: 10px 0 6px 0; }
+  
+  /* Button styling consistency */
+  button, input[type="submit"] {
+    font-size: 1rem;
+    border-radius: 12px;
+  }
   
   /* Better spacing for form elements on mobile */
   .modal-content .space-y-6 {
@@ -2209,9 +2214,24 @@ div:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400)
 
 
 /* --- BETONTE TEAMFARBEN FÜR MOBILE CARDS UND TABLES --- */
-.bg-blue-700, .team-aek-card { background-color: #1e3a8a !important; color: #dbeafe !important; }
-.bg-red-700, .team-real-card { background-color: #991b1b !important; color: #fecaca !important; }
-.bg-slate-700, .team-ehemalige-card { background-color: #64748b !important; color: #f1f5f9 !important; }
+.bg-blue-700, .team-aek-card, .bg-aek, .cell-aek, .text-aek, .border-aek { 
+  background: linear-gradient(135deg, #2563eb, #1e3a8a) !important; 
+  color: #dbeafe !important; 
+  border-color: #2563eb !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+}
+.bg-red-700, .team-real-card, .bg-real, .cell-real, .text-real, .border-real { 
+  background: linear-gradient(135deg, #dc2626, #991b1b) !important; 
+  color: #fecaca !important; 
+  border-color: #dc2626 !important;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+}
+.bg-slate-700, .team-ehemalige-card, .bg-ehemalige, .cell-ehemalige, .text-ehemalige, .border-ehemalige { 
+  background: linear-gradient(135deg, #64748b, #475569) !important; 
+  color: #f1f5f9 !important; 
+  border-color: #64748b !important;
+  box-shadow: 0 2px 8px rgba(100, 116, 139, 0.2);
+}
 
 .text-blue-200 { color: #bfdbfe !important; }
 .text-red-200 { color: #fecaca !important; }
@@ -2303,12 +2323,10 @@ div:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400)
 }
 
 #addScorerA, #addScorerB {
-    height: 20px !important;
-    min-height: 20px !important;
-    font-size: 11px !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    border-radius: 6px !important;
+    min-height: 44px !important;
+    font-size: 1rem !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 8px !important;
 }
 
 /* Responsive Modal: */
@@ -2332,10 +2350,10 @@ div:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400)
         padding: 6px 8px !important;
     }
     #addScorerA, #addScorerB {
-        font-size: 15px !important;
-        padding: 0.6rem 0.9rem !important;
-        min-height: 38px !important;
-        border-radius: 9px !important;
+        font-size: 1rem !important;
+        padding: 0.75rem 1rem !important;
+        min-height: 44px !important;
+        border-radius: 8px !important;
     }
     .card-btn {
         min-width: 36px !important;

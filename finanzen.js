@@ -151,7 +151,7 @@ function renderTransactions() {
     const container = document.getElementById('transactions-list');
     console.log('renderTransactions called with:', transactions.length, 'transactions');
     if (!transactions.length) {
-        container.innerHTML = `<div class="text-gray-400 text-sm">Keine Transaktionen vorhanden.</div>`;
+        container.innerHTML = `<div class="text-gray-700 text-sm">Keine Transaktionen vorhanden.</div>`;
         return;
     }
 
@@ -162,7 +162,7 @@ function renderTransactions() {
 
     // Check if we have any valid transaction groups (transactions with dates)
     if (transactionGroups.length === 0) {
-        container.innerHTML = `<div class="text-gray-400 text-sm">Keine gültigen Transaktionen mit Datum vorhanden.</div>`;
+        container.innerHTML = `<div class="text-gray-700 text-sm">Keine gültigen Transaktionen mit Datum vorhanden.</div>`;
         return;
     }
 
@@ -270,8 +270,8 @@ function renderTransactions() {
                 <div class="flex items-center">
                     <div class="w-3 h-3 bg-${colorScheme.accent} rounded-full mr-2 flex-shrink-0"></div>
                     <div class="text-left">
-                        <div class="text-lg font-extrabold ${colorScheme.header}">Match #${appNr}</div>
-                        <div class="text-xs font-normal opacity-90 ${colorScheme.header}">${matchInfo}</div>
+                        <div class="text-lg font-extrabold ${colorScheme.header}">AEK ${match.goalsa || 0}:${match.goalsb || 0} Real</div>
+                        <div class="text-xs font-normal opacity-90 ${colorScheme.header}">${new Date(match.date).toLocaleDateString('de-DE')}</div>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">

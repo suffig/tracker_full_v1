@@ -179,7 +179,7 @@ function renderMatchesList() {
 
     try {
         if (!matchesData.matches.length) {
-            container.innerHTML = `<div class="text-gray-400 text-sm text-center py-4">Noch keine Matches eingetragen.</div>`;
+            container.innerHTML = `<div class="text-gray-700 text-sm text-center py-4">Noch keine Matches eingetragen.</div>`;
             return;
         }
 
@@ -199,7 +199,7 @@ function renderMatchesList() {
         let html = `<div class="text-center font-semibold text-base mb-2">Spiele am <span class="text-sky-700 dark:text-sky-400">${dateStr}</span></div>`;
 
         if (!filteredMatches.length) {
-            html += `<div class="text-gray-400 text-sm text-center py-4">Keine Spiele für diesen Tag.</div>`;
+            html += `<div class="text-gray-700 text-sm text-center py-4">Keine Spiele für diesen Tag.</div>`;
         } else {
             html += filteredMatches.map(match => {
                 // Durchgehende Nummerierung, unabhängig vom Tag!
@@ -309,7 +309,7 @@ function attachMatchEventListeners(uniqueDates) {
 
 function matchHtml(match, nr) {
     function goalsHtml(goals) {
-        if (!goals || !goals.length) return `<span class="text-gray-400 text-sm italic">Keine Torschützen</span>`;
+        if (!goals || !goals.length) return `<span class="text-gray-600 text-sm italic">Keine Torschützen</span>`;
         return goals
             .map(g => {
                 // Handle both string array format (legacy) and object format (new)
@@ -350,7 +350,7 @@ function matchHtml(match, nr) {
         <div class="flex-1">
           <div class="flex items-center gap-3 mb-2">
             <span class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">#${nr}</span>
-            <span class="text-gray-300 text-sm font-medium">${match.date}</span>
+            <span class="text-gray-200 text-sm font-medium">${match.date}</span>
             <button class="match-toggle-btn bg-gray-600 hover:bg-gray-500 text-white px-3 py-2 rounded-lg text-sm ml-auto transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" data-match-id="${match.id}" title="Details ein-/ausblenden">
               <span class="text-xs font-medium">Details</span>
               <i class="fas fa-chevron-down transform transition-transform duration-200"></i>
@@ -429,7 +429,7 @@ function matchHtml(match, nr) {
         <!-- Footer with Prizes and Man of the Match -->
         <div class="border-t border-gray-600 pt-4 space-y-3">
           <div>
-            <div class="text-sm font-bold text-gray-300 mb-2 flex items-center gap-2">
+            <div class="text-sm font-bold text-gray-200 mb-2 flex items-center gap-2">
               <i class="fas fa-coins"></i>
               Preisgelder:
             </div>
@@ -440,7 +440,7 @@ function matchHtml(match, nr) {
           </div>
           ${match.manofthematch ? `
           <div>
-            <div class="text-sm font-bold text-gray-300 mb-2 flex items-center gap-2">
+            <div class="text-sm font-bold text-gray-200 mb-2 flex items-center gap-2">
               <i class="fas fa-star"></i>
               Spieler des Spiels:
             </div>
@@ -1272,7 +1272,7 @@ async function submitMatchForm(event, id) {
             team: "AEK",
             amount: sdsBonusAek,
             match_id: matchId,
-            info: `Match #${appMatchNr}`
+            info: `SdS Bonus`
         }]);
         await supabase.from('finances').update({ balance: aekOldBalance }).eq('team', "AEK");
     }
@@ -1284,7 +1284,7 @@ async function submitMatchForm(event, id) {
             team: "Real",
             amount: sdsBonusReal,
             match_id: matchId,
-            info: `Match #${appMatchNr}`
+            info: `SdS Bonus`
         }]);
         await supabase.from('finances').update({ balance: realOldBalance }).eq('team', "Real");
     }
@@ -1299,7 +1299,7 @@ async function submitMatchForm(event, id) {
             team: "AEK",
             amount: prizeaek,
             match_id: matchId,
-            info: `Match #${appMatchNr}`
+            info: `Preisgeld`
         }]);
         await supabase.from('finances').update({ balance: aekOldBalance }).eq('team', "AEK");
     }
@@ -1312,7 +1312,7 @@ async function submitMatchForm(event, id) {
             team: "Real",
             amount: prizereal,
             match_id: matchId,
-            info: `Match #${appMatchNr}`
+            info: `Preisgeld`
         }]);
         await supabase.from('finances').update({ balance: realOldBalance }).eq('team', "Real");
     }
@@ -1360,7 +1360,7 @@ async function submitMatchForm(event, id) {
                 team: verlierer,
                 amount: Math.max(0, restVerliererBetrag),
                 match_id: matchId,
-                info: `Match #${appMatchNr}`
+                info: `Echtgeld-Ausgleich`
             }]);
             await supabase.from('finances').update({ debt: neuerVerliererDebt }).eq('team', verlierer);
         }
@@ -1372,7 +1372,7 @@ async function submitMatchForm(event, id) {
                 team: gewinner,
                 amount: -verrechnet,
                 match_id: matchId,
-                info: `Match #${appMatchNr}`
+                info: `Echtgeld-Ausgleich (getilgt)`
             }]);
         }
     }

@@ -96,7 +96,7 @@ function renderBanList(list, containerId, active) {
     const c = document.getElementById(containerId);
     if (!c) return;
     if (!list.length) {
-        c.innerHTML = `<div class="text-gray-400 text-sm">${active ? "Keine aktiven Sperren." : "Keine vergangenen Sperren."}</div>`;
+        c.innerHTML = `<div class="text-gray-700 text-sm">${active ? "Keine aktiven Sperren." : "Keine vergangenen Sperren."}</div>`;
         return;
     }
     c.innerHTML = '';
@@ -117,10 +117,10 @@ function renderBanList(list, containerId, active) {
         div.className = `player-card border dark:border-gray-700 rounded-lg p-3 flex justify-between items-center gap-2 mb-2 ${tClass}`;
         div.innerHTML = `
             <div>
-                <div class="font-medium">${player ? player.name : "-"} <span class="text-xs text-gray-400">(${player ? player.team : "-"})</span></div>
-                <div class="text-xs text-gray-500">Typ: <b>${ban.type || "-"}</b></div>
-                <div class="text-xs text-gray-500">Start: <b>${ban.totalgames}</b> | Aktuell: <b>${restGames < 0 ? 0 : restGames}</b></div>
-                ${ban.reason ? `<div class="text-xs text-gray-400">Grund: ${ban.reason}</div>` : ''}
+                <div class="font-medium">${player ? player.name : "-"} <span class="text-xs text-gray-600">(${player ? player.team : "-"})</span></div>
+                <div class="text-xs text-gray-700">Typ: <b>${ban.type || "-"}</b></div>
+                <div class="text-xs text-gray-700">Start: <b>${ban.totalgames}</b> | Aktuell: <b>${restGames < 0 ? 0 : restGames}</b></div>
+                ${ban.reason ? `<div class="text-xs text-gray-600">Grund: ${ban.reason}</div>` : ''}
             </div>
             <div class="flex gap-1">
                 ${active ? `

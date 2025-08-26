@@ -20,7 +20,7 @@ import { resetMatchesState } from './matches.js';
 import { resetStatsState } from './stats.js';
 import { resetSpielerState } from './spieler.js';
 
-let currentTab = "squad";
+let currentTab = "matches";
 let liveSyncInitialized = false;
 let tabButtonsInitialized = false;
 let realtimeChannel = null;
@@ -537,7 +537,7 @@ async function renderLoginArea() {
                         <div class="flex flex-col items-center mb-8">
                             <img src="assets/logo.png" alt="FIFA Tracker Logo" class="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 mb-4" loading="eager" decoding="async" />
                             <h1 class="text-2xl sm:text-3xl font-bold text-gray-100 text-center">FIFA Statistik-Tracker</h1>
-                            <p class="text-gray-400 text-center mt-2">Melden Sie sich an, um fortzufahren</p>
+                            <p class="text-gray-600 text-center mt-2">Melden Sie sich an, um fortzufahren</p>
                         </div>
                         <form id="loginform" class="login-area flex flex-col gap-6">
                             <div class="space-y-4">

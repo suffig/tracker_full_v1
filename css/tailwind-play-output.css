@@ -2087,6 +2087,35 @@ div:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400)
   color: #000000 !important;
 }
 
+/* --- ADDITIONAL READABILITY IMPROVEMENTS --- */
+/* Improve light gray text readability across the app */
+.text-gray-300 {
+  color: #d1d5db !important; /* Slightly darker than default gray-300 */
+}
+
+.text-gray-400 {
+  color: #9ca3af !important; /* Slightly darker than default gray-400 */
+}
+
+.text-gray-500 {
+  color: #6b7280 !important; /* Slightly darker than default gray-500 */
+}
+
+/* Ensure dark mode text remains readable */
+@media (prefers-color-scheme: dark) {
+  .text-gray-300 {
+    color: #e5e7eb !important; /* Lighter in dark mode */
+  }
+  
+  .text-gray-400 {
+    color: #d1d5db !important; /* Lighter in dark mode */
+  }
+  
+  .text-gray-500 {
+    color: #9ca3af !important; /* Lighter in dark mode */
+  }
+}
+
 /* --- MOBILE ENHANCEMENTS --- */
 @media (max-width: 768px) {
   .player-card {

@@ -1272,7 +1272,7 @@ async function submitMatchForm(event, id) {
             team: "AEK",
             amount: sdsBonusAek,
             match_id: matchId,
-            info: `Match #${appMatchNr}`
+            info: `SdS Bonus`
         }]);
         await supabase.from('finances').update({ balance: aekOldBalance }).eq('team', "AEK");
     }
@@ -1284,7 +1284,7 @@ async function submitMatchForm(event, id) {
             team: "Real",
             amount: sdsBonusReal,
             match_id: matchId,
-            info: `Match #${appMatchNr}`
+            info: `SdS Bonus`
         }]);
         await supabase.from('finances').update({ balance: realOldBalance }).eq('team', "Real");
     }
@@ -1299,7 +1299,7 @@ async function submitMatchForm(event, id) {
             team: "AEK",
             amount: prizeaek,
             match_id: matchId,
-            info: `Match #${appMatchNr}`
+            info: `Preisgeld`
         }]);
         await supabase.from('finances').update({ balance: aekOldBalance }).eq('team', "AEK");
     }
@@ -1312,7 +1312,7 @@ async function submitMatchForm(event, id) {
             team: "Real",
             amount: prizereal,
             match_id: matchId,
-            info: `Match #${appMatchNr}`
+            info: `Preisgeld`
         }]);
         await supabase.from('finances').update({ balance: realOldBalance }).eq('team', "Real");
     }
@@ -1360,7 +1360,7 @@ async function submitMatchForm(event, id) {
                 team: verlierer,
                 amount: Math.max(0, restVerliererBetrag),
                 match_id: matchId,
-                info: `Match #${appMatchNr}`
+                info: `Echtgeld-Ausgleich`
             }]);
             await supabase.from('finances').update({ debt: neuerVerliererDebt }).eq('team', verlierer);
         }
@@ -1372,7 +1372,7 @@ async function submitMatchForm(event, id) {
                 team: gewinner,
                 amount: -verrechnet,
                 match_id: matchId,
-                info: `Match #${appMatchNr}`
+                info: `Echtgeld-Ausgleich (getilgt)`
             }]);
         }
     }

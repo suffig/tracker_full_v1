@@ -20,7 +20,7 @@ import { resetMatchesState } from './matches.js';
 import { resetStatsState } from './stats.js';
 import { resetSpielerState } from './spieler.js';
 
-let currentTab = "squad";
+let currentTab = "matches";
 let liveSyncInitialized = false;
 let tabButtonsInitialized = false;
 let realtimeChannel = null;

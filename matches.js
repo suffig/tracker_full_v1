@@ -535,11 +535,11 @@ function openMatchForm(id) {
 
         const filterButtonHTML = `
             <div class="mb-3 flex gap-2">
-                <button type="button" id="sds-filter-aek" class="sds-filter-btn bg-gray-600 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 border-2 border-transparent flex items-center gap-2 min-h-[40px] flex-1 justify-center touch-manipulation">
+                <button type="button" id="sds-filter-aek" class="sds-filter-btn bg-gray-600 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-base font-semibold transition-all duration-200 border-2 border-transparent flex items-center gap-2 min-h-[40px] flex-1 justify-center touch-manipulation">
                     <span class="w-4 h-4 md:w-3 md:h-3 bg-blue-400 rounded-full flex-shrink-0 indicator-circle"></span>
                     <span>AEK</span>
                 </button>
-                <button type="button" id="sds-filter-real" class="sds-filter-btn bg-gray-600 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 border-2 border-transparent flex items-center gap-2 min-h-[40px] flex-1 justify-center touch-manipulation">
+                <button type="button" id="sds-filter-real" class="sds-filter-btn bg-gray-600 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-base font-semibold transition-all duration-200 border-2 border-transparent flex items-center gap-2 min-h-[40px] flex-1 justify-center touch-manipulation">
                     <span class="w-4 h-4 md:w-3 md:h-3 bg-red-400 rounded-full flex-shrink-0 indicator-circle"></span>
                     <span>Real</span>
                 </button>
@@ -664,11 +664,11 @@ function generateMatchFormHTML(edit, dateVal, match, aekSpieler, realSpieler, ae
             
             <!-- Team Filter Toggle with enhanced visual indicators -->
             <div class="mb-3 flex gap-2">
-                <button type="button" id="sds-filter-aek" class="sds-filter-btn bg-gray-600 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 border-2 border-transparent flex items-center gap-2 min-h-[40px] flex-1 justify-center touch-manipulation">
+                <button type="button" id="sds-filter-aek" class="sds-filter-btn bg-gray-600 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-base font-semibold transition-all duration-200 border-2 border-transparent flex items-center gap-2 min-h-[40px] flex-1 justify-center touch-manipulation">
                     <span class="w-4 h-4 md:w-3 md:h-3 bg-blue-400 rounded-full flex-shrink-0 indicator-circle"></span>
                     <span>AEK</span>
                 </button>
-                <button type="button" id="sds-filter-real" class="sds-filter-btn bg-gray-600 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 border-2 border-transparent flex items-center gap-2 min-h-[40px] flex-1 justify-center touch-manipulation">
+                <button type="button" id="sds-filter-real" class="sds-filter-btn bg-gray-600 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-base font-semibold transition-all duration-200 border-2 border-transparent flex items-center gap-2 min-h-[40px] flex-1 justify-center touch-manipulation">
                     <span class="w-4 h-4 md:w-3 md:h-3 bg-red-400 rounded-full flex-shrink-0 indicator-circle"></span>
                     <span>Real</span>
                 </button>

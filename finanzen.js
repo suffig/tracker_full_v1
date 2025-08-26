@@ -106,8 +106,8 @@ function renderFinanzenTabInner(containerId = "app") {
                 </svg>
                 Transaktionen
             </h3>
-            <button id="add-trans-btn" class="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto px-3 py-0.5 rounded-lg text-sm flex items-center justify-center gap-2 font-semibold transition shadow">
-                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <button id="add-trans-btn" class="bg-green-600 hover:bg-green-700 text-white w-full px-3 py-2 rounded-lg text-sm flex items-center justify-center gap-2 font-semibold transition shadow">
+                <svg class="h-2 w-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 <span>Hinzufügen</span>
             </button>
         </div>

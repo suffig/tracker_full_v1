@@ -174,7 +174,7 @@ export async function renderSpielerTab(containerId = "app") {
             </div>
             `;
         } else if (!top3.length) {
-            tableHtml = `<div class="text-gray-400 p-2">Noch keine Tore</div>`;
+            tableHtml = `<div class="text-gray-700 p-2">Noch keine Tore</div>`;
         }
 
         document.getElementById('spieler-content').innerHTML = top3Html + tableHtml;
@@ -271,7 +271,7 @@ export async function renderSpielerTab(containerId = "app") {
             </div>
             `;
         } else if (!top3.length) {
-            tableHtml = `<div class="text-gray-400 p-2">Noch kein Spieler des Spiels vergeben</div>`;
+            tableHtml = `<div class="text-gray-700 p-2">Noch kein Spieler des Spiels vergeben</div>`;
         }
 
         document.getElementById('spieler-content').innerHTML = top3Html + tableHtml;

@@ -37,10 +37,12 @@
 
     <!-- Standard favicon -->
     <link rel="icon" type="image/png" href="./assets/logo.png">
-    <!-- Roboto Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS via CDN -->
+    <!-- Inter Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Original Tailwind CSS -->
     <link href="css/tailwind-play-output.css" rel="stylesheet">
+    <!-- New Modern Design -->
+    <link href="css/new-design.css" rel="stylesheet">
     <!-- Flowbite CSS - Local Minimal Replacement -->
     <link href="assets/flowbite-minimal.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
@@ -50,198 +52,79 @@
     <link rel="stylesheet" href="assets/fonts/fontawesome-icons.css">
     <!-- Supabase JavaScript Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        html, body {
-            height: 100%;
-            min-height: 100%;
-            background: #0f172a;
-        }
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-        }
-        .app-container {
-            flex: 1 0 auto;
-        }
-        /* --- Bottom Navigation: Immer ganz unten, immer sichtbar --- */
-        #bottom-nav {
-            position: fixed !important;
-            bottom: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            width: 100vw;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(30,41,59,0.96);
-            box-shadow: 0 -4px 24px rgba(0,0,0,0.25);
-            border-top: 2px solid #475569;
-            padding: 0.5rem 0.5rem 0.65rem 0.5rem;
-            min-height: 72px;
-            max-width: 100vw;
-            margin: 0;
-            border-radius: 0;
-            backdrop-filter: blur(12px);
-        }
-        #bottom-nav a {
-            flex: 1 1 0;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            padding: 8px 0 4px 0;
-            border-radius: 16px;
-            margin: 0 2px;
-            transition: background 0.16s, color 0.12s, box-shadow 0.12s;
-            color: #e5e7eb;
-            font-weight: 500;
-            font-size: 13px;
-        }
-        #bottom-nav a.active,
-        #bottom-nav a:focus-visible {
-            background: linear-gradient(135deg, #1e293b 80%, #334155 100%);
-            color: #38bdf8 !important;
-        }
-        #bottom-nav a.active i { color: #38bdf8 !important; }
-        #bottom-nav a.active span:not(.nav-indicator) { color: #38bdf8 !important; }
-        #bottom-nav a:active { background: #334155; }
-        #bottom-nav a i {
-            font-size: 26px;
-            margin-bottom: 2px;
-        }
-        #bottom-nav a span:not(.nav-indicator) {
-            font-size: 11px;
-            margin-top: 1px;
-            font-weight: 600;
-        }
-        .nav-indicator {
-            display: block;
-            width: 8px;
-            height: 8px;
-            margin: 4px auto 0 auto;
-            border-radius: 50%;
-            background: transparent;
-            transition: background 0.17s, box-shadow 0.17s;
-        }
-        .indicator-squad    { background: #2563eb; }
-        .indicator-matches  { background: #e11d48; }
-        .indicator-bans     { background: #eab308; }
-        .indicator-finanzen { background: #16a34a; }
-        .indicator-stats    { background: #8b5cf6; }
-        .indicator-spieler  { background: orange; }
-        /* Modal Buttons & Form Buttons */
-        .modal-content button,
-        .modal-content .btn,
-        .modal-content input[type=submit] {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            min-width: 0;
-            padding: 1.1em 0;
-            font-size: 1.10rem;
-            font-weight: 600;
-            border-radius: 16px;
-            border: none;
-            margin: 0;
-            letter-spacing: 0.01em;
-            margin-bottom: 0;
-            margin-top: 0;
-            position: relative;
-            transition: background 0.17s, color 0.13s, box-shadow 0.13s, scale 0.13s;
-        }
-        /* Button styles moved to main CSS file for consistency */
-        .modal-content .form-btn-row {
-            display: flex;
-            gap: 0.7rem;
-            margin-top: 1.2rem;
-        }
-        /* Team colors and position badges moved to main CSS file for consistency */
-        .badge-def { background: #1e3a8a !important; color: #dbeafe !important; border: 1.5px solid #1e40af !important; }
-        .badge-mid { background: #facc15 !important; color: #78350f !important; border: 1.5px solid #ca8a04 !important; }
-        .badge-att { background: #b91c1c !important; color: #fee2e2 !important; border: 1.5px solid #991b1b !important; }
-        /* Responsive */
-        @media (max-width: 767px) {
-            #bottom-nav { border-radius: 0 !important; }
-            #bottom-nav a { border-radius: 12px; }
-        }
-        @media (max-width: 480px) {
-            #bottom-nav { padding-bottom: max(env(safe-area-inset-bottom, 12px), 12px) !important; }
-        }
-    </style>
 </head>
-<body class="bg-slate-800 font-sans transition-colors min-h-screen">
+<body class="modern-theme">
+<!-- LOGIN AREA - NEW DESIGN -->
 <div id="login-area"></div>
-<div class="app-container w-full bg-slate-700 shadow-lg relative overflow-hidden min-h-screen" style="display:none;">
-    <!-- TOP HEADER -->
-    <header class="bg-slate-600 border-b-2 border-slate-500 px-4 py-3 shadow-xl">
-      <div class="flex justify-between items-center w-full px-2">       
-        <a href="#" class="flex items-center">
-          <img src="assets/logo.png" class="h-10 mr-3" alt="FIFA Tracker Logo" loading="eager" decoding="async" />
-          <span class="self-center text-lg sm:text-xl font-bold whitespace-nowrap text-slate-100 hidden sm:block">FIFA Statistik-Tracker</span>
-          <span class="self-center text-lg font-bold whitespace-nowrap text-slate-100 block sm:hidden">FIFA Tracker</span>
+
+<!-- MAIN APP - NEW DESIGN -->
+<div class="app-container modern-design" style="display:none;">
+    <!-- MODERN HEADER -->
+    <header class="modern-header">
+      <div class="header-content">       
+        <a href="#" class="header-brand">
+          <div class="header-logo">
+            <i class="fas fa-futbol"></i>
+          </div>
+          <div>
+            <div class="header-title">FIFA Tracker</div>
+          </div>
         </a>
-        <div class="flex items-center gap-2">
-          <button id="logout-btn" title="Abmelden" class="inline-flex items-center justify-center border-2 font-sans font-medium text-center transition-all duration-300 ease-in disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed text-sm rounded-lg py-3 px-4 shadow-lg hover:shadow-xl bg-red-600 border-red-600 text-red-50 hover:bg-red-500 hover:border-red-500 active:scale-95" style="min-width:48px;">
-            <i class="fas fa-sign-out-alt text-lg"></i>
-            <span class="ml-2 hidden sm:inline">Abmelden</span>
+        <div class="header-actions">
+          <button id="logout-btn" title="Abmelden" class="btn btn-danger btn-sm">
+            <i class="fas fa-sign-out-alt"></i>
+            <span class="hidden sm:inline">Abmelden</span>
           </button>
         </div>
       </div>
     </header>
-    <!-- TOP HEADER END -->
 
-    <!-- BOTTOM NAVIGATION -->
-    <nav id="bottom-nav">
-      <a id="nav-squad" href="#" class="flex flex-col items-center" style="touch-action: manipulation;">
-        <i class="fas fa-users"></i>
-        <span>Kader</span>
-        <span class="nav-indicator"></span>
-      </a>
-      <a id="nav-matches" href="#" class="flex flex-col items-center" style="touch-action: manipulation;">
-        <i class="fas fa-futbol"></i>
-        <span>Spiele</span>
-        <span class="nav-indicator"></span>
-      </a>
-      <a id="nav-bans" href="#" class="flex flex-col items-center" style="touch-action: manipulation;">
-        <i class="fas fa-ban"></i>
-        <span>Sperren</span>
-        <span class="nav-indicator"></span>
-      </a>
-      <a id="nav-finanzen" href="#" class="flex flex-col items-center" style="touch-action: manipulation;">
-        <i class="fas fa-euro-sign"></i>
-        <span>Finanzen</span>
-        <span class="nav-indicator"></span>
-      </a>
-      <a id="nav-stats" href="#" class="flex flex-col items-center" style="touch-action: manipulation;">
-        <i class="fas fa-chart-bar"></i>
-        <span>Stats</span>
-        <span class="nav-indicator"></span>
-      </a>
-      <a id="nav-spieler" href="#" class="flex flex-col items-center" style="touch-action: manipulation;">
-        <i class="fas fa-star"></i>
-        <span>Spieler</span>
-        <span class="nav-indicator"></span>
-      </a>
+    <!-- MODERN BOTTOM NAVIGATION -->
+    <nav class="modern-bottom-nav">
+      <div class="nav-container">
+        <a id="nav-squad" href="#" class="nav-item active">
+          <i class="fas fa-users nav-icon"></i>
+          <span class="nav-label">Kader</span>
+        </a>
+        <a id="nav-matches" href="#" class="nav-item">
+          <i class="fas fa-futbol nav-icon"></i>
+          <span class="nav-label">Spiele</span>
+        </a>
+        <a id="nav-bans" href="#" class="nav-item">
+          <i class="fas fa-ban nav-icon"></i>
+          <span class="nav-label">Sperren</span>
+        </a>
+        <a id="nav-finanzen" href="#" class="nav-item">
+          <i class="fas fa-euro-sign nav-icon"></i>
+          <span class="nav-label">Finanzen</span>
+        </a>
+        <a id="nav-stats" href="#" class="nav-item">
+          <i class="fas fa-chart-bar nav-icon"></i>
+          <span class="nav-label">Stats</span>
+        </a>
+        <a id="nav-spieler" href="#" class="nav-item">
+          <i class="fas fa-star nav-icon"></i>
+          <span class="nav-label">Spieler</span>
+        </a>
+      </div>
     </nav>
 
-    <main class="p-3 pb-28 lg:pb-8 relative min-h-[calc(100vh-140px)] bg-slate-700">
-        <!-- Loader with enhanced visibility and backdrop blur -->
+    <!-- MAIN CONTENT -->
+    <main class="page-container">
+        <!-- Enhanced loader -->
         <div id="tab-loader" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
-            <div class="bg-white bg-opacity-20 backdrop-blur-md rounded-2xl p-6 flex flex-col items-center space-y-4">
-                <div class="w-12 h-12 border-4 border-blue-400 border-t-transparent border-solid rounded-full animate-spin"></div>
-                <div class="text-white text-sm font-medium">Lädt...</div>
+            <div class="bg-white rounded-xl p-6 flex flex-col items-center gap-4 shadow-xl">
+                <div class="spinner"></div>
+                <div class="text-gray-600 font-medium">Lädt...</div>
             </div>
         </div>
         <div id="app"></div>
     </main>
 </div>
+
+<!-- MODAL ROOT -->
 <div id="modal-root"></div>
+
 <script type="module" src="./main.js"></script>
 </body>
 </html>

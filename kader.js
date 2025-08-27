@@ -144,15 +144,19 @@ function accordionPanelHtml(team, key, gradientClass, teamKey) {
 }
 
 function renderPlayerLists() {
+    // Always update market values in accordion headers, regardless of panel state
+    const aekMwSpan = document.getElementById('aek-marktwert');
+    if (aekMwSpan) aekMwSpan.innerText = getKaderMarktwert(aekAthen).toLocaleString('de-DE') + "M €";
+    
+    const realMwSpan = document.getElementById('real-marktwert');
+    if (realMwSpan) realMwSpan.innerText = getKaderMarktwert(realMadrid).toLocaleString('de-DE') + "M €";
+
+    // Only render player lists if panels are open
     if (openPanel === 'aek' && document.getElementById('team-aek-players')) {
         renderPlayerList('team-aek-players', aekAthen, "AEK");
-        const mwSpan = document.getElementById('aek-marktwert');
-        if (mwSpan) mwSpan.innerText = getKaderMarktwert(aekAthen).toLocaleString('de-DE') + "M €";
     }
     if (openPanel === 'real' && document.getElementById('team-real-players')) {
         renderPlayerList('team-real-players', realMadrid, "Real");
-        const mwSpan = document.getElementById('real-marktwert');
-        if (mwSpan) mwSpan.innerText = getKaderMarktwert(realMadrid).toLocaleString('de-DE') + "M €";
     }
     if (openPanel === 'ehemalige' && document.getElementById('team-ehemalige-players')) {
         renderEhemaligeList('team-ehemalige-players');

@@ -140,16 +140,19 @@ export async function renderMatchesTab(containerId = "app") {
     }
 
     app.innerHTML = `
-        <div class="flex flex-col sm:flex-row sm:justify-between mb-4 gap-2">
-            <h2 class="text-lg font-semibold">Matches</h2>
-            <button id="add-match-btn" class="bg-green-600 text-white w-full sm:w-auto px-4 py-2 rounded-lg text-base flex items-center justify-center gap-2 active:scale-95 transition">
-                <i class="fas fa-plus"></i> <span>Match hinzufügen</span>
-            </button>
-        </div>
-        <div id="matches-list" class="space-y-3">
-            <div class="flex items-center justify-center py-8">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <span class="ml-2 text-gray-600">Lädt Matches...</span>
+        <div class="modern-grid">
+            <div class="modern-card-header">
+                <h2 class="modern-card-title">⚽ Matches</h2>
+                <button id="add-match-btn" class="modern-btn modern-btn-success">
+                    <span>➕</span>
+                    <span>Match hinzufügen</span>
+                </button>
+            </div>
+            <div id="matches-list" class="modern-grid">
+                <div class="modern-card modern-text-center">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <span class="text-gray-400">Lädt Matches...</span>
+                </div>
             </div>
         </div>
     `;
@@ -179,7 +182,7 @@ function renderMatchesList() {
 
     try {
         if (!matchesData.matches.length) {
-            container.innerHTML = `<div class="text-gray-700 text-sm text-center py-4">Noch keine Matches eingetragen.</div>`;
+            container.innerHTML = `<div class="modern-card modern-text-center">Noch keine Matches eingetragen.</div>`;
             return;
         }
 
@@ -196,16 +199,20 @@ function renderMatchesList() {
 
         // Überschrift mit Datum, schön formatiert
         const dateStr = matchViewDate ? matchViewDate.split('-').reverse().join('.') : '';
-        let html = `<div class="text-center font-semibold text-base mb-2">Spiele am <span class="text-sky-700 dark:text-sky-400">${dateStr}</span></div>`;
+        let html = `<div class="modern-card modern-text-center">
+            <h3 class="text-lg font-bold">📅 Spiele am <span class="text-sky-400">${dateStr}</span></h3>
+        </div>`;
 
         if (!filteredMatches.length) {
-            html += `<div class="text-gray-700 text-sm text-center py-4">Keine Spiele für diesen Tag.</div>`;
+            html += `<div class="modern-card modern-text-center">Keine Spiele für diesen Tag.</div>`;
         } else {
+            html += `<div class="modern-grid">`;
             html += filteredMatches.map(match => {
                 // Durchgehende Nummerierung, unabhängig vom Tag!
                 const nr = matchesData.matches.length - matchesData.matches.findIndex(m => m.id === match.id);
                 return matchHtml(match, nr);
             }).join('');
+            html += `</div>`;
         }
 
         // Navigation Buttons - optimized
@@ -226,13 +233,13 @@ function renderMatchesList() {
 // Separate function for navigation buttons
 function renderNavigationButtons(uniqueDates) {
     const currIdx = uniqueDates.indexOf(matchViewDate);
-    let navHtml = `<div class="flex gap-2 justify-center mt-4">`;
+    let navHtml = `<div class="modern-flex modern-flex-center mt-4">`;
     
     if (currIdx < uniqueDates.length - 1) {
-        navHtml += `<button id="older-matches-btn" class="bg-gray-300 dark:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-gray-400">Ältere Spiele anzeigen</button>`;
+        navHtml += `<button id="older-matches-btn" class="modern-btn modern-btn-secondary">⬅️ Ältere Spiele anzeigen</button>`;
     }
     if (currIdx > 0) {
-        navHtml += `<button id="newer-matches-btn" class="bg-gray-300 dark:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-gray-400">Neuere Spiele anzeigen</button>`;
+        navHtml += `<button id="newer-matches-btn" class="modern-btn modern-btn-secondary">Neuere Spiele anzeigen ➡️</button>`;
     }
     
     navHtml += `</div>`;

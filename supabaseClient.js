@@ -166,6 +166,13 @@ const createFallbackClient = () => {
               if (session.expires_at && session.expires_at > Date.now() / 1000) {
                 fallbackSession = session;
                 console.log('✅ Restored demo session from localStorage');
+                // Trigger any existing auth callbacks
+                setTimeout(() => {
+                  authCallbacks.forEach(callback => {
+                    console.log('📢 Triggering SIGNED_IN callback for restored session');
+                    callback('SIGNED_IN', fallbackSession);
+                  });
+                }, 50);
               } else {
                 localStorage.removeItem('supabase.auth.token');
                 console.log('🔄 Demo session expired, removed from localStorage');
@@ -182,8 +189,13 @@ const createFallbackClient = () => {
       onAuthStateChange: (callback) => {
         console.warn('Supabase auth not available - using fallback');
         authCallbacks.push(callback);
-        // Initial callback
-        setTimeout(() => callback(fallbackSession ? 'SIGNED_IN' : 'SIGNED_OUT', fallbackSession), 100);
+        // Initial callback - trigger immediately if we have a session, otherwise after short delay
+        if (fallbackSession) {
+          console.log('📢 Triggering immediate SIGNED_IN callback for restored session');
+          setTimeout(() => callback('SIGNED_IN', fallbackSession), 10);
+        } else {
+          setTimeout(() => callback('SIGNED_OUT', null), 100);
+        }
         return { data: { subscription: { unsubscribe: () => {
           authCallbacks = authCallbacks.filter(cb => cb !== callback);
         } } } };

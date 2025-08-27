@@ -1432,18 +1432,18 @@ button:hover, .btn:hover {
   padding-bottom: 90px; /* Ensure modals don't overlap bottom navbar */
 }
 .modal-content {
-  background: #1e293b;
-  color: #f1f5f9;
+  background: #111827; /* Even darker background for better contrast */
+  color: #f9fafb; /* Ensure light text */
   width: 100%;
   max-width: 600px;
   max-height: calc(100vh - 140px);
   overflow-y: auto;
   border-radius: 20px;
-  box-shadow: 0 25px 50px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1);
+  box-shadow: 0 25px 50px rgba(0,0,0,0.4), 0 0 0 2px rgba(255,255,255,0.15); /* Stronger shadow and border */
   padding: 2rem;
   position: relative;
   animation: slideInModal 0.3s cubic-bezier(.16,.68,.43,.99);
-  border: 1px solid #334155;
+  border: 2px solid #374151; /* Thicker border for better definition */
 }
 
 /* Close button styles */
@@ -2447,13 +2447,15 @@ div:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400)
 
 /* Improve button contrast in modals */
 .modal-content button:not(.bg-blue-600):not(.bg-red-600):not(.bg-green-600):not([class*="bg-green"]):not([class*="bg-blue"]):not([class*="bg-red"]) {
-  background-color: #4b5563 !important;
+  background-color: #374151 !important; /* Darker gray for better contrast */
   color: #f9fafb !important;
   border-color: #6b7280 !important;
+  border-width: 2px !important; /* Thicker border for better visibility */
 }
 
 .modal-content button:hover:not(.bg-blue-600):not(.bg-red-600):not(.bg-green-600):not([class*="bg-green"]):not([class*="bg-blue"]):not([class*="bg-red"]) {
-  background-color: #374151 !important;
+  background-color: #1f2937 !important; /* Even darker on hover */
+  border-color: #9ca3af !important;
 }
 
 /* Special handling for colored buttons in modals to ensure they maintain their colors */
@@ -2475,19 +2477,29 @@ div:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400)
   color: #ffffff !important;
 }
 
-/* Ensure form input text remains readable */
+/* Ensure form input text remains readable with better contrast */
 .modal-content input,
 .modal-content select,
 .modal-content textarea {
-  background-color: #374151 !important;
+  background-color: #1f2937 !important; /* Darker background for better contrast */
   color: #f9fafb !important;
   border-color: #4b5563 !important;
+  border-width: 2px !important; /* Thicker border for better visibility */
 }
 
 .modal-content input::placeholder,
 .modal-content select::placeholder,
 .modal-content textarea::placeholder {
   color: #9ca3af !important;
+}
+
+/* Improve focus state for better accessibility */
+.modal-content input:focus,
+.modal-content select:focus,
+.modal-content textarea:focus {
+  outline: 3px solid #3b82f6 !important;
+  outline-offset: 2px !important;
+  border-color: #3b82f6 !important;
 }
 
 /* --- LOGOUT BUTTON IN NAVIGATION --- */
@@ -2532,15 +2544,25 @@ form .font-semibold {
 form input,
 form select,
 form textarea {
-  background-color: #374151 !important;
+  background-color: #1f2937 !important; /* Darker background for better contrast */
   color: #f9fafb !important;
   border-color: #4b5563 !important;
+  border-width: 2px !important; /* Thicker border for better visibility */
 }
 
 form input::placeholder,
 form select::placeholder,
 form textarea::placeholder {
   color: #9ca3af !important;
+}
+
+/* Improve focus state for all forms */
+form input:focus,
+form select:focus,
+form textarea:focus {
+  outline: 3px solid #3b82f6 !important;
+  outline-offset: 2px !important;
+  border-color: #3b82f6 !important;
 }
 
 /* --- FIX MODAL FULL SCREEN COVERAGE --- */
@@ -2554,6 +2576,8 @@ form textarea::placeholder {
   padding: 1rem !important;
   /* Remove bottom padding that was causing issues */
   padding-bottom: 1rem !important;
+  background: rgba(0,0,0,0.8) !important; /* Darker overlay for better contrast */
+  backdrop-filter: blur(4px) !important; /* Stronger blur */
 }
 
 /* Ensure modal content is properly centered and sized */
@@ -2562,6 +2586,26 @@ form textarea::placeholder {
   max-width: 600px !important;
   max-height: calc(100vh - 2rem) !important;
   margin: 0 auto !important;
+}
+
+/* Mobile improvements for better readability */
+@media (max-width: 768px) {
+  .modal-content {
+    font-size: 16px !important; /* Prevent zoom on iOS */
+    line-height: 1.5 !important; /* Better line spacing for readability */
+  }
+  
+  .modal-content input,
+  .modal-content select,
+  .modal-content textarea,
+  .modal-content button {
+    min-height: 44px !important; /* Touch-friendly size */
+    font-size: 16px !important; /* Prevent zoom on iOS */
+  }
+  
+  .modal-content button {
+    padding: 12px 16px !important; /* Better padding for touch */
+  }
 }
 
 @media (max-width: 700px) {

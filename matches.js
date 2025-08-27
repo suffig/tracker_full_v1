@@ -330,11 +330,18 @@ function matchHtml(match, nr) {
     
     function prizeHtml(amount, team) {
         const isPos = amount >= 0;
-        const tClass = team === "AEK" ? "bg-blue-800 dark:bg-blue-900" : "bg-red-800 dark:bg-red-900";
-        const color = isPos ? "text-green-200 dark:text-green-300" : "text-red-200 dark:text-red-300";
-        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full ${tClass} ${color} font-bold text-xs">
-                    <span class="font-semibold">${team}</span>
-                    <span>${isPos ? '+' : ''}${amount.toLocaleString('de-DE')} €</span>
+        // Enhanced team colors: more vibrant blue for AEK, more vibrant red for Real
+        const teamBg = team === "AEK" ? "bg-blue-600" : "bg-red-600";
+        const teamBorder = team === "AEK" ? "border-blue-400" : "border-red-400";
+        // Enhanced amount colors: bright green for positive, bright red for negative
+        const amountColor = isPos ? "text-green-400" : "text-red-400";
+        const amountBg = isPos ? "bg-green-900" : "bg-red-900";
+        
+        return `<span class="inline-flex items-center gap-2 px-4 py-2 rounded-lg ${teamBg} ${teamBorder} border-2 font-bold text-sm shadow-lg">
+                    <span class="text-white font-bold text-base">${team}</span>
+                    <span class="px-2 py-1 rounded ${amountBg} ${amountColor} font-bold text-sm">
+                        ${isPos ? '+' : ''}${amount.toLocaleString('de-DE')} €
+                    </span>
                 </span>`;
     }
     
@@ -1034,20 +1041,21 @@ function setupGoalButtons(updateTotalGoalsCallback = null) {
 
 
 function scorerFields(name, arr, spielerOpts) {
-    if (!arr.length) arr = [{ player: "", count: 1 }];
+    // No default scorer - start with empty list
+    if (!arr.length) return '';
     return arr.map((g, i) => `
-        <div class="flex gap-3 mb-3 scorer-row items-center bg-gray-600 border-2 border-gray-500 rounded-lg p-3">
-            <select name="${name}-player" class="border-2 border-gray-400 bg-gray-500 text-white rounded-lg p-3 min-h-[44px] text-sm flex-1 font-semibold" style="min-width:120px;">
+        <div class="flex gap-2 mb-3 scorer-row items-center bg-gray-600 border-2 border-gray-500 rounded-lg p-3">
+            <select name="${name}-player" class="border-2 border-gray-400 bg-gray-500 text-white rounded-lg p-3 min-h-[44px] text-sm flex-1 font-semibold" style="min-width:100px;">
                 <option value="">Spieler wählen</option>
                 ${spielerOpts.replace(`value="${g.player}"`, `value="${g.player}" selected`)}
             </select>
-            <div class="flex items-center gap-2 bg-gray-700 rounded-lg p-2 border-2 border-gray-400">
-                <button type="button" class="goal-btn goal-btn-down bg-red-600 hover:bg-red-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-10 h-10 flex items-center justify-center touch-manipulation border-2 border-red-400" data-target="${name}-count-${i}" data-min="1">−</button>
-                <input type="number" min="1" name="${name}-count" placeholder="Tore" class="goal-input border-2 border-gray-400 bg-gray-500 text-white rounded-lg p-2 w-14 min-h-[40px] text-sm text-center font-bold flex-shrink-0" value="${g.count||1}" readonly id="${name}-count-${i}">
-                <button type="button" class="goal-btn goal-btn-up bg-green-600 hover:bg-green-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-10 h-10 flex items-center justify-center touch-manipulation border-2 border-green-400" data-target="${name}-count-${i}" data-max="20">+</button>
+            <div class="flex items-center gap-1 bg-gray-700 rounded-lg p-2 border-2 border-gray-400">
+                <button type="button" class="goal-btn goal-btn-down bg-red-600 hover:bg-red-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation border border-red-400" data-target="${name}-count-${i}" data-min="1">−</button>
+                <input type="number" min="1" name="${name}-count" placeholder="Tore" class="goal-input border border-gray-400 bg-gray-500 text-white rounded-lg p-1 w-12 min-h-[32px] text-sm text-center font-bold flex-shrink-0" value="${g.count||1}" readonly id="${name}-count-${i}">
+                <button type="button" class="goal-btn goal-btn-up bg-green-600 hover:bg-green-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation border border-green-400" data-target="${name}-count-${i}" data-max="20">+</button>
             </div>
-            <button type="button" class="remove-goal-btn bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg min-h-[44px] w-12 flex items-center justify-center transition-all duration-200 flex-shrink-0 ${arr.length===1 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'} touch-manipulation border-2 border-red-400" title="Torschütze entfernen" ${arr.length===1 ? 'disabled' : ''}>
-                <i class="fas fa-trash text-sm"></i>
+            <button type="button" class="remove-goal-btn bg-red-600 hover:bg-red-700 text-white px-2 py-2 rounded-lg min-h-[40px] w-10 flex items-center justify-center transition-all duration-200 flex-shrink-0 hover:scale-105 touch-manipulation border border-red-400" title="Torschütze entfernen">
+                <i class="fas fa-trash text-xs"></i>
             </button>
         </div>
     `).join('');

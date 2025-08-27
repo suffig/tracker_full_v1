@@ -76,9 +76,8 @@ function renderFinanzenTabInner(containerId = "app") {
     app.innerHTML = `
         <div class="mb-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
             <h2 class="text-lg font-semibold text-slate-100">Finanzen</h2>
-            <button id="add-trans-btn" class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs flex items-center gap-1 font-semibold transition shadow self-start">
-                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                <span>+</span>
+            <button id="add-trans-btn" class="bg-green-600 hover:bg-green-700 text-white px-2 py-2 rounded-lg text-sm flex items-center justify-center font-semibold transition shadow w-8 h-8">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             </button>
         </div>
         <div class="flex flex-col sm:flex-row gap-3 mb-6">

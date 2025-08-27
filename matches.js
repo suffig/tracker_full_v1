@@ -788,7 +788,7 @@ function attachMatchFormEventHandlers(edit, id, aekSpieler, realSpieler, aekSort
                 <input type="number" min="1" name="${name}-count" placeholder="Tore" class="goal-input border border-gray-400 bg-gray-500 text-white rounded p-1 w-8 h-7 text-xs text-center font-bold flex-shrink-0" value="1" readonly id="${uniqueId}">
                 <button type="button" class="goal-btn goal-btn-up bg-green-600 hover:bg-green-500 text-white px-2 py-1 rounded text-xs font-bold w-7 h-7 flex items-center justify-center touch-manipulation" data-target="${uniqueId}" data-max="20">+</button>
             </div>
-            <button type="button" class="remove-goal-btn bg-red-600 hover:bg-red-700 text-white px-2 py-2 rounded-lg h-8 w-8 flex items-center justify-center transition-all duration-200 flex-shrink-0 hover:scale-105 touch-manipulation" title="Torschütze entfernen">
+            <button type="button" class="remove-goal-btn bg-red-600 hover:bg-red-700 text-white px-2 py-2 rounded-lg min-h-[44px] w-10 flex items-center justify-center transition-all duration-200 flex-shrink-0 hover:scale-105 touch-manipulation" title="Torschütze entfernen">
                 <i class="fas fa-trash text-xs"></i>
             </button>
         `;
@@ -1031,7 +1031,7 @@ function scorerFields(name, arr, spielerOpts) {
     if (!arr.length) return '';
     return arr.map((g, i) => `
         <div class="flex gap-2 mb-3 scorer-row items-center bg-gray-600 border-2 border-gray-500 rounded-lg p-3">
-            <select name="${name}-player" class="border-2 border-gray-400 bg-gray-500 text-white rounded-lg p-3 min-h-[44px] text-sm flex-1 font-semibold" style="min-width:100px;">
+            <select name="${name}-player" class="border-2 border-gray-400 bg-gray-500 text-white rounded-lg p-3 min-h-[44px] text-sm flex-1 font-semibold" style="min-width:150px;">
                 <option value="">Spieler wählen</option>
                 ${spielerOpts.replace(`value="${g.player}"`, `value="${g.player}" selected`)}
             </select>
@@ -1040,7 +1040,7 @@ function scorerFields(name, arr, spielerOpts) {
                 <input type="number" min="1" name="${name}-count" placeholder="Tore" class="goal-input border border-gray-400 bg-gray-500 text-white rounded-lg p-1 w-12 min-h-[32px] text-sm text-center font-bold flex-shrink-0" value="${g.count||1}" readonly id="${name}-count-${i}">
                 <button type="button" class="goal-btn goal-btn-up bg-green-600 hover:bg-green-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation border border-green-400" data-target="${name}-count-${i}" data-max="20">+</button>
             </div>
-            <button type="button" class="remove-goal-btn bg-red-600 hover:bg-red-700 text-white px-2 py-2 rounded-lg h-8 w-8 flex items-center justify-center transition-all duration-200 flex-shrink-0 hover:scale-105 touch-manipulation" title="Torschütze entfernen">
+            <button type="button" class="remove-goal-btn bg-red-600 hover:bg-red-700 text-white px-2 py-2 rounded-lg min-h-[44px] w-10 flex items-center justify-center transition-all duration-200 flex-shrink-0 hover:scale-105 touch-manipulation" title="Torschütze entfernen">
                 <i class="fas fa-trash text-xs"></i>
             </button>
         </div>

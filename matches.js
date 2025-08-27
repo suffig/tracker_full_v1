@@ -309,32 +309,28 @@ function attachMatchEventListeners(uniqueDates) {
 
 function matchHtml(match, nr) {
     function goalsHtml(goals) {
-        if (!goals || !goals.length) return `<span class="text-gray-600 text-sm italic">Keine Torschützen</span>`;
+        if (!goals || !goals.length) return `<span class="text-gray-500 text-xs italic">-</span>`;
         return goals
             .map(g => {
                 // Handle both string array format (legacy) and object format (new)
                 if (typeof g === 'string') {
-                    return `<span class="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-500 text-green-100 rounded-lg px-3 py-1 text-sm font-medium shadow-md">
-                        ${g} 
-                        <span class="inline-block rounded-md px-2 py-1 border font-bold text-xs bg-green-700 border-green-600 text-green-100">1</span>
+                    return `<span class="inline-flex items-center gap-1 bg-green-600 text-green-100 rounded px-2 py-0.5 text-xs font-medium">
+                        ${g} <span class="bg-green-700 rounded px-1 text-xs font-bold">1</span>
                     </span>`;
                 } else {
-                    return `<span class="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-500 text-green-100 rounded-lg px-3 py-1 text-sm font-medium shadow-md">
-                        ${g.player} 
-                        <span class="inline-block rounded-md px-2 py-1 border font-bold text-xs bg-green-700 border-green-600 text-green-100">${g.count}</span>
+                    return `<span class="inline-flex items-center gap-1 bg-green-600 text-green-100 rounded px-2 py-0.5 text-xs font-medium">
+                        ${g.player} <span class="bg-green-700 rounded px-1 text-xs font-bold">${g.count}</span>
                     </span>`;
                 }
             })
             .join(' ');
     }
-    function prizeHtml(amount, team) {
-        const isPos = amount >= 0;
-        const tClass = team === "AEK" ? "bg-blue-800 dark:bg-blue-900" : "bg-red-800 dark:bg-red-900";
-        const color = isPos ? "text-green-200 dark:text-green-300" : "text-red-200 dark:text-red-300";
-        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full ${tClass} ${color} font-bold text-xs">
-                    <span class="font-semibold">${team}</span>
-                    <span>${isPos ? '+' : ''}${amount.toLocaleString('de-DE')} €</span>
-                </span>`;
+    
+    function cardsHtml(yellow, red) {
+        const parts = [];
+        if (yellow > 0) parts.push(`🟨${yellow}`);
+        if (red > 0) parts.push(`🟥${red}`);
+        return parts.length ? parts.join(' ') : '-';
     }
     
     // Determine match result for better visual indication
@@ -344,120 +340,59 @@ function matchHtml(match, nr) {
                         'border-l-4 border-l-gray-500';
     
     return `
-    <div class="bg-gradient-to-r from-gray-800 to-gray-750 border border-gray-600 rounded-xl p-5 mt-4 text-gray-100 shadow-xl hover:shadow-2xl transition-all duration-300 ${resultClass} transform hover:scale-[1.02]">
-      <!-- Match Header -->
-      <div class="flex justify-between items-start mb-4">
-        <div class="flex-1">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">#${nr}</span>
-            <span class="text-gray-200 text-sm font-medium">${match.date}</span>
-            <button class="match-toggle-btn bg-gray-600 hover:bg-gray-500 text-white px-3 py-2 rounded-lg text-sm ml-auto transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" data-match-id="${match.id}" title="Details ein-/ausblenden">
-              <span class="text-xs font-medium">Details</span>
-              <i class="fas fa-chevron-down transform transition-transform duration-200"></i>
-            </button>
-          </div>
-          <div class="score-contrast rounded-xl p-4 mb-3 border-slate-light">
-            <div class="flex items-center justify-center">
-              <div class="text-center">
-                <span class="text-aek-bright font-bold text-xl block mb-1">${match.teama}</span>
-                <span class="text-3xl font-black text-white">${match.goalsa}</span>
-              </div>
-              <div class="mx-6 text-center">
-                <span class="text-white text-2xl font-bold">:</span>
-              </div>
-              <div class="text-center">
-                <span class="text-real-bright font-bold text-xl block mb-1">${match.teamb}</span>
-                <span class="text-3xl font-black text-white">${match.goalsb}</span>
-              </div>
-            </div>
-          </div>
+    <div class="bg-gray-800 border border-gray-600 rounded-lg p-4 mb-3 text-gray-100 shadow-lg hover:shadow-xl transition-all duration-200 ${resultClass}">
+      <!-- Compact Header with Match Info -->
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center gap-2">
+          <span class="bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold">#${nr}</span>
+          <span class="text-gray-300 text-sm">${match.date}</span>
+          ${match.manofthematch ? `<span class="text-yellow-400 text-sm" title="Spieler des Spiels: ${match.manofthematch}">⭐</span>` : ''}
         </div>
-        <div class="flex gap-2 ml-4">
-          <button class="edit-match-btn bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-xl text-sm flex items-center justify-center active:scale-95 transition-all shadow-lg hover:shadow-xl" title="Bearbeiten" data-id="${match.id}">
-            <i class="fas fa-edit text-base"></i>
+        <div class="flex gap-1">
+          <button class="edit-match-btn bg-blue-500 hover:bg-blue-600 text-white p-2 rounded text-xs transition-colors" title="Bearbeiten" data-id="${match.id}">
+            ✏️
           </button>
-          <button class="delete-match-btn bg-red-500 hover:bg-red-600 text-white p-3 rounded-xl text-sm flex items-center justify-center active:scale-95 transition-all shadow-lg hover:shadow-xl" title="Löschen" data-id="${match.id}">
-            <i class="fas fa-trash text-base"></i>
+          <button class="delete-match-btn bg-red-500 hover:bg-red-600 text-white p-2 rounded text-xs transition-colors" title="Löschen" data-id="${match.id}">
+            🗑️
           </button>
         </div>
       </div>
       
-      <!-- Collapsible Details Section -->
-      <div class="match-details" data-match-id="${match.id}" style="display: none;">
-        <!-- Goal Scorers Section -->
-        <div class="space-y-3 mb-4">
-          <div class="bg-gradient-to-r from-blue-900/30 to-blue-800/30 border border-blue-700/50 rounded-xl p-3">
-            <div class="text-sm font-bold text-aek-bright mb-2 flex items-center gap-2">
-              <i class="fas fa-futbol"></i>
-              ${match.teama} Torschützen:
-            </div>
-            <div class="flex flex-wrap gap-2">${goalsHtml(match.goalslista || [])}</div>
-          </div>
-          <div class="bg-gradient-to-r from-red-900/30 to-red-800/30 border border-red-700/50 rounded-xl p-3">
-            <div class="text-sm font-bold text-real-bright mb-2 flex items-center gap-2">
-              <i class="fas fa-futbol"></i>
-              ${match.teamb} Torschützen:
-            </div>
-            <div class="flex flex-wrap gap-2">${goalsHtml(match.goalslistb || [])}</div>
-          </div>
+      <!-- Compact Score Display -->
+      <div class="flex items-center justify-center bg-gray-700 rounded-lg p-3 mb-3">
+        <div class="text-center">
+          <div class="text-blue-400 font-semibold text-sm mb-1">${match.teama}</div>
+          <div class="text-2xl font-bold text-white">${match.goalsa}</div>
         </div>
-        
-        <!-- Cards Section -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-          <div class="bg-gradient-to-r from-blue-900/30 to-blue-800/30 border border-blue-700/50 rounded-xl p-3">
-            <div class="text-sm font-bold text-aek-bright mb-2 flex items-center gap-2">
-              <i class="fas fa-id-card"></i>
-              ${match.teama} Karten:
-            </div>
-            <div class="flex gap-2">
-              <span class="inline-flex items-center gap-1 bg-yellow-600 text-yellow-100 rounded-lg px-3 py-1 text-sm font-medium shadow-md">🟨 ${match.yellowa || 0}</span>
-              <span class="inline-flex items-center gap-1 bg-red-600 text-red-100 rounded-lg px-3 py-1 text-sm font-medium shadow-md">🟥 ${match.reda || 0}</span>
-            </div>
-          </div>
-          <div class="bg-gradient-to-r from-red-900/30 to-red-800/30 border border-red-700/50 rounded-xl p-3">
-            <div class="text-sm font-bold text-real-bright mb-2 flex items-center gap-2">
-              <i class="fas fa-id-card"></i>
-              ${match.teamb} Karten:
-            </div>
-            <div class="flex gap-2">
-              <span class="inline-flex items-center gap-1 bg-yellow-600 text-yellow-100 rounded-lg px-3 py-1 text-sm font-medium shadow-md">🟨 ${match.yellowb || 0}</span>
-              <span class="inline-flex items-center gap-1 bg-red-600 text-red-100 rounded-lg px-3 py-1 text-sm font-medium shadow-md">🟥 ${match.redb || 0}</span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Footer with Prizes and Man of the Match -->
-        <div class="border-t border-gray-600 pt-4 space-y-3">
-          <div>
-            <div class="text-sm font-bold text-gray-lighter mb-2 flex items-center gap-2">
-              <i class="fas fa-coins"></i>
-              Preisgelder:
-            </div>
-            <div class="flex flex-wrap gap-2">
-              ${prizeHtml(match.prizeaek ?? 0, "AEK")}
-              ${prizeHtml(match.prizereal ?? 0, "Real")}
-            </div>
-          </div>
-          ${match.manofthematch ? `
-          <div>
-            <div class="text-sm font-bold text-gray-lighter mb-2 flex items-center gap-2">
-              <i class="fas fa-star"></i>
-              Spieler des Spiels:
-            </div>
-            <span class="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-600 to-yellow-500 text-yellow-100 px-3 py-2 rounded-lg text-sm font-bold shadow-lg">
-              ⭐ ${match.manofthematch}
-              <span class="text-xs font-medium opacity-90">(${(() => {
-                // Determine team from match data
-                if (match.goalslista && match.goalslista.some(g => g.player === match.manofthematch)) return 'AEK';
-                if (match.goalslistb && match.goalslistb.some(g => g.player === match.manofthematch)) return 'Real';
-                // Fallback: check if player is in AEK or Real team
-                return matchesData.aekAthen.find(p => p.name === match.manofthematch) ? 'AEK' : 'Real';
-              })()})</span>
-            </span>
-          </div>
-          ` : ''}
+        <div class="mx-4 text-white text-xl font-bold">:</div>
+        <div class="text-center">
+          <div class="text-red-400 font-semibold text-sm mb-1">${match.teamb}</div>
+          <div class="text-2xl font-bold text-white">${match.goalsb}</div>
         </div>
       </div>
+      
+      <!-- Compact Details in Grid -->
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <div class="bg-gray-700 rounded-lg p-2">
+          <div class="text-blue-400 font-semibold mb-1">⚽ ${match.teama} Tore:</div>
+          <div class="space-y-1">${goalsHtml(match.goalslista || [])}</div>
+          <div class="text-gray-400 mt-1">Karten: ${cardsHtml(match.yellowa || 0, match.reda || 0)}</div>
+        </div>
+        <div class="bg-gray-700 rounded-lg p-2">
+          <div class="text-red-400 font-semibold mb-1">⚽ ${match.teamb} Tore:</div>
+          <div class="space-y-1">${goalsHtml(match.goalslistb || [])}</div>
+          <div class="text-gray-400 mt-1">Karten: ${cardsHtml(match.yellowb || 0, match.redb || 0)}</div>
+        </div>
+      </div>
+      
+      ${match.manofthematch ? `
+      <!-- Man of the Match -->
+      <div class="mt-3 text-center">
+        <span class="inline-flex items-center gap-1 bg-yellow-600 text-yellow-100 px-3 py-1 rounded text-xs font-semibold">
+          ⭐ Spieler des Spiels: ${match.manofthematch}
+        </span>
+      </div>
+      ` : ''}
     </div>
     `;
 }

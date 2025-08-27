@@ -2279,6 +2279,44 @@ div:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400)
 .text-blue-100 { color: #dbeafe !important; }
 .text-red-100 { color: #fee2e2 !important; }
 
+/* --- IMPROVED CONTRAST CLASSES FOR BETTER READABILITY --- */
+/* High contrast team colors for better visibility */
+.text-aek-bright { color: #60a5fa !important; }  /* Brighter blue for AEK */
+.text-real-bright { color: #f87171 !important; } /* Brighter red for Real */
+
+/* Enhanced input field contrasts */
+.bg-slate-dark { background-color: #1e293b !important; } /* Darker slate for better contrast */
+.text-slate-light { color: #f1f5f9 !important; }        /* Lighter slate text */
+.border-slate-light { border-color: #64748b !important; } /* Medium slate borders */
+
+/* High contrast backgrounds for forms */
+.bg-gray-darker { background-color: #111827 !important; }  /* Even darker gray */
+.bg-gray-dark { background-color: #1f2937 !important; }    /* Dark gray */
+.text-gray-lighter { color: #f9fafb !important; }          /* Very light gray text */
+
+/* Improved score display contrast */
+.score-contrast { 
+  background-color: #0f172a !important; /* Very dark blue-gray */
+  color: #ffffff !important;             /* Pure white text */
+  border-color: #334155 !important;     /* Medium gray border */
+}
+
+/* Enhanced label contrast */
+.label-high-contrast { color: #ffffff !important; }
+
+/* Better button contrast states */
+.btn-contrast-primary {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
+  color: #ffffff !important;
+  border-color: #1d4ed8 !important;
+}
+
+.btn-contrast-secondary {
+  background: linear-gradient(135deg, #374151, #1f2937) !important;
+  color: #ffffff !important;
+  border-color: #374151 !important;
+}
+
 /* --- SCROLLBAR DESIGN --- */
 ::-webkit-scrollbar {
   width: 10px;

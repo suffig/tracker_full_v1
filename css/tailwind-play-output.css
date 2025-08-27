@@ -2411,7 +2411,8 @@ div:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400)
   color: #f1f5f9 !important;
 }
 
-/* Override all text elements in modal to have proper contrast */
+/* Override all text elements in modal to have proper contrast - Enhanced version */
+.modal-content *:not(input):not(select):not(textarea):not(button):not([class*="bg-blue"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-yellow"]):not([class*="bg-purple"]):not([class*="bg-orange"]),
 .modal-content label,
 .modal-content .text-description,
 .modal-content .text-gray-700,
@@ -2421,9 +2422,11 @@ div:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400)
 .modal-content .text-gray-500,
 .modal-content .text-gray-400,
 .modal-content .text-gray-300,
+.modal-content .text-gray-200,
+.modal-content .text-gray-100,
 .modal-content .text-black,
 .modal-content p,
-.modal-content div,
+.modal-content div:not([class*="bg-"]):not(.modal-content),
 .modal-content span:not([class*="text-blue"]):not([class*="text-red"]):not([class*="text-green"]):not([class*="text-white"]):not([class*="bg-"]):not(.text-white),
 .modal-content h1,
 .modal-content h2,
@@ -2433,16 +2436,30 @@ div:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400)
 .modal-content h6,
 .modal-content b,
 .modal-content strong,
-.modal-content .scorer-row > *,
-.modal-content .flex > *,
-.modal-content .space-y-4 > *,
-.modal-content .space-y-6 > *,
+.modal-content .scorer-row > *:not(input):not(select):not(button),
+.modal-content .flex > *:not(input):not(select):not(button):not([class*="bg-"]),
+.modal-content .space-y-4 > *:not(input):not(select):not(button),
+.modal-content .space-y-6 > *:not(input):not(select):not(button),
 .modal-content .mb-3,
 .modal-content .text-lg,
 .modal-content .text-base,
 .modal-content .text-sm,
-.modal-content .text-xs {
+.modal-content .text-xs,
+.modal-content em,
+.modal-content i:not([class*="fa"]):not([class*="icon"]),
+.modal-content small,
+.modal-content .form-control,
+.modal-content .form-label,
+.modal-content td:not([class*="bg-"]),
+.modal-content th:not([class*="bg-"]),
+.modal-content li:not([class*="bg-"]) {
   color: #f1f5f9 !important; /* Light text for dark modal background */
+}
+
+/* Ensure specific text color classes in modals override default styling */
+.modal-content .text-slate-200,
+.modal-content .text-slate-100 {
+  color: #f1f5f9 !important;
 }
 
 /* Improve button contrast in modals */
@@ -2477,20 +2494,21 @@ div:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400)
   color: #ffffff !important;
 }
 
-/* Ensure form input text remains readable with better contrast */
+/* Ensure form input text remains readable with better contrast - Enhanced version */
 .modal-content input,
 .modal-content select,
 .modal-content textarea {
-  background-color: #1f2937 !important; /* Darker background for better contrast */
-  color: #f9fafb !important;
-  border-color: #4b5563 !important;
+  background-color: #0f172a !important; /* Even darker background for better contrast */
+  color: #f8fafc !important; /* Brighter text */
+  border-color: #334155 !important; /* Lighter border */
   border-width: 2px !important; /* Thicker border for better visibility */
+  font-size: 16px !important; /* Prevent zoom on mobile */
 }
 
 .modal-content input::placeholder,
 .modal-content select::placeholder,
 .modal-content textarea::placeholder {
-  color: #9ca3af !important;
+  color: #cbd5e1 !important; /* Lighter placeholder text */
 }
 
 /* Improve focus state for better accessibility */
@@ -2544,16 +2562,17 @@ form .font-semibold {
 form input,
 form select,
 form textarea {
-  background-color: #1f2937 !important; /* Darker background for better contrast */
-  color: #f9fafb !important;
-  border-color: #4b5563 !important;
+  background-color: #0f172a !important; /* Even darker background for better contrast */
+  color: #f8fafc !important; /* Brighter text */
+  border-color: #334155 !important; /* Lighter border */
   border-width: 2px !important; /* Thicker border for better visibility */
+  font-size: 16px !important; /* Prevent zoom on mobile */
 }
 
 form input::placeholder,
 form select::placeholder,
 form textarea::placeholder {
-  color: #9ca3af !important;
+  color: #cbd5e1 !important; /* Lighter placeholder text */
 }
 
 /* Improve focus state for all forms */

@@ -330,11 +330,12 @@ function matchHtml(match, nr) {
     
     function prizeHtml(amount, team) {
         const isPos = amount >= 0;
-        const tClass = team === "AEK" ? "bg-blue-800 dark:bg-blue-900" : "bg-red-800 dark:bg-red-900";
-        const color = isPos ? "text-green-200 dark:text-green-300" : "text-red-200 dark:text-red-300";
-        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full ${tClass} ${color} font-bold text-xs">
-                    <span class="font-semibold">${team}</span>
-                    <span>${isPos ? '+' : ''}${amount.toLocaleString('de-DE')} €</span>
+        const tClass = team === "AEK" ? "bg-blue-200 border-2 border-blue-600" : "bg-red-200 border-2 border-red-600";
+        const color = isPos ? "text-green-800" : "text-red-800";
+        const teamTextColor = team === "AEK" ? "text-blue-900" : "text-red-900";
+        return `<span class="inline-flex items-center gap-2 px-3 py-2 rounded-full ${tClass} font-bold text-sm shadow-lg">
+                    <span class="font-bold ${teamTextColor}">${team}</span>
+                    <span class="${color} font-extrabold">${isPos ? '+' : ''}${amount.toLocaleString('de-DE')} €</span>
                 </span>`;
     }
     
@@ -350,7 +351,7 @@ function matchHtml(match, nr) {
       <div class="flex justify-between items-start mb-3">
         <div class="flex-1">
           <div class="flex items-center gap-3 mb-2">
-            <span class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">#${nr}</span>
+            <span class="bg-gradient-to-r from-blue-400 to-blue-300 text-black px-3 py-1 rounded-full text-sm font-bold shadow-lg border-2 border-blue-600">#${nr}</span>
             <span class="text-gray-700 text-sm font-medium">${match.date}</span>
             <button class="match-toggle-btn bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-2 rounded-lg text-sm ml-auto transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" data-match-id="${match.id}" title="Details ein-/ausblenden">
               <span class="text-xs font-medium">Details</span>

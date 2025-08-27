@@ -574,108 +574,139 @@ function openMatchForm(id) {
 function generateMatchFormHTML(edit, dateVal, match, aekSpieler, realSpieler, aekSorted, realSorted, goalsListA, goalsListB, manofthematch) {
     return `
     <form id="match-form" class="space-y-6 w-full">
-        <div class="space-y-4">
+        <!-- Datum Section -->
+        <div class="bg-gray-800 border-2 border-gray-600 rounded-xl p-4">
+            <h3 class="text-white text-lg font-bold mb-3 text-center">📅 Spieldatum</h3>
             <div class="flex justify-center">
-                <button type="button" id="show-date" class="flex items-center gap-2 text-sm font-semibold text-slate-300 hover:text-sky-400 border border-slate-600 rounded-lg px-4 py-3 bg-slate-700 focus:outline-none transition-all focus:ring-2 focus:ring-sky-500" tabindex="0">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button type="button" id="show-date" class="flex items-center gap-3 text-base font-semibold text-white hover:text-blue-300 border-2 border-gray-500 hover:border-blue-400 rounded-lg px-6 py-3 bg-gray-700 hover:bg-gray-600 focus:outline-none transition-all focus:ring-2 focus:ring-blue-400" tabindex="0">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
                     <span id="date-label">${dateVal.split('-').reverse().join('.')}</span>
                 </button>
                 <input type="date" name="date" id="date-input" class="hidden" value="${dateVal}" required>
             </div>
-            <div class="flex items-center justify-center gap-2 score-contrast rounded-lg p-3 border-slate-light">
+        </div>
+
+        <!-- Endergebnis Section -->
+        <div class="bg-gray-800 border-2 border-gray-600 rounded-xl p-4">
+            <h3 class="text-white text-lg font-bold mb-4 text-center">⚽ Endergebnis</h3>
+            <div class="flex items-center justify-center gap-4 bg-gray-700 rounded-lg p-4 border-2 border-gray-500">
                 <div class="flex flex-col items-center">
-                    <span class="font-bold text-aek-bright text-sm mb-1">AEK</span>
+                    <span class="font-bold text-blue-300 text-lg mb-2">AEK Athen</span>
                 </div>
-                <input type="number" min="0" max="50" name="goalsa" class="border-slate-light bg-slate-dark text-slate-light rounded-lg p-2 w-14 min-h-[40px] text-center text-lg font-bold cursor-not-allowed" readonly placeholder="0" value="${match ? match.goalsa : ""}" title="Wird automatisch aus den Torschützen berechnet">
-                <span class="font-bold text-lg text-slate-light mx-1">:</span>
-                <input type="number" min="0" max="50" name="goalsb" class="border-slate-light bg-slate-dark text-slate-light rounded-lg p-2 w-14 min-h-[40px] text-center text-lg font-bold cursor-not-allowed" readonly placeholder="0" value="${match ? match.goalsb : ""}" title="Wird automatisch aus den Torschützen berechnet">
+                <input type="number" min="0" max="50" name="goalsa" class="border-2 border-gray-500 bg-gray-600 text-white rounded-lg p-3 w-16 min-h-[48px] text-center text-xl font-bold cursor-not-allowed" readonly placeholder="0" value="${match ? match.goalsa : ""}" title="Wird automatisch aus den Torschützen berechnet">
+                <span class="font-bold text-2xl text-white mx-2">:</span>
+                <input type="number" min="0" max="50" name="goalsb" class="border-2 border-gray-500 bg-gray-600 text-white rounded-lg p-3 w-16 min-h-[48px] text-center text-xl font-bold cursor-not-allowed" readonly placeholder="0" value="${match ? match.goalsb : ""}" title="Wird automatisch aus den Torschützen berechnet">
                 <div class="flex flex-col items-center">
-                    <span class="font-bold text-real-bright text-sm mb-1">Real</span>
+                    <span class="font-bold text-red-300 text-lg mb-2">Real Madrid</span>
                 </div>
             </div>
         </div>
         
-        <div id="scorersA-block" class="bg-gray-dark border border-slate-light p-3 rounded-lg">
-            <b class="text-aek-bright text-sm">Torschützen AEK</b>
-            <div id="scorersA" class="mt-2">${scorerFields("goalslista", goalsListA, aekSpieler)}</div>
-			<button type="button" id="addScorerA"
-				class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-2 py-[2px] rounded active:scale-95 transition text-xs shadow touch-manipulation"
-				style="height: 22px; min-height: 0; min-width: 0; font-size: 12px;">
-				<span class="inline align-middle" style="font-size:1em; line-height:1;">+</span>
-				<span class="align-middle">Torschütze hinzufügen</span>
-			</button>
-
+        <!-- Torschützen AEK Section -->
+        <div id="scorersA-block" class="bg-gray-800 border-2 border-blue-500 rounded-xl p-4">
+            <h3 class="text-blue-300 text-lg font-bold mb-3 flex items-center gap-2">
+                <span class="bg-blue-600 text-white px-2 py-1 rounded text-sm">AEK</span>
+                ⚽ Torschützen
+            </h3>
+            <div id="scorersA" class="space-y-3 mt-3">${scorerFields("goalslista", goalsListA, aekSpieler)}</div>
+            <button type="button" id="addScorerA"
+                class="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg active:scale-95 transition text-sm shadow-lg hover:shadow-xl border-2 border-blue-400 mt-3"
+                style="min-height: 40px;">
+                <span class="text-lg">+</span>
+                <span>Torschütze hinzufügen</span>
+            </button>
         </div>
         
-        <div id="scorersB-block" class="bg-gray-dark border border-slate-light p-3 rounded-lg">
-            <b class="text-real-bright text-sm">Torschützen Real</b>
-            <div id="scorersB" class="mt-2">
+        <!-- Torschützen Real Section -->
+        <div id="scorersB-block" class="bg-gray-800 border-2 border-red-500 rounded-xl p-4">
+            <h3 class="text-red-300 text-lg font-bold mb-3 flex items-center gap-2">
+                <span class="bg-red-600 text-white px-2 py-1 rounded text-sm">Real</span>
+                ⚽ Torschützen
+            </h3>
+            <div id="scorersB" class="space-y-3 mt-3">
                 ${scorerFields("goalslistb", goalsListB, realSpieler)}
             </div>
-			<button type="button" id="addScorerB"
-				class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-2 py-[2px] rounded active:scale-95 transition text-xs shadow touch-manipulation"
-				style="height: 22px; min-height: 0; min-width: 0; font-size: 12px;">
-				<span class="inline align-middle" style="font-size:1em; line-height:1;">+</span>
-				<span class="align-middle">Torschütze hinzufügen</span>
-			</button>
-
+            <button type="button" id="addScorerB"
+                class="flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-semibold px-4 py-2 rounded-lg active:scale-95 transition text-sm shadow-lg hover:shadow-xl border-2 border-red-400 mt-3"
+                style="min-height: 40px;">
+                <span class="text-lg">+</span>
+                <span>Torschütze hinzufügen</span>
+            </button>
         </div>
         
-		<div class="bg-gray-dark border border-slate-light p-3 rounded-lg">
-			<b class="text-aek-bright text-sm">Karten AEK</b>
-			<div class="flex flex-col gap-2 mt-2">
-				<div class="flex items-center gap-2">
-					<label class="label-high-contrast text-lg w-8">🟨</label>
-					<button type="button" class="card-btn card-btn-down bg-red-600 hover:bg-red-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowa" data-min="0">−</button>
-					<input type="number" min="0" max="20" name="yellowa" class="card-input border-slate-light bg-slate-dark text-slate-light rounded-lg p-2 w-12 min-h-[32px] text-sm text-center" value="${match?.yellowa || 0}" readonly>
-					<button type="button" class="card-btn card-btn-up bg-green-600 hover:bg-green-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowa" data-max="20">+</button>
-				</div>
-				<div class="flex items-center gap-2">
-					<label class="label-high-contrast text-lg w-8">🟥</label>
-					<button type="button" class="card-btn card-btn-down bg-red-600 hover:bg-red-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="reda" data-min="0">−</button>
-					<input type="number" min="0" max="11" name="reda" class="card-input border-slate-light bg-slate-dark text-slate-light rounded-lg p-2 w-12 min-h-[32px] text-sm text-center" value="${match?.reda || 0}" readonly>
-					<button type="button" class="card-btn card-btn-up bg-green-600 hover:bg-green-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="reda" data-max="11">+</button>
-				</div>
-			</div>
-		</div>
-        
-		<div class="bg-gray-dark border border-slate-light p-3 rounded-lg">
-			<b class="text-real-bright text-sm">Karten Real</b>
-			<div class="flex flex-col gap-2 mt-2">
-				<div class="flex items-center gap-2">
-					<label class="label-high-contrast text-lg w-8">🟨</label>
-					<button type="button" class="card-btn card-btn-down bg-red-600 hover:bg-red-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowb" data-min="0">−</button>
-					<input type="number" min="0" max="20" name="yellowb" class="card-input border-slate-light bg-slate-dark text-slate-light rounded-lg p-2 w-12 min-h-[32px] text-sm text-center" value="${match?.yellowb || 0}" readonly>
-					<button type="button" class="card-btn card-btn-up bg-green-600 hover:bg-green-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="yellowb" data-max="20">+</button>
-				</div>
-				<div class="flex items-center gap-2">
-					<label class="label-high-contrast text-lg w-8">🟥</label>
-					<button type="button" class="card-btn card-btn-down bg-red-600 hover:bg-red-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="redb" data-min="0">−</button>
-					<input type="number" min="0" max="11" name="redb" class="card-input border-slate-light bg-slate-dark text-slate-light rounded-lg p-2 w-12 min-h-[32px] text-sm text-center" value="${match?.redb || 0}" readonly>
-					<button type="button" class="card-btn card-btn-up bg-green-600 hover:bg-green-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="redb" data-max="11">+</button>
-				</div>
-			</div>
-		</div>
-        
-        <div class="bg-gray-dark border border-slate-light p-3 rounded-lg">
-            <label class="font-semibold label-high-contrast block mb-2">Spieler des Spiels (SdS):</label>
+        <!-- Karten Section -->
+        <div class="bg-gray-800 border-2 border-yellow-500 rounded-xl p-4">
+            <h3 class="text-yellow-300 text-lg font-bold mb-4 text-center">🟨🟥 Karten & Disziplin</h3>
             
-            <!-- Team Filter Toggle with enhanced visual indicators -->
-            <div class="mb-3 flex gap-2">
-                <button type="button" id="sds-filter-aek" class="sds-filter-btn btn-contrast-secondary hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-base font-semibold transition-all duration-200 border-2 border-transparent flex items-center gap-2 min-h-[40px] flex-1 justify-center touch-manipulation">
-                    <span class="w-4 h-4 md:w-3 md:h-3 bg-blue-400 rounded-full flex-shrink-0 indicator-circle"></span>
-                    <span>AEK</span>
+            <!-- AEK Karten -->
+            <div class="bg-gray-700 border-2 border-blue-500 rounded-lg p-4 mb-4">
+                <h4 class="text-blue-300 text-base font-bold mb-3 flex items-center gap-2">
+                    <span class="bg-blue-600 text-white px-2 py-1 rounded text-sm">AEK</span>
+                    Karten
+                </h4>
+                <div class="flex flex-col gap-3">
+                    <div class="flex items-center gap-3 bg-gray-600 rounded-lg p-3">
+                        <div class="text-2xl w-8 text-center">🟨</div>
+                        <span class="text-white font-semibold flex-1">Gelbe Karten</span>
+                        <button type="button" class="card-btn card-btn-down bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-lg text-sm font-bold w-10 h-10 flex items-center justify-center touch-manipulation border-2 border-red-400" data-target="yellowa" data-min="0">−</button>
+                        <input type="number" min="0" max="20" name="yellowa" class="border-2 border-gray-400 bg-gray-500 text-white rounded-lg p-2 w-14 min-h-[40px] text-center font-bold" value="${match?.yellowa || 0}" readonly>
+                        <button type="button" class="card-btn card-btn-up bg-green-600 hover:bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-bold w-10 h-10 flex items-center justify-center touch-manipulation border-2 border-green-400" data-target="yellowa" data-max="20">+</button>
+                    </div>
+                    <div class="flex items-center gap-3 bg-gray-600 rounded-lg p-3">
+                        <div class="text-2xl w-8 text-center">🟥</div>
+                        <span class="text-white font-semibold flex-1">Rote Karten</span>
+                        <button type="button" class="card-btn card-btn-down bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-lg text-sm font-bold w-10 h-10 flex items-center justify-center touch-manipulation border-2 border-red-400" data-target="reda" data-min="0">−</button>
+                        <input type="number" min="0" max="11" name="reda" class="border-2 border-gray-400 bg-gray-500 text-white rounded-lg p-2 w-14 min-h-[40px] text-center font-bold" value="${match?.reda || 0}" readonly>
+                        <button type="button" class="card-btn card-btn-up bg-green-600 hover:bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-bold w-10 h-10 flex items-center justify-center touch-manipulation border-2 border-green-400" data-target="reda" data-max="11">+</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Real Karten -->
+            <div class="bg-gray-700 border-2 border-red-500 rounded-lg p-4">
+                <h4 class="text-red-300 text-base font-bold mb-3 flex items-center gap-2">
+                    <span class="bg-red-600 text-white px-2 py-1 rounded text-sm">Real</span>
+                    Karten
+                </h4>
+                <div class="flex flex-col gap-3">
+                    <div class="flex items-center gap-3 bg-gray-600 rounded-lg p-3">
+                        <div class="text-2xl w-8 text-center">🟨</div>
+                        <span class="text-white font-semibold flex-1">Gelbe Karten</span>
+                        <button type="button" class="card-btn card-btn-down bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-lg text-sm font-bold w-10 h-10 flex items-center justify-center touch-manipulation border-2 border-red-400" data-target="yellowb" data-min="0">−</button>
+                        <input type="number" min="0" max="20" name="yellowb" class="border-2 border-gray-400 bg-gray-500 text-white rounded-lg p-2 w-14 min-h-[40px] text-center font-bold" value="${match?.yellowb || 0}" readonly>
+                        <button type="button" class="card-btn card-btn-up bg-green-600 hover:bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-bold w-10 h-10 flex items-center justify-center touch-manipulation border-2 border-green-400" data-target="yellowb" data-max="20">+</button>
+                    </div>
+                    <div class="flex items-center gap-3 bg-gray-600 rounded-lg p-3">
+                        <div class="text-2xl w-8 text-center">🟥</div>
+                        <span class="text-white font-semibold flex-1">Rote Karten</span>
+                        <button type="button" class="card-btn card-btn-down bg-red-600 hover:bg-red-500 text-white px-3 py-2 rounded-lg text-sm font-bold w-10 h-10 flex items-center justify-center touch-manipulation border-2 border-red-400" data-target="redb" data-min="0">−</button>
+                        <input type="number" min="0" max="11" name="redb" class="border-2 border-gray-400 bg-gray-500 text-white rounded-lg p-2 w-14 min-h-[40px] text-center font-bold" value="${match?.redb || 0}" readonly>
+                        <button type="button" class="card-btn card-btn-up bg-green-600 hover:bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-bold w-10 h-10 flex items-center justify-center touch-manipulation border-2 border-green-400" data-target="redb" data-max="11">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Spieler des Spiels Section -->
+        <div class="bg-gray-800 border-2 border-yellow-500 rounded-xl p-4">
+            <h3 class="text-yellow-300 text-lg font-bold mb-4 text-center">⭐ Spieler des Spiels (SdS)</h3>
+            
+            <!-- Team Filter mit verbesserter Optik -->
+            <div class="mb-4 flex gap-3">
+                <button type="button" id="sds-filter-aek" class="sds-filter-btn flex-1 bg-gray-600 hover:bg-blue-600 text-white px-4 py-3 rounded-lg text-base font-bold transition-all duration-200 border-2 border-gray-500 hover:border-blue-400 flex items-center gap-3 min-h-[48px] justify-center touch-manipulation">
+                    <span class="w-5 h-5 bg-blue-400 rounded-full flex-shrink-0 indicator-circle border-2 border-white"></span>
+                    <span>AEK Athen</span>
                 </button>
-                <button type="button" id="sds-filter-real" class="sds-filter-btn btn-contrast-secondary hover:bg-red-600 text-white px-3 py-2 rounded-lg text-base font-semibold transition-all duration-200 border-2 border-transparent flex items-center gap-2 min-h-[40px] flex-1 justify-center touch-manipulation">
-                    <span class="w-4 h-4 md:w-3 md:h-3 bg-red-400 rounded-full flex-shrink-0 indicator-circle"></span>
-                    <span>Real</span>
+                <button type="button" id="sds-filter-real" class="sds-filter-btn flex-1 bg-gray-600 hover:bg-red-600 text-white px-4 py-3 rounded-lg text-base font-bold transition-all duration-200 border-2 border-gray-500 hover:border-red-400 flex items-center gap-3 min-h-[48px] justify-center touch-manipulation">
+                    <span class="w-5 h-5 bg-red-400 rounded-full flex-shrink-0 indicator-circle border-2 border-white"></span>
+                    <span>Real Madrid</span>
                 </button>
             </div>
             
-            <select name="manofthematch" id="manofthematch-select" class="border-slate-light bg-slate-dark text-slate-light rounded-lg p-2 w-full min-h-[40px] text-sm">
-                <option value="">Keiner</option>
+            <select name="manofthematch" id="manofthematch-select" class="border-2 border-gray-500 bg-gray-600 text-white rounded-lg p-3 w-full min-h-[48px] text-base font-semibold">
+                <option value="">Keiner ausgewählt</option>
                 ${aekSorted.map(p => {
                     const sdsCount = getSdsCount(p.name, "AEK");
                     return `<option value="${DOM.sanitizeForAttribute(p.name)}" data-team="AEK"${manofthematch===p.name?' selected':''}>${DOM.sanitizeForHTML(p.name)} (AEK, ${sdsCount} SdS)</option>`;
@@ -687,9 +718,14 @@ function generateMatchFormHTML(edit, dateVal, match, aekSpieler, realSpieler, ae
             </select>
         </div>
         
-        <div class="flex flex-col gap-2 pt-2">
-            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white w-full px-4 py-2 rounded-lg text-sm font-semibold active:scale-95 transition min-h-[40px] touch-manipulation">${edit ? "Speichern" : "Anlegen"}</button>
-            <button type="button" class="btn-contrast-secondary hover:bg-gray-700 text-white w-full px-4 py-2 rounded-lg text-sm font-semibold transition-colors min-h-[40px] touch-manipulation" onclick="window.hideModal()">Abbrechen</button>
+        <!-- Action Buttons -->
+        <div class="flex flex-col gap-3 pt-2">
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white w-full px-6 py-3 rounded-lg text-lg font-bold active:scale-95 transition-all min-h-[52px] touch-manipulation border-2 border-green-400 shadow-lg hover:shadow-xl">
+                ${edit ? "💾 Änderungen speichern" : "✅ Match anlegen"}
+            </button>
+            <button type="button" class="bg-gray-600 hover:bg-gray-700 text-white w-full px-6 py-3 rounded-lg text-lg font-semibold transition-all min-h-[52px] touch-manipulation border-2 border-gray-400" onclick="window.hideModal()">
+                ❌ Abbrechen
+            </button>
         </div>
     </form>
     `;
@@ -730,17 +766,19 @@ function attachMatchFormEventHandlers(edit, id, aekSpieler, realSpieler, aekSort
         const rowCount = container.querySelectorAll('.scorer-row').length;
         const uniqueId = `${name}-count-${rowCount}`;
         const div = document.createElement("div");
-        div.className = "flex gap-2 mb-2 scorer-row items-center";
+        div.className = "flex gap-3 mb-3 scorer-row items-center bg-gray-600 border-2 border-gray-500 rounded-lg p-3";
         div.innerHTML = `
-            <select name="${name}-player" class="border-slate-light bg-slate-dark text-slate-light rounded-lg p-2 min-h-[40px] text-sm flex-1" style="min-width:100px;">
+            <select name="${name}-player" class="border-2 border-gray-400 bg-gray-500 text-white rounded-lg p-3 min-h-[44px] text-sm flex-1 font-semibold" style="min-width:120px;">
                 <option value="">Spieler wählen</option>
                 ${spielerOpts}
             </select>
-            <button type="button" class="goal-btn goal-btn-down bg-red-600 hover:bg-red-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="${uniqueId}" data-min="1">−</button>
-            <input type="number" min="1" name="${name}-count" placeholder="Tore" class="goal-input border-slate-light bg-slate-dark text-slate-light rounded-lg p-2 w-12 min-h-[32px] text-sm text-center flex-shrink-0" value="1" readonly id="${uniqueId}">
-            <button type="button" class="goal-btn goal-btn-up bg-green-600 hover:bg-green-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="${uniqueId}" data-max="20">+</button>
-            <button type="button" class="remove-goal-btn bg-red-600 hover:bg-red-700 text-white px-2 py-2 rounded-lg min-h-[40px] w-10 flex items-center justify-center transition-all duration-200 flex-shrink-0 hover:scale-105 touch-manipulation" title="Torschütze entfernen">
-                <i class="fas fa-minus text-xs"></i>
+            <div class="flex items-center gap-2 bg-gray-700 rounded-lg p-2 border-2 border-gray-400">
+                <button type="button" class="goal-btn goal-btn-down bg-red-600 hover:bg-red-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-10 h-10 flex items-center justify-center touch-manipulation border-2 border-red-400" data-target="${uniqueId}" data-min="1">−</button>
+                <input type="number" min="1" name="${name}-count" placeholder="Tore" class="goal-input border-2 border-gray-400 bg-gray-500 text-white rounded-lg p-2 w-14 min-h-[40px] text-sm text-center font-bold flex-shrink-0" value="1" readonly id="${uniqueId}">
+                <button type="button" class="goal-btn goal-btn-up bg-green-600 hover:bg-green-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-10 h-10 flex items-center justify-center touch-manipulation border-2 border-green-400" data-target="${uniqueId}" data-max="20">+</button>
+            </div>
+            <button type="button" class="remove-goal-btn bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg min-h-[44px] w-12 flex items-center justify-center transition-all duration-200 flex-shrink-0 hover:scale-105 touch-manipulation border-2 border-red-400" title="Torschütze entfernen">
+                <i class="fas fa-trash text-sm"></i>
             </button>
         `;
         div.querySelector('.remove-goal-btn').onclick = function() {
@@ -988,16 +1026,18 @@ function setupGoalButtons(updateTotalGoalsCallback = null) {
 function scorerFields(name, arr, spielerOpts) {
     if (!arr.length) arr = [{ player: "", count: 1 }];
     return arr.map((g, i) => `
-        <div class="flex gap-2 mb-2 scorer-row items-center">
-            <select name="${name}-player" class="border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 min-h-[40px] text-sm flex-1" style="min-width:100px;">
+        <div class="flex gap-3 mb-3 scorer-row items-center bg-gray-600 border-2 border-gray-500 rounded-lg p-3">
+            <select name="${name}-player" class="border-2 border-gray-400 bg-gray-500 text-white rounded-lg p-3 min-h-[44px] text-sm flex-1 font-semibold" style="min-width:120px;">
                 <option value="">Spieler wählen</option>
                 ${spielerOpts.replace(`value="${g.player}"`, `value="${g.player}" selected`)}
             </select>
-            <button type="button" class="goal-btn goal-btn-down bg-red-600 hover:bg-red-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="${name}-count-${i}" data-min="1">−</button>
-            <input type="number" min="1" name="${name}-count" placeholder="Tore" class="goal-input border border-gray-600 bg-gray-700 text-gray-100 rounded-lg p-2 w-12 min-h-[32px] text-sm text-center flex-shrink-0" value="${g.count||1}" readonly id="${name}-count-${i}">
-            <button type="button" class="goal-btn goal-btn-up bg-green-600 hover:bg-green-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-8 h-8 flex items-center justify-center touch-manipulation" data-target="${name}-count-${i}" data-max="20">+</button>
-            <button type="button" class="remove-goal-btn bg-red-600 hover:bg-red-700 text-white px-2 py-2 rounded-lg min-h-[40px] w-10 flex items-center justify-center transition-all duration-200 flex-shrink-0 ${arr.length===1 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'} touch-manipulation" title="Torschütze entfernen" ${arr.length===1 ? 'disabled' : ''}>
-                <i class="fas fa-minus text-xs"></i>
+            <div class="flex items-center gap-2 bg-gray-700 rounded-lg p-2 border-2 border-gray-400">
+                <button type="button" class="goal-btn goal-btn-down bg-red-600 hover:bg-red-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-10 h-10 flex items-center justify-center touch-manipulation border-2 border-red-400" data-target="${name}-count-${i}" data-min="1">−</button>
+                <input type="number" min="1" name="${name}-count" placeholder="Tore" class="goal-input border-2 border-gray-400 bg-gray-500 text-white rounded-lg p-2 w-14 min-h-[40px] text-sm text-center font-bold flex-shrink-0" value="${g.count||1}" readonly id="${name}-count-${i}">
+                <button type="button" class="goal-btn goal-btn-up bg-green-600 hover:bg-green-500 text-white px-2 py-2 rounded-lg text-sm font-bold w-10 h-10 flex items-center justify-center touch-manipulation border-2 border-green-400" data-target="${name}-count-${i}" data-max="20">+</button>
+            </div>
+            <button type="button" class="remove-goal-btn bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg min-h-[44px] w-12 flex items-center justify-center transition-all duration-200 flex-shrink-0 ${arr.length===1 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'} touch-manipulation border-2 border-red-400" title="Torschütze entfernen" ${arr.length===1 ? 'disabled' : ''}>
+                <i class="fas fa-trash text-sm"></i>
             </button>
         </div>
     `).join('');

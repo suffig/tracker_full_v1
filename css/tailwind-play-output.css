@@ -2405,36 +2405,74 @@ div:not(.text-white):not(.text-red-400):not(.text-blue-400):not(.text-green-400)
 }
 
 /* --- FIX MODAL TEXT CONTRAST ISSUES --- */
-/* Override the global black text rule for modal form elements */
+/* Ensure modal has consistent dark theme styling to override conflicts from new-design.css */
+.modal-content {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+/* Override all text elements in modal to have proper contrast */
 .modal-content label,
 .modal-content .text-description,
 .modal-content .text-gray-700,
 .modal-content .text-gray-800,
 .modal-content .text-gray-900,
+.modal-content .text-gray-600,
+.modal-content .text-gray-500,
+.modal-content .text-gray-400,
+.modal-content .text-gray-300,
+.modal-content .text-black,
 .modal-content p,
-.modal-content div > .text-sm,
-.modal-content b,
-.modal-content span:not(.text-blue-400):not(.text-red-400):not(.text-white):not(.bg-blue-400):not(.bg-red-400),
+.modal-content div,
+.modal-content span:not([class*="text-blue"]):not([class*="text-red"]):not([class*="text-green"]):not([class*="text-white"]):not([class*="bg-"]):not(.text-white),
+.modal-content h1,
 .modal-content h2,
 .modal-content h3,
 .modal-content h4,
-.modal-content .text-black,
-.modal-content .text-gray-600,
-.modal-content button[type="button"],
+.modal-content h5,
+.modal-content h6,
+.modal-content b,
+.modal-content strong,
 .modal-content .scorer-row > *,
-.modal-content .flex > .text-sm {
+.modal-content .flex > *,
+.modal-content .space-y-4 > *,
+.modal-content .space-y-6 > *,
+.modal-content .mb-3,
+.modal-content .text-lg,
+.modal-content .text-base,
+.modal-content .text-sm,
+.modal-content .text-xs {
   color: #f1f5f9 !important; /* Light text for dark modal background */
 }
 
 /* Improve button contrast in modals */
-.modal-content button:not(.bg-blue-600):not(.bg-red-600):not(.bg-green-600) {
+.modal-content button:not(.bg-blue-600):not(.bg-red-600):not(.bg-green-600):not([class*="bg-green"]):not([class*="bg-blue"]):not([class*="bg-red"]) {
   background-color: #4b5563 !important;
   color: #f9fafb !important;
   border-color: #6b7280 !important;
 }
 
-.modal-content button:hover:not(.bg-blue-600):not(.bg-red-600):not(.bg-green-600) {
+.modal-content button:hover:not(.bg-blue-600):not(.bg-red-600):not(.bg-green-600):not([class*="bg-green"]):not([class*="bg-blue"]):not([class*="bg-red"]) {
   background-color: #374151 !important;
+}
+
+/* Special handling for colored buttons in modals to ensure they maintain their colors */
+.modal-content button.bg-green-600,
+.modal-content button[class*="bg-green"] {
+  background-color: #059669 !important;
+  color: #ffffff !important;
+}
+
+.modal-content button.bg-blue-600,
+.modal-content button[class*="bg-blue"] {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+}
+
+.modal-content button.bg-red-600,
+.modal-content button[class*="bg-red"] {
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
 }
 
 /* Ensure form input text remains readable */
@@ -2541,7 +2579,172 @@ form textarea::placeholder {
   }
 }
 
+/* --- IMPROVED FINANCE SECTION RESPONSIVENESS --- */
+/* Fix button sizing issues in finance section */
+.bg-gray-600.hover\\:bg-gray-700,
+.bg-blue-600.hover\\:bg-blue-700,
+button[class*="bg-gray-6"],
+button[class*="bg-blue-6"] {
+  min-height: 44px !important;
+  min-width: fit-content !important;
+  padding: 0.75rem 1.5rem !important;
+  font-size: 0.875rem !important;
+  white-space: nowrap !important;
+}
+
+/* Ensure finance navigation buttons work properly on mobile */
+@media (max-width: 640px) {
+  .bg-gray-600.hover\\:bg-gray-700,
+  .bg-blue-600.hover\\:bg-blue-700,
+  button[class*="bg-gray-6"],
+  button[class*="bg-blue-6"] {
+    min-height: 48px !important;
+    padding: 0.875rem 1rem !important;
+    font-size: 0.8rem !important;
+  }
+  
+  /* Stack finance buttons vertically on very small screens */
+  @media (max-width: 480px) {
+    .flex.gap-3.mt-6.justify-center {
+      flex-direction: column !important;
+      gap: 0.75rem !important;
+    }
+    
+    .bg-gray-600.hover\\:bg-gray-700,
+    .bg-blue-600.hover\\:bg-blue-700,
+    button[class*="bg-gray-6"],
+    button[class*="bg-blue-6"] {
+      width: 100% !important;
+      justify-content: center !important;
+    }
+  }
+}
+
+/* --- IMPROVED CARD LAYOUT AND RESPONSIVENESS --- */
+/* Ensure cards don't overflow on small screens */
+.modern-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+.modern-card .card-title {
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: auto !important;
+  max-width: 100% !important;
+}
+
+/* Improve button layout in cards to prevent overflow */
+.modern-card .card-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.5rem !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+.modern-card .card-actions .btn {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Improve mobile responsiveness for cards */
+@media (max-width: 480px) {
+  .modern-card {
+    margin-bottom: 0.75rem !important;
+    padding: 1rem !important;
+  }
+  
+  .modern-card .card-actions {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+  
+  .modern-card .card-actions .btn {
+    width: 100% !important;
+    flex: none !important;
+    min-height: 44px !important;
+  }
+  
+  .card-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+  
+  .card-header .flex {
+    width: 100% !important;
+  }
+}
+
 /* --- IMPROVE SAVE INDICATOR VISIBILITY --- */
+/* Ensure cards don't overflow on small screens */
+.modern-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+.modern-card .card-title {
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: auto !important;
+  max-width: 100% !important;
+}
+
+/* Improve button layout in cards to prevent overflow */
+.modern-card .card-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.5rem !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+.modern-card .card-actions .btn {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Improve mobile responsiveness for cards */
+@media (max-width: 480px) {
+  .modern-card {
+    margin-bottom: 0.75rem !important;
+    padding: 1rem !important;
+  }
+  
+  .modern-card .card-actions {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+  
+  .modern-card .card-actions .btn {
+    width: 100% !important;
+    flex: none !important;
+    min-height: 44px !important;
+  }
+  
+  .card-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+  
+  .card-header .flex {
+    width: 100% !important;
+  }
+}
 #match-save-indicator {
   position: fixed !important;
   inset: 0 !important;

@@ -74,44 +74,69 @@ export async function renderFinanzenTab(containerId = "app") {
 function renderFinanzenTabInner(containerId = "app") {
     const app = document.getElementById(containerId);
     app.innerHTML = `
-        <div class="mb-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-            <h2 class="text-lg font-semibold text-slate-100">Finanzen</h2>
-            <button id="add-trans-btn" class="bg-green-600 hover:bg-green-700 text-white px-2 py-2 rounded-lg text-sm flex items-center justify-center font-semibold transition shadow w-8 h-8">
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
-            </button>
-        </div>
-        <div class="flex flex-col sm:flex-row gap-3 mb-6">
-            <div class="bg-blue-700 text-blue-100 rounded-lg p-3 flex-1 min-w-0 border border-blue-600 shadow-lg">
-                <div class="flex items-center gap-2 mb-2">
-                    <div class="w-3 h-3 bg-blue-400 rounded-full"></div>
-                    <span class="font-bold text-lg">AEK</span>
+        <div class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Finanzen</h1>
+                    <p class="text-slate-600 dark:text-slate-400 mt-1">Übersicht über Teamfinanzen und Transaktionen</p>
                 </div>
-                <div class="space-y-1 text-sm">
-                    <div>Kontostand: <span class="font-bold text-blue-200">${(finances.aekAthen.balance || 0).toLocaleString('de-DE')} €</span></div>
-                    <div>Schulden: <span class="font-bold text-blue-200">${(finances.aekAthen.debt || 0).toLocaleString('de-DE')} €</span></div>
+                <button id="add-trans-btn" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl touch-manipulation">
+                    <i class="fas fa-plus"></i>
+                    <span>Transaktion hinzufügen</span>
+                </button>
+            </div>
+
+            <!-- Team Finance Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-users text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">AEK Athen</h3>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-blue-100">Kontostand:</span>
+                            <span class="font-bold text-lg">${(finances.aekAthen.balance || 0).toLocaleString('de-DE')} €</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-blue-100">Schulden:</span>
+                            <span class="font-bold text-lg">${(finances.aekAthen.debt || 0).toLocaleString('de-DE')} €</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-red-500 to-red-600 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-users text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Real Madrid</h3>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-red-100">Kontostand:</span>
+                            <span class="font-bold text-lg">${(finances.realMadrid.balance || 0).toLocaleString('de-DE')} €</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-red-100">Schulden:</span>
+                            <span class="font-bold text-lg">${(finances.realMadrid.debt || 0).toLocaleString('de-DE')} €</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="bg-red-700 text-red-100 rounded-lg p-3 flex-1 min-w-0 border border-red-600 shadow-lg">
-                <div class="flex items-center gap-2 mb-2">
-                    <div class="w-3 h-3 bg-red-400 rounded-full"></div>
-                    <span class="font-bold text-lg">Real</span>
+
+            <!-- Transactions Section -->
+            <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-receipt text-emerald-600 dark:text-emerald-400"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">Transaktionen</h2>
                 </div>
-                <div class="space-y-1 text-sm">
-                    <div>Kontostand: <span class="font-bold text-red-200">${(finances.realMadrid.balance || 0).toLocaleString('de-DE')} €</span></div>
-                    <div>Schulden: <span class="font-bold text-red-200">${(finances.realMadrid.debt || 0).toLocaleString('de-DE')} €</span></div>
-                </div>
+                <div id="transactions-list" class="space-y-4"></div>
             </div>
-        </div>
-        <div class="mb-3">
-            <h3 class="text-lg font-semibold text-slate-100 flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-                Transaktionen
-            </h3>
-        </div>
-        <div class="overflow-x-auto w-full" style="max-width:100vw;">
-          <div id="transactions-list" class="space-y-2"></div>
         </div>
     `;
 

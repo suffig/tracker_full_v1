@@ -47,25 +47,49 @@ export function renderBansTab(containerId = "app") {
     const app = document.getElementById(containerId);
 
     app.innerHTML = `
-        <div class="mb-4">
-            <h2 class="text-lg font-semibold dark:text-white">Sperren</h2>
-            <div class="flex space-x-2 mt-4 mb-6">
-                <button id="add-ban-btn" class="w-full sm:w-auto bg-sky-600 hover:bg-sky-700 text-white px-4 py-3 rounded-lg text-base flex items-center gap-2 font-semibold transition shadow">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    Sperre hinzufügen
+        <div class="space-y-6">
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-slate-900 dark:text-white">🚫 Sperren</h1>
+                    <p class="text-slate-600 dark:text-slate-400 mt-1">Verwalten Sie Spielersperren und deren Status</p>
+                </div>
+                <button id="add-ban-btn" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl touch-manipulation">
+                    <i class="fas fa-plus"></i>
+                    <span>Sperre hinzufügen</span>
                 </button>
             </div>
-            <div>
-                <h3 class="font-bold text-base mb-2 dark:text-white">Aktive Sperren</h3>
-                <div id="bans-active-list" class="mb-8"></div>
+
+            <!-- Active Bans -->
+            <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                    <span class="w-8 h-8 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-exclamation-triangle text-red-600 dark:text-red-400"></i>
+                    </span>
+                    Aktive Sperren
+                </h2>
+                <div id="bans-active-list"></div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                    <h3 class="font-bold text-base mb-2 text-blue-800 dark:text-blue-400">Vergangene Sperren AEK</h3>
+
+            <!-- Historical Bans -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm">
+                    <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
+                        <span class="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-users text-blue-600 dark:text-blue-400 text-sm"></i>
+                        </span>
+                        Vergangene Sperren AEK
+                    </h3>
                     <div id="bans-history-aek"></div>
                 </div>
-                <div>
-                    <h3 class="font-bold text-base mb-2 text-red-800 dark:text-red-400">Vergangene Sperren Real</h3>
+                
+                <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm">
+                    <h3 class="text-lg font-bold text-red-600 dark:text-red-400 mb-4 flex items-center gap-2">
+                        <span class="w-6 h-6 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-users text-red-600 dark:text-red-400 text-sm"></i>
+                        </span>
+                        Vergangene Sperren Real
+                    </h3>
                     <div id="bans-history-real"></div>
                 </div>
             </div>
@@ -96,42 +120,68 @@ function renderBanList(list, containerId, active) {
     const c = document.getElementById(containerId);
     if (!c) return;
     if (!list.length) {
-        c.innerHTML = `<div class="text-gray-700 text-sm">${active ? "Keine aktiven Sperren." : "Keine vergangenen Sperren."}</div>`;
+        c.innerHTML = `<div class="text-center py-8 text-slate-500 dark:text-slate-400">
+            <i class="fas fa-check-circle text-2xl mb-2"></i>
+            <p>${active ? "Keine aktiven Sperren." : "Keine vergangenen Sperren."}</p>
+        </div>`;
         return;
     }
     c.innerHTML = '';
     list.forEach(ban => {
         const player = playersCache.find(p => p.id === ban.player_id);
-        let tClass;
-        if (!player) {
-            tClass = "bg-gray-700 dark:bg-gray-700 text-gray-400";
-        } else if (player.team === "Ehemalige") {
-            tClass = "bg-gray-200 dark:bg-gray-700 text-gray-500";
-        } else if (player.team === "AEK") {
-            tClass = "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-200";
-        } else {
-            tClass = "bg-red-100 dark:bg-red-900 text-red-900 dark:text-red-200";
+        let cardClass = "bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600";
+        let teamColor = "text-slate-600 dark:text-slate-400";
+        
+        if (player) {
+            if (player.team === "AEK") {
+                cardClass = "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700";
+                teamColor = "text-blue-600 dark:text-blue-400";
+            } else if (player.team === "Real") {
+                cardClass = "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700";
+                teamColor = "text-red-600 dark:text-red-400";
+            }
         }
+        
         const restGames = getRestGames(ban);
         const div = document.createElement('div');
-        div.className = `player-card border dark:border-gray-700 rounded-lg p-3 flex justify-between items-center gap-2 mb-2 ${tClass}`;
+        div.className = `${cardClass} border rounded-lg p-4 flex justify-between items-center gap-4 mb-3 hover:shadow-md transition-all duration-200`;
         div.innerHTML = `
-            <div>
-                <div class="font-medium">${player ? player.name : "-"} <span class="text-xs text-gray-600">(${player ? player.team : "-"})</span></div>
-                <div class="text-xs text-gray-700">Typ: <b>${ban.type || "-"}</b></div>
-                <div class="text-xs text-gray-700">Start: <b>${ban.totalgames}</b> | Aktuell: <b>${restGames < 0 ? 0 : restGames}</b></div>
-                ${ban.reason ? `<div class="text-xs text-gray-600">Grund: ${ban.reason}</div>` : ''}
+            <div class="flex-1">
+                <div class="flex items-center gap-2 mb-2">
+                    <h4 class="font-semibold text-slate-900 dark:text-white">${player ? player.name : "Unbekannter Spieler"}</h4>
+                    <span class="px-2 py-1 ${teamColor} bg-current bg-opacity-10 rounded-md text-xs font-medium">
+                        ${player ? player.team : "Unbekannt"}
+                    </span>
+                </div>
+                <div class="space-y-1 text-sm">
+                    <div class="flex items-center gap-4">
+                        <span class="text-slate-600 dark:text-slate-400">Typ:</span>
+                        <span class="font-medium text-slate-900 dark:text-white">${ban.type || "Nicht angegeben"}</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-slate-600 dark:text-slate-400">Spiele:</span>
+                        <span class="font-medium text-slate-900 dark:text-white">
+                            ${restGames < 0 ? 0 : restGames} / ${ban.totalgames} verbleibend
+                        </span>
+                    </div>
+                    ${ban.reason ? `
+                        <div class="flex items-center gap-4">
+                            <span class="text-slate-600 dark:text-slate-400">Grund:</span>
+                            <span class="text-slate-700 dark:text-slate-300">${ban.reason}</span>
+                        </div>
+                    ` : ''}
+                </div>
             </div>
-            <div class="flex gap-1">
-                ${active ? `
-                <button class="edit-ban-btn bg-sky-500 hover:bg-sky-600 text-white px-3 py-2 rounded-lg" title="Bearbeiten">
-                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-1.5a2.121 2.121 0 00-3 0l-7.5 7.5a2.121 2.121 0 000 3l3.5 3.5a2.121 2.121 0 003 0l7.5-7.5a2.121 2.121 0 000-3z"/></svg>
-                </button>
-                <button class="delete-ban-btn bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-lg" title="Löschen">
-                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-                ` : ''}
-            </div>
+            ${active ? `
+                <div class="flex gap-2">
+                    <button class="edit-ban-btn bg-slate-100 dark:bg-slate-600 hover:bg-slate-200 dark:hover:bg-slate-500 text-slate-700 dark:text-slate-300 p-2 rounded-lg transition-colors touch-manipulation" title="Bearbeiten">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="delete-ban-btn bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 p-2 rounded-lg transition-colors touch-manipulation" title="Löschen">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            ` : ''}
         `;
         if (active) {
             div.querySelector('.edit-ban-btn').onclick = () => openBanForm(ban);

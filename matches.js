@@ -140,16 +140,24 @@ export async function renderMatchesTab(containerId = "app") {
     }
 
     app.innerHTML = `
-        <div class="flex flex-col sm:flex-row sm:justify-between mb-4 gap-2">
-            <h2 class="text-lg font-semibold">Matches</h2>
-            <button id="add-match-btn" class="bg-green-600 text-white w-full sm:w-auto px-4 py-2 rounded-lg text-base flex items-center justify-center gap-2 active:scale-95 transition">
-                <i class="fas fa-plus"></i> <span>Match hinzufügen</span>
-            </button>
-        </div>
-        <div id="matches-list" class="space-y-3">
-            <div class="flex items-center justify-center py-8">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <span class="ml-2 text-gray-600">Lädt Matches...</span>
+        <div class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Matches</h1>
+                    <p class="text-slate-600 dark:text-slate-400 mt-1">Verwalten Sie Ihre FIFA-Spiele und Ergebnisse</p>
+                </div>
+                <button id="add-match-btn" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl touch-manipulation">
+                    <i class="fas fa-plus"></i> 
+                    <span>Match hinzufügen</span>
+                </button>
+            </div>
+            <div id="matches-list" class="space-y-4">
+                <div class="flex items-center justify-center py-12">
+                    <div class="text-center">
+                        <div class="animate-spin rounded-full h-8 w-8 border-2 border-slate-200 border-t-emerald-500 mx-auto mb-4"></div>
+                        <span class="text-slate-600 dark:text-slate-400 font-medium">Lädt Matches...</span>
+                    </div>
+                </div>
             </div>
         </div>
     `;

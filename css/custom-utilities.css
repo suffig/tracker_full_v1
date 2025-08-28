@@ -1,0 +1,70 @@
+/* Custom Animation Utilities */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+.fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+/* Safe area insets for mobile */
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Enhanced touch targets */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Improved mobile interactions */
+@media (max-width: 768px) {
+  .hover\:scale-\[1\.02\]:hover {
+    transform: none;
+  }
+  
+  .hover\:scale-\[1\.02\]:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Custom positioning badge styles */
+.position-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  border-radius: 0.375rem;
+}
+
+/* Enhanced dark mode support */
+@media (prefers-color-scheme: dark) {
+  .bg-white {
+    background-color: rgb(30 41 59);
+  }
+  
+  .text-slate-900 {
+    color: rgb(248 250 252);
+  }
+  
+  .border-slate-200 {
+    border-color: rgb(71 85 105);
+  }
+}

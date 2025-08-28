@@ -89,7 +89,7 @@ export function renderKaderTab(containerId = "app") {
     loadPlayersAndFinances(renderPlayerLists);
 
     app.innerHTML = `
-        <div class="space-y-6 animate-in fade-in duration-500">
+        <div class="space-y-6 fade-in opacity-0 animate-fade-in">
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Team Management</h1>
                 <p class="text-slate-600 dark:text-slate-400">Verwalten Sie Ihre FIFA-Teams und Spieler</p>
@@ -132,7 +132,7 @@ function accordionPanelHtml(team, key, gradientClass, teamKey) {
             </button>
             
             ${isOpen ? `
-                <div id="panel-content-${key}" class="border-t border-slate-200 dark:border-slate-700 p-6 animate-in slide-in-from-top duration-300">
+                <div id="panel-content-${key}" class="border-t border-slate-200 dark:border-slate-700 p-6 opacity-0 animate-fade-in">
                     <button id="add-player-${key}" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 mb-6 touch-manipulation">
                         <i class="fas fa-plus"></i>
                         <span>Neuen Spieler hinzufügen</span>

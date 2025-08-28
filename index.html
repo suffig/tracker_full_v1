@@ -39,10 +39,8 @@
     <link rel="icon" type="image/png" href="./assets/logo.png">
     <!-- Inter Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Original Tailwind CSS -->
+    <!-- Tailwind CSS -->
     <link href="css/tailwind-play-output.css" rel="stylesheet">
-    <!-- New Modern Design -->
-    <link href="css/new-design.css" rel="stylesheet">
     <!-- Flowbite CSS - Local Minimal Replacement -->
     <link href="assets/flowbite-minimal.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
@@ -53,55 +51,55 @@
     <!-- Supabase JavaScript Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="modern-theme">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans antialiased">
 <!-- LOGIN AREA - NEW DESIGN -->
 <div id="login-area"></div>
 
-<!-- MAIN APP - NEW DESIGN -->
-<div class="app-container modern-design" style="display:none;">
-    <!-- Header removed as per requirement #4 -->
-
-    <!-- MODERN BOTTOM NAVIGATION -->
-    <nav class="modern-bottom-nav">
-      <div class="nav-container">
-        <a id="nav-matches" href="#" class="nav-item active">
-          <i class="fas fa-futbol nav-icon"></i>
-          <span class="nav-label">Spiele</span>
-        </a>
-        <a id="nav-squad" href="#" class="nav-item">
-          <i class="fas fa-users nav-icon"></i>
-          <span class="nav-label">Kader</span>
-        </a>
-        <a id="nav-bans" href="#" class="nav-item">
-          <i class="fas fa-ban nav-icon"></i>
-          <span class="nav-label">Sperren</span>
-        </a>
-        <a id="nav-finanzen" href="#" class="nav-item">
-          <i class="fas fa-euro-sign nav-icon"></i>
-          <span class="nav-label">Finanzen</span>
-        </a>
-        <a id="nav-stats" href="#" class="nav-item">
-          <i class="fas fa-chart-bar nav-icon"></i>
-          <span class="nav-label">Stats</span>
-        </a>
-        <a id="nav-spieler" href="#" class="nav-item">
-          <i class="fas fa-star nav-icon"></i>
-          <span class="nav-label">Spieler</span>
-        </a>
-        <button id="logout-btn" class="nav-item logout-nav" title="Abmelden">
-          <i class="fas fa-sign-out-alt nav-icon"></i>
-          <span class="nav-label">Logout</span>
-        </button>
+<!-- MAIN APP -->
+<div class="app-container" style="display:none;">
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 z-50 shadow-lg backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95">
+      <div class="max-w-screen-sm mx-auto px-2 py-2" style="padding-bottom: max(0.5rem, env(safe-area-inset-bottom));">
+        <div class="flex justify-around items-center">
+          <a id="nav-matches" href="#" class="flex flex-col items-center justify-center px-2 py-1.5 rounded-lg transition-all duration-200 min-w-0 flex-1 text-xs touch-manipulation hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
+            <i class="fas fa-futbol text-base mb-0.5 text-slate-600 dark:text-slate-400"></i>
+            <span class="text-slate-600 dark:text-slate-400 font-medium truncate text-xs">Spiele</span>
+          </a>
+          <a id="nav-squad" href="#" class="flex flex-col items-center justify-center px-2 py-1.5 rounded-lg transition-all duration-200 min-w-0 flex-1 text-xs touch-manipulation hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
+            <i class="fas fa-users text-base mb-0.5 text-slate-600 dark:text-slate-400"></i>
+            <span class="text-slate-600 dark:text-slate-400 font-medium truncate text-xs">Kader</span>
+          </a>
+          <a id="nav-bans" href="#" class="flex flex-col items-center justify-center px-2 py-1.5 rounded-lg transition-all duration-200 min-w-0 flex-1 text-xs touch-manipulation hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
+            <i class="fas fa-ban text-base mb-0.5 text-slate-600 dark:text-slate-400"></i>
+            <span class="text-slate-600 dark:text-slate-400 font-medium truncate text-xs">Sperren</span>
+          </a>
+          <a id="nav-finanzen" href="#" class="flex flex-col items-center justify-center px-2 py-1.5 rounded-lg transition-all duration-200 min-w-0 flex-1 text-xs touch-manipulation hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
+            <i class="fas fa-euro-sign text-base mb-0.5 text-slate-600 dark:text-slate-400"></i>
+            <span class="text-slate-600 dark:text-slate-400 font-medium truncate text-xs">Finanzen</span>
+          </a>
+          <a id="nav-stats" href="#" class="flex flex-col items-center justify-center px-2 py-1.5 rounded-lg transition-all duration-200 min-w-0 flex-1 text-xs touch-manipulation hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
+            <i class="fas fa-chart-bar text-base mb-0.5 text-slate-600 dark:text-slate-400"></i>
+            <span class="text-slate-600 dark:text-slate-400 font-medium truncate text-xs">Stats</span>
+          </a>
+          <a id="nav-spieler" href="#" class="flex flex-col items-center justify-center px-2 py-1.5 rounded-lg transition-all duration-200 min-w-0 flex-1 text-xs touch-manipulation hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95">
+            <i class="fas fa-star text-base mb-0.5 text-slate-600 dark:text-slate-400"></i>
+            <span class="text-slate-600 dark:text-slate-400 font-medium truncate text-xs">Spieler</span>
+          </a>
+          <button id="logout-btn" class="flex flex-col items-center justify-center px-2 py-1.5 rounded-lg transition-all duration-200 min-w-0 flex-1 text-xs border-l border-slate-200 dark:border-slate-700 ml-1 touch-manipulation hover:bg-red-50 dark:hover:bg-red-900/20 active:scale-95" title="Abmelden">
+            <i class="fas fa-sign-out-alt text-base mb-0.5 text-slate-600 dark:text-slate-400"></i>
+            <span class="text-slate-600 dark:text-slate-400 font-medium truncate text-xs">Logout</span>
+          </button>
+        </div>
       </div>
     </nav>
 
     <!-- MAIN CONTENT -->
-    <main class="page-container">
+    <main class="min-h-screen pb-20 px-4 pt-4 max-w-screen-xl mx-auto">
         <!-- Enhanced loader -->
-        <div id="tab-loader" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
-            <div class="bg-white rounded-xl p-6 flex flex-col items-center gap-4 shadow-xl">
-                <div class="spinner"></div>
-                <div class="text-gray-600 font-medium">Lädt...</div>
+        <div id="tab-loader" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
+            <div class="bg-white dark:bg-slate-800 rounded-xl p-6 flex flex-col items-center gap-4 shadow-xl max-w-sm mx-4">
+                <div class="animate-spin rounded-full h-8 w-8 border-2 border-slate-200 border-t-emerald-500"></div>
+                <div class="text-slate-600 dark:text-slate-400 font-medium">Lädt...</div>
             </div>
         </div>
         <div id="app"></div>

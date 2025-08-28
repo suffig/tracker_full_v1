@@ -345,15 +345,36 @@ function showTabLoader(show = true) {
 // --- Bottom Navbar Indicator ---
 function updateBottomNavActive(tab) {
     try {
-        // Remove active class from all nav items
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.classList.remove('active');
+        // Remove active classes
+        document.querySelectorAll('nav a, nav button').forEach(item => {
+            item.classList.remove('bg-emerald-100', 'dark:bg-emerald-900/30');
+            // Reset to default colors
+            const icon = item.querySelector('i');
+            const span = item.querySelector('span');
+            if (icon) {
+                icon.className = icon.className.replace(/text-emerald-\d+/g, '');
+                icon.classList.add('text-slate-600', 'dark:text-slate-400');
+            }
+            if (span) {
+                span.className = span.className.replace(/text-emerald-\d+/g, '');
+                span.classList.add('text-slate-600', 'dark:text-slate-400');
+            }
         });
         
         // Add active class to current tab
         const navElement = document.getElementById(`nav-${tab}`);
         if (navElement) {
-            navElement.classList.add('active');
+            navElement.classList.add('bg-emerald-100', 'dark:bg-emerald-900/30');
+            const icon = navElement.querySelector('i');
+            const span = navElement.querySelector('span');
+            if (icon) {
+                icon.classList.remove('text-slate-600', 'dark:text-slate-400');
+                icon.classList.add('text-emerald-700', 'dark:text-emerald-300');
+            }
+            if (span) {
+                span.classList.remove('text-slate-600', 'dark:text-slate-400');
+                span.classList.add('text-emerald-700', 'dark:text-emerald-300');
+            }
         }
     } catch (error) {
         console.error('Error updating bottom nav:', error);
@@ -533,42 +554,45 @@ async function renderLoginArea() {
             if (document.getElementById('email')) emailValue = document.getElementById('email').value;
             if (document.getElementById('pw')) pwValue = document.getElementById('pw').value;
             loginDiv.innerHTML = `
-                <div class="login-container">
-                    <div class="login-card fade-in">
-                        <div class="login-logo">
-                            <div class="login-logo-icon">
-                                <i class="fas fa-futbol"></i>
+                <div class="min-h-screen bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center p-4 relative overflow-hidden">
+                    <!-- Background decoration -->
+                    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-10"></div>
+                    
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 w-full max-w-md relative z-10 animate-in slide-in-from-bottom-4 duration-500">
+                        <div class="text-center mb-8">
+                            <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                <i class="fas fa-futbol text-white text-3xl"></i>
                             </div>
-                            <h1 class="login-title">FIFA Tracker</h1>
-                            <p class="login-subtitle">Melden Sie sich an, um fortzufahren</p>
+                            <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">FIFA Tracker</h1>
+                            <p class="text-slate-600 dark:text-slate-400">Melden Sie sich an, um fortzufahren</p>
                         </div>
                         
                         <form id="loginform" class="space-y-6">
-                            <div class="form-group">
-                                <label for="email" class="form-label">E-Mail-Adresse</label>
+                            <div class="space-y-2">
+                                <label for="email" class="block text-sm font-semibold text-slate-700 dark:text-slate-300">E-Mail-Adresse</label>
                                 <input 
                                     type="email" 
                                     id="email" 
                                     required 
                                     placeholder="ihre@email.com" 
                                     autocomplete="email"
-                                    class="form-input" 
+                                    class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 text-base" 
                                     value="${emailValue}" />
                             </div>
-                            <div class="form-group">
-                                <label for="pw" class="form-label">Passwort</label>
+                            <div class="space-y-2">
+                                <label for="pw" class="block text-sm font-semibold text-slate-700 dark:text-slate-300">Passwort</label>
                                 <input 
                                     type="password" 
                                     id="pw" 
                                     required 
                                     placeholder="Ihr Passwort" 
                                     autocomplete="current-password"
-                                    class="form-input" 
+                                    class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 text-base" 
                                     value="${pwValue}" />
                             </div>
                             <button
                                 type="submit"
-                                class="btn btn-primary btn-lg w-full login-btn">
+                                class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 text-base touch-manipulation">
                                 <i class="fas fa-sign-in-alt"></i> 
                                 <span>Anmelden</span>
                             </button>

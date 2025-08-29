@@ -250,14 +250,11 @@ function renderEhemaligeList(containerId = "ehemalige-players") {
                     <span>Löschen</span>
                 </button>
             </div>
-        `;
-                    <span>Löschen</span>
-                </button>
-                <button class="btn btn-primary btn-sm move-aek-btn" style="background: linear-gradient(135deg, var(--accent-blue), #60A5FA);">
+                <button class="move-aek-btn flex-1 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 py-2 px-3 rounded-md transition-colors duration-200 flex items-center justify-center gap-2 text-sm font-medium touch-manipulation">
                     <i class="fas fa-arrow-left"></i>
                     <span>Zu AEK</span>
                 </button>
-                <button class="btn btn-primary btn-sm move-real-btn" style="background: linear-gradient(135deg, var(--accent-red), #F87171);">
+                <button class="move-real-btn flex-1 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 py-2 px-3 rounded-md transition-colors duration-200 flex items-center justify-center gap-2 text-sm font-medium touch-manipulation">
                     <i class="fas fa-arrow-right"></i>
                     <span>Zu Real</span>
                 </button>

@@ -89,23 +89,24 @@ export async function renderStatsTab(containerId = "app") {
     // Sperren-Tabelle
     const bansTableHtml = bans.length
         ? `
-        <div class="mt-4" id="bans-table-wrap" style="display:none;">
-            <div class="overflow-x-auto">
-                <table class="w-full mt-3 text-sm bg-white dark:bg-slate-700 rounded-lg overflow-hidden shadow-sm border border-slate-200 dark:border-slate-600">
+        <div class="mt-3" id="bans-table-wrap" style="display:none;">
+            <b>Alle Sperren</b>
+            <div style="overflow-x:auto;">
+                <table class="w-full mt-2 text-xs border border-gray-600 rounded overflow-hidden bg-gray-800">
                     <thead>
-                        <tr class="bg-slate-50 dark:bg-slate-600">
-                            <th class="px-4 py-3 text-left font-semibold text-slate-700 dark:text-slate-300">Spieler</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-700 dark:text-slate-300">Typ</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-700 dark:text-slate-300">Spiele</th>
+                        <tr class="bg-gray-700">
+                            <th class="p-1 text-left">Spieler</th>
+                            <th class="p-1 text-left">Typ</th>
+                            <th class="p-1 text-left">Spiele</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-200 dark:divide-slate-600">
+                    <tbody>
                         ${bans.map(b => {
                             const p = players.find(pl => pl.id === b.player_id);
-                            return `<tr class="hover:bg-slate-50 dark:hover:bg-slate-600/50">
-                                <td class="px-4 py-3 text-slate-900 dark:text-slate-100">${p ? p.name : "?"}</td>
-                                <td class="px-4 py-3 text-slate-700 dark:text-slate-300">${b.type || ""}</td>
-                                <td class="px-4 py-3 text-slate-700 dark:text-slate-300">${b.totalgames || ""}</td>
+                            return `<tr>
+                                <td class="p-1">${p ? p.name : "?"}</td>
+                                <td class="p-1">${b.type || ""}</td>
+                                <td class="p-1">${b.totalgames || ""}</td>
                             </tr>`;
                         }).join("")}
                     </tbody>
@@ -156,165 +157,46 @@ export async function renderStatsTab(containerId = "app") {
     // --- HTML ---
     const app = document.getElementById(containerId);
     app.innerHTML = `
-        <div class="space-y-6">
-            <!-- Header -->
-            <div class="text-center">
-                <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">📊 Statistiken</h1>
-                <p class="text-slate-600 dark:text-slate-400">Übersicht über alle Spiele, Tore und Karten</p>
-            </div>
-
-            <!-- Overview Stats -->
-            <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm">
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                    <span class="text-2xl">⚽</span>
-                    Spielübersicht
-                </h2>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                    <div class="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                        <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">${totalGoals}</div>
-                        <div class="text-sm text-blue-700 dark:text-blue-300">Tore gesamt</div>
-                    </div>
-                    <div class="text-center p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-                        <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">${totalGelb}</div>
-                        <div class="text-sm text-yellow-700 dark:text-yellow-300">Gelbe Karten</div>
-                    </div>
-                    <div class="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                        <div class="text-2xl font-bold text-red-600 dark:text-red-400">${totalRot}</div>
-                        <div class="text-sm text-red-700 dark:text-red-300">Rote Karten</div>
-                    </div>
-                    <div class="text-center p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                        <div class="text-2xl font-bold text-slate-600 dark:text-slate-400">${totalMatches}</div>
-                        <div class="text-sm text-slate-700 dark:text-slate-300">Spiele gesamt</div>
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div class="bg-slate-50 dark:bg-slate-700 p-3 rounded-lg">
-                        <span class="text-slate-600 dark:text-slate-400">Ø Tore pro Spiel:</span>
-                        <span class="font-bold text-slate-900 dark:text-white ml-2">${avgGoalsPerMatch}</span>
-                    </div>
-                    <div class="bg-slate-50 dark:bg-slate-700 p-3 rounded-lg">
-                        <span class="text-slate-600 dark:text-slate-400">Ø Karten pro Spiel:</span>
-                        <span class="font-bold text-slate-900 dark:text-white ml-2">${avgCardsPerMatch}</span>
-                    </div>
-                </div>
-                ${maxGoalsSingle > 0 ? `
-                    <div class="mt-4 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
-                        <span class="text-emerald-700 dark:text-emerald-300 text-sm">
-                            🥅 Rekord: <strong>${maxGoalsSingle}</strong> Tore von <strong>${maxGoalsPlayer?.name || "?"}</strong> in einem Spiel
-                        </span>
-                    </div>
-                ` : ''}
-            </div>
-
-            <!-- Team High Scores -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6 shadow-lg">
-                    <h3 class="text-lg font-bold mb-3 flex items-center gap-2">
-                        <span class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">🏆</span>
-                        AEK Athen - Höchster Sieg
-                    </h3>
-                    <div class="text-2xl font-bold">
-                        ${aekBestWin ? `${aekBestWin.goalsFor}:${aekBestWin.goalsAgainst}` : "–"}
-                    </div>
-                    <div class="text-blue-100 text-sm mt-1">
-                        ${aekBestWin ? aekBestWin.date : "Noch kein Sieg"}
-                    </div>
-                </div>
-                
-                <div class="bg-gradient-to-br from-red-500 to-red-600 text-white rounded-xl p-6 shadow-lg">
-                    <h3 class="text-lg font-bold mb-3 flex items-center gap-2">
-                        <span class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">🏆</span>
-                        Real Madrid - Höchster Sieg
-                    </h3>
-                    <div class="text-2xl font-bold">
-                        ${realBestWin ? `${realBestWin.goalsFor}:${realBestWin.goalsAgainst}` : "–"}
-                    </div>
-                    <div class="text-red-100 text-sm mt-1">
-                        ${realBestWin ? realBestWin.date : "Noch kein Sieg"}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bans Statistics -->
-            <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm">
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                    <span class="text-2xl">🚫</span>
-                    Sperren-Statistiken
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-3">
-                        <h3 class="font-semibold text-blue-600 dark:text-blue-400">AEK Athen</h3>
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between">
-                                <span class="text-slate-600 dark:text-slate-400">Gesamt Sperren:</span>
-                                <span class="font-bold">${totalBansAek}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-slate-600 dark:text-slate-400">Ø Dauer:</span>
-                                <span class="font-bold">${avgBanDurationAek} Spiele</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-slate-600 dark:text-slate-400">Meiste Sperren:</span>
-                                <span class="font-bold">${topBannedAek}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <h3 class="font-semibold text-red-600 dark:text-red-400">Real Madrid</h3>
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between">
-                                <span class="text-slate-600 dark:text-slate-400">Gesamt Sperren:</span>
-                                <span class="font-bold">${totalBansReal}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-slate-600 dark:text-slate-400">Ø Dauer:</span>
-                                <span class="font-bold">${avgBanDurationReal} Spiele</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-slate-600 dark:text-slate-400">Meiste Sperren:</span>
-                                <span class="font-bold">${topBannedReal}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                ${bans.length > 0 ? `
-                    <div class="mt-6">
-                        <button id="toggle-bans-table" class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium text-sm transition-colors">
-                            📋 Alle Sperren anzeigen
-                        </button>
-                        ${bansTableHtml}
-                    </div>
-                ` : ''}
-            </div>
-
-            <!-- Goal Statistics -->
-            <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm">
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                    <span class="text-2xl">⚽</span>
-                    Tor-Statistiken
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                        <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">${totalToreAek}</div>
-                        <div class="text-blue-700 dark:text-blue-300 font-medium">AEK Athen Tore</div>
-                        <div class="text-sm text-blue-600 dark:text-blue-400 mt-1">
-                            Ø ${aekPlayers.length ? (totalToreAek / aekPlayers.length).toFixed(2) : "0.00"} pro Spieler
-                        </div>
-                    </div>
-                    
-                    <div class="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                        <div class="text-3xl font-bold text-red-600 dark:text-red-400">${totalToreReal}</div>
-                        <div class="text-red-700 dark:text-red-300 font-medium">Real Madrid Tore</div>
-                        <div class="text-sm text-red-600 dark:text-red-400 mt-1">
-                            Ø ${realPlayers.length ? (totalToreReal / realPlayers.length).toFixed(2) : "0.00"} pro Spieler
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="mb-4 flex items-center gap-2">
+            <span class="text-3xl">📊</span>
+            <h2 class="text-2xl font-bold">Statistiken</h2>
         </div>
-    `;
+        <div class="flex flex-col gap-6">
+
+            <!-- Übersicht -->
+            <div class="rounded-xl shadow border bg-gray-800 p-4 mb-2">
+                <div class="font-bold text-lg mb-1">Übersicht</div>
+                <div class="flex flex-wrap gap-4 items-center text-base font-medium mb-2">
+                    <span class="flex items-center gap-1 text-blue-700"><span class="text-xl">⚽</span> ${totalGoals} Tore</span>
+                    <span class="flex items-center gap-1 text-yellow-600"><span class="text-xl">🟨</span> ${totalGelb} Gelbe Karten</span>
+                    <span class="flex items-center gap-1 text-red-600"><span class="text-xl">🟥</span> ${totalRot} Rote Karten</span>
+                </div>
+                <div class="flex flex-wrap gap-4 text-base mt-1">
+                    <span>Ø Tore/Spiel: <b>${avgGoalsPerMatch}</b></span>
+                    <span>Ø Karten/Spiel: <b>${avgCardsPerMatch}</b></span>
+                </div>
+                <div class="flex flex-col gap-1 text-xs mt-2 text-gray-600">
+                    ${maxGoalsSingle > 0 ? `Meiste Tore eines Spielers in einem Spiel: <b>${maxGoalsSingle}</b> (${maxGoalsPlayer?.name || "?"})` : ""}
+                </div>
+                <div class="flex flex-col gap-1 text-xs mt-2">
+                    <div>
+                        <span class="font-bold text-blue-800">Höchster AEK-Sieg:</span>
+                        ${aekBestWin ? `${aekBestWin.goalsFor}:${aekBestWin.goalsAgainst} (${aekBestWin.date})` : "–"}
+                    </div>
+                    <div>
+                        <span class="font-bold text-red-800">Höchster Real-Sieg:</span>
+                        ${realBestWin ? `${realBestWin.goalsFor}:${realBestWin.goalsAgainst} (${realBestWin.date})` : "–"}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sperren -->
+            <div class="rounded-xl shadow border bg-gray-800 p-4 mb-2">
+                <div class="flex items-center gap-2 font-bold text-lg mb-2">
+                    <span class="text-xl">🚫</span>
+                    <span>Sperren</span>
+                </div>
+                <div class="flex flex-col gap-3 text-base mb-1">
                     <div>
                         <div class="flex flex-wrap items-center gap-4">
                             <span class="inline-flex items-center bg-blue-100 text-blue-900 rounded px-3 py-1 font-bold text-base min-w-[80px]">AEK</span>

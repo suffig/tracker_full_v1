@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Full Module Test</title>
+</head>
+<body>
+    <div id="output"></div>
+    <script type="module">
+        console.log("Starting full module test...");
+        
+        try {
+            console.log("Importing all modules from main.js...");
+            
+            // Import modules in the same order as main.js
+            const { supabase, supabaseDb, usingFallback } = await import('./supabaseClient.js');
+            console.log("✅ supabaseClient imported");
+            
+            const { connectionMonitor, isDatabaseAvailable } = await import('./connectionMonitor.js');
+            console.log("✅ connectionMonitor imported");
+            
+            const { dataManager } = await import('./dataManager.js');
+            console.log("✅ dataManager imported");
+            
+            const { loadingManager, ErrorHandler, eventBus } = await import('./utils.js');
+            console.log("✅ utils imported");
+            
+            const { signUp, signIn, signOut } = await import('./auth.js');
+            console.log("✅ auth imported");
+            
+            const { renderKaderTab } = await import('./kader.js');
+            console.log("✅ kader imported");
+            
+            const { renderBansTab } = await import('./bans.js');
+            console.log("✅ bans imported");
+            
+            const { renderMatchesTab } = await import('./matches.js');
+            console.log("✅ matches imported");
+            
+            const { renderStatsTab } = await import('./stats.js');
+            console.log("✅ stats imported");
+            
+            const { renderFinanzenTab } = await import('./finanzen.js');
+            console.log("✅ finanzen imported");
+            
+            const { renderSpielerTab } = await import('./spieler.js');
+            console.log("✅ spieler imported");
+            
+            // Try importing reset functions
+            const { resetKaderState } = await import('./kader.js');
+            console.log("✅ kader reset imported");
+            
+            const { resetBansState } = await import('./bans.js');
+            console.log("✅ bans reset imported");
+            
+            const { resetFinanzenState } = await import('./finanzen.js');
+            console.log("✅ finanzen reset imported");
+            
+            const { resetMatchesState } = await import('./matches.js');
+            console.log("✅ matches reset imported");
+            
+            const { resetStatsState } = await import('./stats.js');
+            console.log("✅ stats reset imported");
+            
+            const { resetSpielerState } = await import('./spieler.js');
+            console.log("✅ spieler reset imported");
+            
+            console.log("🎉 All modules imported successfully!");
+            document.getElementById('output').textContent = "All modules loaded successfully!";
+            
+        } catch (error) {
+            console.error("Module import failed:", error);
+            document.getElementById('output').textContent = "Module import failed: " + error.message;
+        }
+    </script>
+</body>
+</html>

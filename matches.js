@@ -140,16 +140,34 @@ export async function renderMatchesTab(containerId = "app") {
     }
 
     app.innerHTML = `
-        <div class="flex flex-col sm:flex-row sm:justify-between mb-4 gap-2">
-            <h2 class="text-lg font-semibold">Matches</h2>
-            <button id="add-match-btn" class="bg-green-600 text-white w-full sm:w-auto px-4 py-2 rounded-lg text-base flex items-center justify-center gap-2 active:scale-95 transition">
-                <i class="fas fa-plus"></i> <span>Match hinzufügen</span>
-            </button>
-        </div>
-        <div id="matches-list" class="space-y-3">
-            <div class="flex items-center justify-center py-8">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <span class="ml-2 text-gray-600">Lädt Matches...</span>
+        <div class="w-full px-1 animate-fade-in">
+            <div class="flex flex-col sm:flex-row justify-between mb-6 gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-futbol text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-white mb-1">Matches</h2>
+                        <p class="text-gray-400 text-sm">Verwalte FIFA-Spiele</p>
+                    </div>
+                </div>
+                <button id="add-match-btn" class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white px-6 py-3 rounded-2xl text-lg flex items-center justify-center gap-3 font-bold transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-[1.02] border border-green-500/30 backdrop-blur-md">
+                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <span>Match hinzufügen</span>
+                </button>
+            </div>
+            <div id="matches-list" class="space-y-4">
+                <div class="flex items-center justify-center py-12">
+                    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 flex flex-col items-center border border-white/20">
+                        <div class="relative mb-4">
+                            <div class="w-12 h-12 border-4 border-green-400/30 border-t-green-400 border-solid rounded-full animate-spin"></div>
+                            <div class="absolute inset-2 w-8 h-8 border-4 border-blue-400/30 border-b-blue-400 border-solid rounded-full animate-spin animate-reverse"></div>
+                        </div>
+                        <span class="text-white text-lg font-semibold">Lädt Matches...</span>
+                    </div>
+                </div>
             </div>
         </div>
     `;
@@ -179,7 +197,15 @@ function renderMatchesList() {
 
     try {
         if (!matchesData.matches.length) {
-            container.innerHTML = `<div class="text-gray-700 text-sm text-center py-4">Noch keine Matches eingetragen.</div>`;
+            container.innerHTML = `
+                <div class="text-center py-12">
+                    <div class="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-futbol text-3xl text-white/60"></i>
+                    </div>
+                    <p class="text-white/70 text-xl mb-2">Noch keine Matches</p>
+                    <p class="text-white/50 text-sm">Füge das erste Match hinzu</p>
+                </div>
+            `;
             return;
         }
 
@@ -194,21 +220,38 @@ function renderMatchesList() {
         // Nur Matches des aktuellen Tages anzeigen
         const filteredMatches = matchesData.matches.filter(m => m.date === matchViewDate);
 
-        // Überschrift mit Datum, schön formatiert
+        // Enhanced date header with gradient styling
         const dateStr = matchViewDate ? matchViewDate.split('-').reverse().join('.') : '';
-        let html = `<div class="text-center font-semibold text-base mb-2">Spiele am <span class="text-sky-700 dark:text-sky-400">${dateStr}</span></div>`;
+        let html = `
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md rounded-2xl px-6 py-4 border border-white/20">
+                    <i class="fas fa-calendar-alt text-xl text-blue-400"></i>
+                    <span class="text-white font-bold text-lg">Spiele am ${dateStr}</span>
+                </div>
+            </div>
+        `;
 
         if (!filteredMatches.length) {
-            html += `<div class="text-gray-700 text-sm text-center py-4">Keine Spiele für diesen Tag.</div>`;
+            html += `
+                <div class="text-center py-8">
+                    <div class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-search text-2xl text-white/60"></i>
+                    </div>
+                    <p class="text-white/70 text-lg">Keine Spiele für diesen Tag</p>
+                    <p class="text-white/50 text-sm">Wähle ein anderes Datum oder füge ein Match hinzu</p>
+                </div>
+            `;
         } else {
-            html += filteredMatches.map(match => {
+            html += '<div class="space-y-4">';
+            html += filteredMatches.map((match, index) => {
                 // Durchgehende Nummerierung, unabhängig vom Tag!
                 const nr = matchesData.matches.length - matchesData.matches.findIndex(m => m.id === match.id);
-                return matchHtml(match, nr);
+                return matchHtml(match, nr, index);
             }).join('');
+            html += '</div>';
         }
 
-        // Navigation Buttons - optimized
+        // Enhanced navigation buttons
         html += renderNavigationButtons(uniqueDates);
         
         DOM.setSafeHTML(container, html);
@@ -219,20 +262,45 @@ function renderMatchesList() {
     } catch (error) {
         console.error('Error rendering matches list:', error);
         ErrorHandler.showUserError('Fehler beim Anzeigen der Matches');
-        container.innerHTML = `<div class="text-red-500 text-center py-4">Fehler beim Laden der Matches</div>`;
+        container.innerHTML = `
+            <div class="text-center py-12">
+                <div class="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-exclamation-triangle text-2xl text-red-400"></i>
+                </div>
+                <p class="text-red-400 text-lg">Fehler beim Laden der Matches</p>
+            </div>
+        `;
     }
 }
 
-// Separate function for navigation buttons
+// Enhanced navigation buttons with modern design
 function renderNavigationButtons(uniqueDates) {
     const currIdx = uniqueDates.indexOf(matchViewDate);
-    let navHtml = `<div class="flex gap-2 justify-center mt-4">`;
+    
+    if (uniqueDates.length <= 1) {
+        return ''; // No navigation needed
+    }
+    
+    let navHtml = `
+        <div class="flex gap-4 justify-center mt-8 px-4">
+    `;
     
     if (currIdx < uniqueDates.length - 1) {
-        navHtml += `<button id="older-matches-btn" class="bg-gray-300 dark:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-gray-400">Ältere Spiele anzeigen</button>`;
+        navHtml += `
+            <button id="older-matches-btn" class="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-6 py-3 rounded-2xl font-bold transition-all duration-200 border border-white/30 flex items-center gap-2 hover:scale-105 shadow-lg">
+                <i class="fas fa-chevron-left"></i>
+                <span>Ältere Spiele</span>
+            </button>
+        `;
     }
+    
     if (currIdx > 0) {
-        navHtml += `<button id="newer-matches-btn" class="bg-gray-300 dark:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-gray-400">Neuere Spiele anzeigen</button>`;
+        navHtml += `
+            <button id="newer-matches-btn" class="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-6 py-3 rounded-2xl font-bold transition-all duration-200 border border-white/30 flex items-center gap-2 hover:scale-105 shadow-lg">
+                <span>Neuere Spiele</span>
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        `;
     }
     
     navHtml += `</div>`;
@@ -307,7 +375,7 @@ function attachMatchEventListeners(uniqueDates) {
     });
 }
 
-function matchHtml(match, nr) {
+function matchHtml(match, nr, index = 0) {
     function goalsHtml(goals) {
         if (!goals || !goals.length) return `<span class="text-gray-600 text-sm italic">Keine Torschützen</span>`;
         return goals
@@ -337,86 +405,145 @@ function matchHtml(match, nr) {
                 </span>`;
     }
     
-    // Determine match result for better visual indication
+    // Enhanced match result with gradient overlays
     const isWin = match.goalsa > match.goalsb ? 'AEK' : match.goalsa < match.goalsb ? 'Real' : 'Draw';
-    const resultClass = isWin === 'AEK' ? 'border-l-4 border-l-blue-500' : 
-                        isWin === 'Real' ? 'border-l-4 border-l-red-500' : 
-                        'border-l-4 border-l-gray-500';
+    const resultGradient = isWin === 'AEK' ? 'from-blue-900/20 to-blue-800/20' : 
+                          isWin === 'Real' ? 'from-red-900/20 to-red-800/20' : 
+                          'from-gray-900/20 to-gray-800/20';
+    const borderAccent = isWin === 'AEK' ? 'border-l-4 border-l-blue-400' : 
+                        isWin === 'Real' ? 'border-l-4 border-l-red-400' : 
+                        'border-l-4 border-l-gray-400';
     
     return `
-    <div class="bg-gradient-to-r from-gray-800 to-gray-750 border border-gray-600 rounded-xl p-5 mt-4 text-gray-100 shadow-xl hover:shadow-2xl transition-all duration-300 ${resultClass} transform hover:scale-[1.02]">
-      <!-- Match Header -->
-      <div class="flex justify-between items-start mb-4">
+    <div class="bg-gradient-to-r ${resultGradient} backdrop-blur-md border-2 border-white/20 rounded-3xl p-6 text-white shadow-xl hover:shadow-2xl transition-all duration-300 ${borderAccent} transform hover:scale-[1.02] group animate-slide-in" style="animation-delay: ${index * 0.1}s">
+      <!-- Enhanced match header -->
+      <div class="flex justify-between items-start mb-6">
         <div class="flex-1">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">#${nr}</span>
-            <span class="text-gray-200 text-sm font-medium">${match.date}</span>
-            <button class="match-toggle-btn bg-gray-600 hover:bg-gray-500 text-white px-3 py-2 rounded-lg text-sm ml-auto transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" data-match-id="${match.id}" title="Details ein-/ausblenden">
-              <span class="text-xs font-medium">Details</span>
+          <div class="flex items-center gap-4 mb-4">
+            <div class="flex items-center gap-3">
+              <span class="bg-gradient-to-r from-purple-600 to-purple-500 text-white px-4 py-2 rounded-full text-lg font-bold shadow-lg">#${nr}</span>
+              <div class="flex items-center gap-2 text-white/80">
+                <i class="fas fa-calendar-alt text-sm"></i>
+                <span class="text-sm font-medium">${match.date}</span>
+              </div>
+            </div>
+            <button class="match-toggle-btn bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-4 py-2 rounded-xl text-sm ml-auto transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl border border-white/30 group-hover:scale-105" data-match-id="${match.id}" title="Details ein-/ausblenden">
+              <span class="font-medium">Details</span>
               <i class="fas fa-chevron-down transform transition-transform duration-200"></i>
             </button>
           </div>
-          <div class="bg-gradient-to-r from-gray-700 to-gray-650 rounded-xl p-4 mb-3 border border-gray-600">
+          
+          <!-- Enhanced score display -->
+          <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 mb-4 border border-white/30">
             <div class="flex items-center justify-center">
-              <div class="text-center">
-                <span class="text-blue-400 font-bold text-xl block mb-1">${match.teama}</span>
-                <span class="text-3xl font-black text-white">${match.goalsa}</span>
+              <div class="text-center flex-1">
+                <div class="flex items-center justify-center gap-2 mb-3">
+                  <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">⚽</span>
+                  </div>
+                  <span class="text-blue-300 font-bold text-xl">${match.teama}</span>
+                </div>
+                <span class="text-4xl font-black text-white drop-shadow-lg">${match.goalsa}</span>
               </div>
-              <div class="mx-6 text-center">
-                <span class="text-gray-400 text-2xl font-bold">:</span>
+              <div class="mx-8 text-center">
+                <div class="text-white/60 text-sm font-medium mb-2">VS</div>
+                <span class="text-white/40 text-3xl font-bold">:</span>
               </div>
-              <div class="text-center">
-                <span class="text-red-400 font-bold text-xl block mb-1">${match.teamb}</span>
-                <span class="text-3xl font-black text-white">${match.goalsb}</span>
+              <div class="text-center flex-1">
+                <div class="flex items-center justify-center gap-2 mb-3">
+                  <div class="w-8 h-8 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">⚽</span>
+                  </div>
+                  <span class="text-red-300 font-bold text-xl">${match.teamb}</span>
+                </div>
+                <span class="text-4xl font-black text-white drop-shadow-lg">${match.goalsb}</span>
               </div>
+            </div>
+            
+            <!-- Result indicator -->
+            <div class="text-center mt-4">
+              ${isWin === 'AEK' ? 
+                '<span class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-4 py-2 rounded-full text-sm font-bold"><i class="fas fa-trophy"></i> AEK Sieg</span>' :
+                isWin === 'Real' ? 
+                '<span class="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-500 text-white px-4 py-2 rounded-full text-sm font-bold"><i class="fas fa-trophy"></i> Real Sieg</span>' :
+                '<span class="inline-flex items-center gap-2 bg-gradient-to-r from-gray-600 to-gray-500 text-white px-4 py-2 rounded-full text-sm font-bold"><i class="fas fa-handshake"></i> Unentschieden</span>'
+              }
             </div>
           </div>
         </div>
-        <div class="flex gap-2 ml-4">
-          <button class="edit-match-btn bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-xl text-sm flex items-center justify-center active:scale-95 transition-all shadow-lg hover:shadow-xl" title="Bearbeiten" data-id="${match.id}">
-            <i class="fas fa-edit text-base"></i>
+        
+        <!-- Enhanced action buttons -->
+        <div class="flex flex-col gap-3 ml-6">
+          <button class="edit-match-btn bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white p-4 rounded-2xl flex items-center justify-center transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-110 border border-blue-400/30" title="Bearbeiten" data-id="${match.id}">
+            <i class="fas fa-edit text-lg"></i>
           </button>
-          <button class="delete-match-btn bg-red-500 hover:bg-red-600 text-white p-3 rounded-xl text-sm flex items-center justify-center active:scale-95 transition-all shadow-lg hover:shadow-xl" title="Löschen" data-id="${match.id}">
-            <i class="fas fa-trash text-base"></i>
+          <button class="delete-match-btn bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white p-4 rounded-2xl flex items-center justify-center transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-110 border border-red-400/30" title="Löschen" data-id="${match.id}">
+            <i class="fas fa-trash text-lg"></i>
           </button>
         </div>
       </div>
       
-      <!-- Collapsible Details Section -->
+      <!-- Enhanced collapsible details section -->
       <div class="match-details" data-match-id="${match.id}" style="display: none;">
-        <!-- Goal Scorers Section -->
-        <div class="space-y-3 mb-4">
-          <div class="bg-gradient-to-r from-blue-900/30 to-blue-800/30 border border-blue-700/50 rounded-xl p-3">
-            <div class="text-sm font-bold text-blue-300 mb-2 flex items-center gap-2">
-              <i class="fas fa-futbol"></i>
-              ${match.teama} Torschützen:
+        <!-- Goal Scorers Section with enhanced styling -->
+        <div class="space-y-4 mb-6">
+          <div class="bg-gradient-to-r from-blue-600/20 to-blue-500/20 backdrop-blur-md border-2 border-blue-400/30 rounded-2xl p-4">
+            <div class="text-lg font-bold text-blue-300 mb-3 flex items-center gap-3">
+              <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                <i class="fas fa-futbol text-white text-sm"></i>
+              </div>
+              ${match.teama} Torschützen
             </div>
-            <div class="flex flex-wrap gap-2">${goalsHtml(match.goalslista || [])}</div>
+            <div class="flex flex-wrap gap-3">${goalsHtml(match.goalslista || [])}</div>
           </div>
-          <div class="bg-gradient-to-r from-red-900/30 to-red-800/30 border border-red-700/50 rounded-xl p-3">
-            <div class="text-sm font-bold text-red-300 mb-2 flex items-center gap-2">
-              <i class="fas fa-futbol"></i>
-              ${match.teamb} Torschützen:
+          
+          <div class="bg-gradient-to-r from-red-600/20 to-red-500/20 backdrop-blur-md border-2 border-red-400/30 rounded-2xl p-4">
+            <div class="text-lg font-bold text-red-300 mb-3 flex items-center gap-3">
+              <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                <i class="fas fa-futbol text-white text-sm"></i>
+              </div>
+              ${match.teamb} Torschützen
             </div>
-            <div class="flex flex-wrap gap-2">${goalsHtml(match.goalslistb || [])}</div>
+            <div class="flex flex-wrap gap-3">${goalsHtml(match.goalslistb || [])}</div>
           </div>
         </div>
         
-        <!-- Cards Section -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-          <div class="bg-gradient-to-r from-blue-900/30 to-blue-800/30 border border-blue-700/50 rounded-xl p-3">
-            <div class="text-sm font-bold text-blue-300 mb-2 flex items-center gap-2">
-              <i class="fas fa-id-card"></i>
-              ${match.teama} Karten:
+        <!-- Enhanced Cards Section -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          <div class="bg-gradient-to-r from-blue-600/20 to-blue-500/20 backdrop-blur-md border-2 border-blue-400/30 rounded-2xl p-4">
+            <div class="text-lg font-bold text-blue-300 mb-3 flex items-center gap-3">
+              <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                <i class="fas fa-id-card text-white text-sm"></i>
+              </div>
+              ${match.teama} Karten
             </div>
-            <div class="flex gap-2">
-              <span class="inline-flex items-center gap-1 bg-yellow-600 text-yellow-100 rounded-lg px-3 py-1 text-sm font-medium shadow-md">🟨 ${match.yellowa || 0}</span>
-              <span class="inline-flex items-center gap-1 bg-red-600 text-red-100 rounded-lg px-3 py-1 text-sm font-medium shadow-md">🟥 ${match.reda || 0}</span>
+            <div class="flex gap-3">
+              <span class="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-xl px-4 py-2 text-sm font-bold shadow-lg">
+                🟨 ${match.yellowa || 0}
+              </span>
+              <span class="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl px-4 py-2 text-sm font-bold shadow-lg">
+                🟥 ${match.reda || 0}
+              </span>
             </div>
           </div>
-          <div class="bg-gradient-to-r from-red-900/30 to-red-800/30 border border-red-700/50 rounded-xl p-3">
-            <div class="text-sm font-bold text-red-300 mb-2 flex items-center gap-2">
-              <i class="fas fa-id-card"></i>
+          
+          <div class="bg-gradient-to-r from-red-600/20 to-red-500/20 backdrop-blur-md border-2 border-red-400/30 rounded-2xl p-4">
+            <div class="text-lg font-bold text-red-300 mb-3 flex items-center gap-3">
+              <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                <i class="fas fa-id-card text-white text-sm"></i>
+              </div>
+              ${match.teamb} Karten
+            </div>
+            <div class="flex gap-3">
+              <span class="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-xl px-4 py-2 text-sm font-bold shadow-lg">
+                🟨 ${match.yellowb || 0}
+              </span>
+              <span class="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl px-4 py-2 text-sm font-bold shadow-lg">
+                🟥 ${match.redb || 0}
+              </span>
+            </div>
+          </div>
+        </div>
               ${match.teamb} Karten:
             </div>
             <div class="flex gap-2">

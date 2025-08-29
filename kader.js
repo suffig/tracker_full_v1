@@ -19,7 +19,8 @@ const POSITION_ORDER = {
 };
 
 // --- ACCORDION Panel Zustand ---
-let openPanel = null; // "aek", "real", "ehemalige" oder null
+// Start with all panels open by default so all players are visible
+let openPanel = 'all'; // "aek", "real", "ehemalige", "all", oder null
 
 // --- Positions-Badge Klasse (für Redesign) ---
 function getPositionBadgeClass(pos) {
@@ -112,14 +113,24 @@ export function renderKaderTab(containerId = "app") {
     `;
     ['aek', 'real', 'ehemalige'].forEach(team => {
         document.getElementById(`panel-toggle-${team}`)?.addEventListener('click', () => {
-            openPanel = openPanel === team ? null : team;
-            renderKaderTab(containerId); // Neu rendern, damit Panel-Inhalt sichtbar wird
+            // If all panels are open and user clicks one, show only that one
+            if (openPanel === 'all') {
+                openPanel = team;
+            } else if (openPanel === team) {
+                // If clicked panel is open, close it
+                openPanel = null;
+            } else {
+                // Otherwise open the clicked panel
+                openPanel = team;
+            }
+            renderKaderTab(containerId); // Re-render to update panel content visibility
         });
     });
 }
 
 function accordionPanelHtml(team, key, colorClass, teamKey) {
-    const isOpen = openPanel === key;
+    // Check if panel should be open - either this specific panel or all panels
+    const isOpen = openPanel === key || openPanel === 'all';
     return `
         <div class="accordion">
             <div id="panel-toggle-${key}" class="accordion-header ${isOpen ? 'active' : ''}">
@@ -134,7 +145,7 @@ function accordionPanelHtml(team, key, colorClass, teamKey) {
                         </p>
                     </div>
                 </div>
-                <i class="fas fa-chevron-down accordion-icon"></i>
+                <i class="fas fa-chevron-down accordion-icon ${isOpen ? 'rotate-180' : ''}"></i>
             </div>
             
             <div class="accordion-content ${isOpen ? 'active' : ''}">
@@ -158,20 +169,27 @@ function renderPlayerLists() {
     const realMwSpan = document.getElementById('real-marktwert');
     if (realMwSpan) realMwSpan.innerText = getKaderMarktwert(realMadrid).toLocaleString('de-DE') + "M €";
 
-    // Only render player lists if panels are open
-    if (openPanel === 'aek' && document.getElementById('team-aek-players')) {
+    // Render player lists if panels are open or if all panels are open
+    if ((openPanel === 'aek' || openPanel === 'all') && document.getElementById('team-aek-players')) {
         renderPlayerList('team-aek-players', aekAthen, "AEK");
     }
-    if (openPanel === 'real' && document.getElementById('team-real-players')) {
+    if ((openPanel === 'real' || openPanel === 'all') && document.getElementById('team-real-players')) {
         renderPlayerList('team-real-players', realMadrid, "Real");
     }
-    if (openPanel === 'ehemalige' && document.getElementById('team-ehemalige-players')) {
+    if ((openPanel === 'ehemalige' || openPanel === 'all') && document.getElementById('team-ehemalige-players')) {
         renderEhemaligeList('team-ehemalige-players');
     }
-    // Add Player-Button Handler nur im offenen Panel
-    if (openPanel === 'aek' && document.getElementById('add-player-aek')) document.getElementById('add-player-aek').onclick = () => openPlayerForm('AEK');
-    if (openPanel === 'real' && document.getElementById('add-player-real')) document.getElementById('add-player-real').onclick = () => openPlayerForm('Real');
-    if (openPanel === 'ehemalige' && document.getElementById('add-player-ehemalige')) document.getElementById('add-player-ehemalige').onclick = () => openPlayerForm('Ehemalige');
+    
+    // Add Player-Button Handler for open panels
+    if ((openPanel === 'aek' || openPanel === 'all') && document.getElementById('add-player-aek')) {
+        document.getElementById('add-player-aek').onclick = () => openPlayerForm('AEK');
+    }
+    if ((openPanel === 'real' || openPanel === 'all') && document.getElementById('add-player-real')) {
+        document.getElementById('add-player-real').onclick = () => openPlayerForm('Real');
+    }
+    if ((openPanel === 'ehemalige' || openPanel === 'all') && document.getElementById('add-player-ehemalige')) {
+        document.getElementById('add-player-ehemalige').onclick = () => openPlayerForm('Ehemalige');
+    }
 }
 
 function renderPlayerList(containerId, arr, team) {
@@ -439,5 +457,5 @@ export function resetKaderState() {
     ehemalige = [];
     finances = { aekAthen: { balance: 0 }, realMadrid: { balance: 0 } };
     transactions = [];
-    openPanel = null;
+    openPanel = 'all'; // Reset to show all panels open by default
 }

@@ -478,7 +478,8 @@ body {
   transition: transform var(--duration-normal) var(--easing-smooth);
 }
 
-.accordion-header.active .accordion-icon {
+.accordion-header.active .accordion-icon,
+.accordion-icon.rotate-180 {
   transform: rotate(180deg);
 }
 

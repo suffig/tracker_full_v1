@@ -142,7 +142,7 @@ export async function renderMatchesTab(containerId = "app") {
     app.innerHTML = `
         <div class="flex flex-col sm:flex-row sm:justify-between mb-4 gap-2">
             <h2 class="text-lg font-semibold">Matches</h2>
-            <button id="add-match-btn" class="bg-green-600 text-white w-full sm:w-auto px-4 py-2 rounded-lg text-base flex items-center justify-center gap-2 active:scale-95 transition">
+            <button id="add-match-btn" class="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto px-4 py-2 rounded-lg text-base font-semibold flex items-center justify-center gap-2 active:scale-95 transition-all duration-200 border border-green-500 shadow-lg hover:shadow-xl">
                 <i class="fas fa-plus"></i> <span>Match hinzufügen</span>
             </button>
         </div>
@@ -229,10 +229,10 @@ function renderNavigationButtons(uniqueDates) {
     let navHtml = `<div class="flex gap-2 justify-center mt-4">`;
     
     if (currIdx < uniqueDates.length - 1) {
-        navHtml += `<button id="older-matches-btn" class="bg-gray-300 dark:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-gray-400">Ältere Spiele anzeigen</button>`;
+        navHtml += `<button id="older-matches-btn" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 border border-gray-500 shadow-md hover:shadow-lg">Ältere Spiele anzeigen</button>`;
     }
     if (currIdx > 0) {
-        navHtml += `<button id="newer-matches-btn" class="bg-gray-300 dark:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-gray-400">Neuere Spiele anzeigen</button>`;
+        navHtml += `<button id="newer-matches-btn" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 border border-gray-500 shadow-md hover:shadow-lg">Neuere Spiele anzeigen</button>`;
     }
     
     navHtml += `</div>`;
@@ -353,7 +353,7 @@ function matchHtml(match, nr) {
           <div class="flex items-center gap-3 mb-2">
             <span class="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg border-2 border-blue-500">#${nr}</span>
             <span class="text-gray-300 text-sm font-medium">${match.date}</span>
-            <button class="match-toggle-btn bg-gray-600 hover:bg-gray-500 text-gray-100 px-3 py-2 rounded-lg text-sm ml-auto transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" data-match-id="${match.id}" title="Details ein-/ausblenden">
+            <button class="match-toggle-btn bg-gray-600 hover:bg-gray-500 text-white px-3 py-2 rounded-lg text-sm ml-auto transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg border border-gray-500" data-match-id="${match.id}" title="Details ein-/ausblenden">
               <span class="text-xs font-medium">Details</span>
               <i class="fas fa-chevron-down transform transition-transform duration-200"></i>
             </button>
@@ -376,10 +376,10 @@ function matchHtml(match, nr) {
           </div>
         </div>
         <div class="flex gap-2 ml-4">
-          <button class="edit-match-btn bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-xl text-sm flex items-center justify-center active:scale-95 transition-all shadow-lg hover:shadow-xl" title="Bearbeiten" data-id="${match.id}">
+          <button class="edit-match-btn bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-xl text-sm flex items-center justify-center active:scale-95 transition-all duration-200 shadow-lg hover:shadow-xl border border-blue-500" title="Bearbeiten" data-id="${match.id}">
             <i class="fas fa-edit text-base"></i>
           </button>
-          <button class="delete-match-btn bg-red-500 hover:bg-red-600 text-white p-3 rounded-xl text-sm flex items-center justify-center active:scale-95 transition-all shadow-lg hover:shadow-xl" title="Löschen" data-id="${match.id}">
+          <button class="delete-match-btn bg-red-600 hover:bg-red-700 text-white p-3 rounded-xl text-sm flex items-center justify-center active:scale-95 transition-all duration-200 shadow-lg hover:shadow-xl border border-red-500" title="Löschen" data-id="${match.id}">
             <i class="fas fa-trash text-base"></i>
           </button>
         </div>

@@ -37,33 +37,288 @@
 
     <!-- Standard favicon -->
     <link rel="icon" type="image/png" href="./assets/logo.png">
-    <!-- Inter Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Original Tailwind CSS -->
     <link href="css/tailwind-play-output.css" rel="stylesheet">
-    <!-- New Modern Design -->
-    <link href="css/new-design.css" rel="stylesheet">
+    <!-- NativeWind Mobile-First Design -->
+    <link href="css/nativewind-design.css" rel="stylesheet">
     <!-- Flowbite CSS - Local Minimal Replacement -->
     <link href="assets/flowbite-minimal.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
     <!-- Mobile menu functionality -->
     <script src="assets/mobile-menu.js"></script>
     <!-- Font Awesome - Local Replacement -->
     <link rel="stylesheet" href="assets/fonts/fontawesome-icons.css">
-    <!-- Supabase JavaScript Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase JavaScript Client with improved fallback -->
+    <script>
+      // Enhanced fallback Supabase client with comprehensive sample data
+      window.supabase = window.supabase || {
+        createClient: function(url, key, options) {
+          console.warn('Using fallback Supabase client - CDN not available');
+          
+          // Track auth state for fallback
+          let fallbackAuthState = null;
+          let authChangeCallbacks = [];
+          
+          // Comprehensive sample data for demo mode
+          const sampleData = {
+            players: [
+              // AEK Team - 12 players
+              { id: 1, name: "Luka Modric", team: "AEK", position: "ZM", value: 95, goals: 12, created_at: "2024-01-01T00:00:00Z" },
+              { id: 2, name: "Virgil van Dijk", team: "AEK", position: "IV", value: 110, goals: 3, created_at: "2024-01-01T00:00:00Z" },
+              { id: 3, name: "Kevin De Bruyne", team: "AEK", position: "ZOM", value: 105, goals: 18, created_at: "2024-01-01T00:00:00Z" },
+              { id: 4, name: "Robert Lewandowski", team: "AEK", position: "ST", value: 88, goals: 25, created_at: "2024-01-01T00:00:00Z" },
+              { id: 5, name: "Thibaut Courtois", team: "AEK", position: "TH", value: 75, goals: 0, created_at: "2024-01-01T00:00:00Z" },
+              { id: 6, name: "Alphonso Davies", team: "AEK", position: "LV", value: 72, goals: 2, created_at: "2024-01-01T00:00:00Z" },
+              { id: 7, name: "Joshua Kimmich", team: "AEK", position: "ZDM", value: 85, goals: 5, created_at: "2024-01-01T00:00:00Z" },
+              { id: 8, name: "Mohamed Salah", team: "AEK", position: "RF", value: 92, goals: 22, created_at: "2024-01-01T00:00:00Z" },
+              { id: 9, name: "Joao Cancelo", team: "AEK", position: "RV", value: 78, goals: 4, created_at: "2024-01-01T00:00:00Z" },
+              { id: 10, name: "Bruno Fernandes", team: "AEK", position: "ZOM", value: 83, goals: 14, created_at: "2024-01-01T00:00:00Z" },
+              { id: 11, name: "Raheem Sterling", team: "AEK", position: "LF", value: 76, goals: 16, created_at: "2024-01-01T00:00:00Z" },
+              { id: 12, name: "Pedri", team: "AEK", position: "ZM", value: 85, goals: 8, created_at: "2024-01-01T00:00:00Z" },
+              
+              // Real Madrid Team - 12 players  
+              { id: 13, name: "Kylian Mbappe", team: "Real", position: "ST", value: 165, goals: 28, created_at: "2024-01-01T00:00:00Z" },
+              { id: 14, name: "Vinicius Jr", team: "Real", position: "LF", value: 120, goals: 20, created_at: "2024-01-01T00:00:00Z" },
+              { id: 15, name: "Eder Militao", team: "Real", position: "IV", value: 85, goals: 2, created_at: "2024-01-01T00:00:00Z" },
+              { id: 16, name: "Jude Bellingham", team: "Real", position: "ZM", value: 110, goals: 15, created_at: "2024-01-01T00:00:00Z" },
+              { id: 17, name: "Thibaut Courtois", team: "Real", position: "TH", value: 75, goals: 0, created_at: "2024-01-01T00:00:00Z" },
+              { id: 18, name: "Ferland Mendy", team: "Real", position: "LV", value: 65, goals: 1, created_at: "2024-01-01T00:00:00Z" },
+              { id: 19, name: "Dani Carvajal", team: "Real", position: "RV", value: 68, goals: 3, created_at: "2024-01-01T00:00:00Z" },
+              { id: 20, name: "Casemiro", team: "Real", position: "ZDM", value: 70, goals: 4, created_at: "2024-01-01T00:00:00Z" },
+              { id: 21, name: "Rodrygo", team: "Real", position: "RF", value: 88, goals: 12, created_at: "2024-01-01T00:00:00Z" },
+              { id: 22, name: "Luka Modric", team: "Real", position: "ZM", value: 45, goals: 6, created_at: "2024-01-01T00:00:00Z" },
+              { id: 23, name: "Antonio Rudiger", team: "Real", position: "IV", value: 72, goals: 1, created_at: "2024-01-01T00:00:00Z" },
+              { id: 24, name: "Eduardo Camavinga", team: "Real", position: "ZM", value: 85, goals: 3, created_at: "2024-01-01T00:00:00Z" },
+              
+              // Ehemalige - 8 players
+              { id: 25, name: "Lionel Messi", team: "Ehemalige", position: "RF", value: 45, goals: 0, created_at: "2024-01-01T00:00:00Z" },
+              { id: 26, name: "Cristiano Ronaldo", team: "Ehemalige", position: "ST", value: 25, goals: 0, created_at: "2024-01-01T00:00:00Z" },
+              { id: 27, name: "Neymar Jr", team: "Ehemalige", position: "LF", value: 65, goals: 0, created_at: "2024-01-01T00:00:00Z" },
+              { id: 28, name: "Sergio Ramos", team: "Ehemalige", position: "IV", value: 15, goals: 0, created_at: "2024-01-01T00:00:00Z" },
+              { id: 29, name: "Paul Pogba", team: "Ehemalige", position: "ZM", value: 35, goals: 0, created_at: "2024-01-01T00:00:00Z" },
+              { id: 30, name: "Zlatan Ibrahimovic", team: "Ehemalige", position: "ST", value: 8, goals: 0, created_at: "2024-01-01T00:00:00Z" },
+              { id: 31, name: "Manuel Neuer", team: "Ehemalige", position: "TH", value: 12, goals: 0, created_at: "2024-01-01T00:00:00Z" },
+              { id: 32, name: "Andres Iniesta", team: "Ehemalige", position: "ZM", value: 5, goals: 0, created_at: "2024-01-01T00:00:00Z" }
+            ],
+            matches: [
+              {
+                id: 1,
+                date: "2025-01-29",
+                teama: "AEK",
+                teamb: "Real",
+                goalsa: 3,
+                goalsb: 2,
+                goalslista: [
+                  { player: "Kevin De Bruyne", count: 2 },
+                  { player: "Robert Lewandowski", count: 1 }
+                ],
+                goalslistb: [
+                  { player: "Kylian Mbappe", count: 1 },
+                  { player: "Vinicius Jr", count: 1 }
+                ],
+                yellowa: 1,
+                reda: 0,
+                yellowb: 2,
+                redb: 0,
+                manofthematch: "Kevin De Bruyne",
+                prizeaek: 750000,
+                prizereal: -650000,
+                created_at: "2025-01-29T15:30:00Z"
+              },
+              {
+                id: 2,
+                date: "2025-01-28",
+                teama: "AEK",
+                teamb: "Real",
+                goalsa: 1,
+                goalsb: 4,
+                goalslista: [
+                  { player: "Mohamed Salah", count: 1 }
+                ],
+                goalslistb: [
+                  { player: "Kylian Mbappe", count: 2 },
+                  { player: "Jude Bellingham", count: 1 },
+                  { player: "Vinicius Jr", count: 1 }
+                ],
+                yellowa: 0,
+                reda: 1,
+                yellowb: 1,
+                redb: 0,
+                manofthematch: "Kylian Mbappe",
+                prizeaek: -750000,
+                prizereal: 850000,
+                created_at: "2025-01-28T18:00:00Z"
+              }
+            ],
+            finances: [
+              { id: 1, team: "AEK", balance: 2500000, debt: 0, created_at: "2024-01-01T00:00:00Z" },
+              { id: 2, team: "Real", balance: 3200000, debt: 0, created_at: "2024-01-01T00:00:00Z" }
+            ],
+            transactions: [
+              { id: 1, date: "2025-01-29", type: "Preisgeld", team: "AEK", amount: 750000, info: "Sieg vs Real Madrid", created_at: "2025-01-29T15:30:00Z" },
+              { id: 2, date: "2025-01-29", type: "Bonus SdS", team: "AEK", amount: 100000, info: "Kevin De Bruyne", created_at: "2025-01-29T15:30:00Z" },
+              { id: 3, date: "2025-01-28", type: "Preisgeld", team: "Real", amount: 850000, info: "Sieg vs AEK Athen", created_at: "2025-01-28T18:00:00Z" },
+              { id: 4, date: "2025-01-28", type: "Bonus SdS", team: "Real", amount: 100000, info: "Kylian Mbappe", created_at: "2025-01-28T18:00:00Z" }
+            ],
+            bans: [
+              { id: 1, player_name: "Sergio Ramos", matches_remaining: 2, reason: "Unsportliches Verhalten", created_at: "2025-01-25T12:00:00Z" }
+            ],
+            spieler_des_spiels: [
+              { id: 1, name: "Kevin De Bruyne", team: "AEK", count: 3, created_at: "2024-01-01T00:00:00Z" },
+              { id: 2, name: "Kylian Mbappe", team: "Real", count: 4, created_at: "2024-01-01T00:00:00Z" },
+              { id: 3, name: "Robert Lewandowski", team: "AEK", count: 2, created_at: "2024-01-01T00:00:00Z" },
+              { id: 4, name: "Jude Bellingham", team: "Real", count: 2, created_at: "2024-01-01T00:00:00Z" }
+            ]
+          };
+          
+          // Enhanced query builder with proper method chaining
+          function createQueryBuilder(table, data) {
+            let result = [...data];
+            let filters = {};
+            let orderBy = null;
+            let limitCount = null;
+            let rangeFrom = null;
+            let rangeTo = null;
+            
+            const builder = {
+              select: function(query = '*') {
+                return this;
+              },
+              eq: function(column, value) {
+                filters[column] = value;
+                return this;
+              },
+              order: function(column, options = {}) {
+                orderBy = { column, ascending: options.ascending !== false };
+                return this;
+              },
+              limit: function(count) {
+                limitCount = count;
+                return this;
+              },
+              range: function(from, to) {
+                rangeFrom = from;
+                rangeTo = to;
+                return this;
+              },
+              // Add missing method for connection monitor
+              abortSignal: function(signal) {
+                return this;
+              },
+              then: function(resolve) {
+                // Apply filters
+                if (Object.keys(filters).length > 0) {
+                  result = result.filter(item => {
+                    return Object.entries(filters).every(([key, value]) => item[key] === value);
+                  });
+                }
+                
+                // Apply ordering
+                if (orderBy) {
+                  result.sort((a, b) => {
+                    const aVal = a[orderBy.column];
+                    const bVal = b[orderBy.column];
+                    let comparison = 0;
+                    if (aVal > bVal) comparison = 1;
+                    if (aVal < bVal) comparison = -1;
+                    return orderBy.ascending ? comparison : -comparison;
+                  });
+                }
+                
+                // Apply range
+                if (rangeFrom !== null && rangeTo !== null) {
+                  result = result.slice(rangeFrom, rangeTo + 1);
+                } else if (limitCount !== null) {
+                  // Apply limit only if range is not set
+                  result = result.slice(0, limitCount);
+                }
+                
+                return Promise.resolve({ data: result, error: null }).then(resolve);
+              },
+              catch: function(reject) {
+                return Promise.resolve({ data: result, error: null }).catch(reject);
+              }
+            };
+            
+            return builder;
+          }
+          
+          return {
+            auth: {
+              signInWithPassword: async (credentials) => {
+                console.log('Demo login with:', credentials.email);
+                if (!credentials.email || !credentials.password) {
+                  return { error: new Error('Email and password required') };
+                }
+                if (credentials.password.length < 3) {
+                  return { error: new Error('Invalid credentials') };
+                }
+                const user = { id: 'demo', email: credentials.email, created_at: new Date().toISOString() };
+                const session = { user, access_token: 'demo_token', expires_at: Date.now() / 1000 + 3600 };
+                fallbackAuthState = { user, session };
+                
+                // Notify auth state change callbacks
+                authChangeCallbacks.forEach(callback => {
+                  callback('SIGNED_IN', session);
+                });
+                
+                return { data: { user, session }, error: null };
+              },
+              signUp: async (credentials) => {
+                console.log('Demo signup - please use login instead');
+                return { data: { user: null, session: null }, error: null };
+              },
+              signOut: async () => {
+                console.log('Demo logout');
+                fallbackAuthState = null;
+                
+                // Notify auth state change callbacks
+                authChangeCallbacks.forEach(callback => {
+                  callback('SIGNED_OUT', null);
+                });
+                
+                return { error: null };
+              },
+              getSession: async () => {
+                return { data: { session: fallbackAuthState?.session || null } };
+              },
+              onAuthStateChange: (callback) => {
+                console.log('Setting up demo auth state listener');
+                authChangeCallbacks.push(callback);
+                
+                return { data: { subscription: { unsubscribe: () => {
+                  const index = authChangeCallbacks.indexOf(callback);
+                  if (index > -1) authChangeCallbacks.splice(index, 1);
+                } } } };
+              }
+            },
+            from: (table) => {
+              const tableData = sampleData[table] || [];
+              return createQueryBuilder(table, tableData);
+            },
+            channel: (name) => ({
+              on: function() { return this; },
+              subscribe: () => 'SUBSCRIBED',
+              unsubscribe: () => Promise.resolve({ error: null })
+            }),
+            removeChannel: () => Promise.resolve({ error: null })
+          };
+        }
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" 
+            onload="console.log('✅ Real Supabase CDN loaded successfully')"
+            onerror="console.warn('⚠️ Supabase CDN blocked - using fallback client')"></script>
 </head>
-<body class="modern-theme">
-<!-- LOGIN AREA - NEW DESIGN -->
+<body class="nativewind-theme">
+<!-- LOGIN AREA - NATIVEWIND DESIGN -->
 <div id="login-area"></div>
 
-<!-- MAIN APP - NEW DESIGN -->
-<div class="app-container modern-design" style="display:none;">
-    <!-- Header removed as per requirement #4 -->
-
-    <!-- MODERN BOTTOM NAVIGATION -->
-    <nav class="modern-bottom-nav">
-      <div class="nav-container">
+<!-- MAIN APP - NATIVEWIND DESIGN -->
+<div class="app-container" style="display:none;">
+    
+    <!-- NATIVE BOTTOM NAVIGATION -->
+    <nav class="native-bottom-nav">
+      <div class="nav-grid">
         <a id="nav-matches" href="#" class="nav-item active">
           <i class="fas fa-futbol nav-icon"></i>
           <span class="nav-label">Spiele</span>
@@ -97,14 +352,14 @@
 
     <!-- MAIN CONTENT -->
     <main class="page-container">
-        <!-- Enhanced loader -->
-        <div id="tab-loader" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
-            <div class="bg-white rounded-xl p-6 flex flex-col items-center gap-4 shadow-xl">
+        <!-- Enhanced NativeWind loader -->
+        <div id="tab-loader" class="loading-overlay" style="display:none;">
+            <div class="loading-card">
                 <div class="spinner"></div>
-                <div class="text-gray-600 font-medium">Lädt...</div>
+                <div class="text-text-secondary font-medium">Lädt...</div>
             </div>
         </div>
-        <div id="app"></div>
+        <div id="app" class="content-wrapper"></div>
     </main>
 </div>
 

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Module Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="status">Testing modules...</div>
+    
+    <script type="module">
+        const statusDiv = document.getElementById('status');
+        
+        try {
+            console.log("1. Testing supabaseClient...");
+            statusDiv.textContent = "Testing supabaseClient...";
+            
+            const { supabase, supabaseDb, usingFallback } = await import('./supabaseClient.js');
+            console.log("✅ supabaseClient loaded");
+            statusDiv.innerHTML += "<br>✅ supabaseClient loaded";
+            
+            console.log("2. Testing connectionMonitor...");
+            statusDiv.innerHTML += "<br>Testing connectionMonitor...";
+            const { connectionMonitor, isDatabaseAvailable } = await import('./connectionMonitor.js');
+            console.log("✅ connectionMonitor loaded");
+            statusDiv.innerHTML += "<br>✅ connectionMonitor loaded";
+            
+            console.log("3. Testing utils...");
+            statusDiv.innerHTML += "<br>Testing utils...";
+            const { loadingManager, ErrorHandler, eventBus } = await import('./utils.js');
+            console.log("✅ utils loaded");
+            statusDiv.innerHTML += "<br>✅ utils loaded";
+            
+            console.log("4. Testing auth...");
+            statusDiv.innerHTML += "<br>Testing auth...";
+            const { signUp, signIn, signOut } = await import('./auth.js');
+            console.log("✅ auth loaded");
+            statusDiv.innerHTML += "<br>✅ auth loaded";
+            
+            console.log("All modules loaded successfully!");
+            statusDiv.innerHTML += "<br><strong>All modules loaded successfully!</strong>";
+            
+        } catch (error) {
+            console.error("Module loading failed:", error);
+            statusDiv.innerHTML += `<br><span style="color:red">❌ Error: ${error.message}</span>`;
+        }
+    </script>
+</body>
+</html>

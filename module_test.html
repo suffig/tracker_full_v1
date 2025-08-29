@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>FIFA Tracker - Module Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>
+      // Pre-create fallback Supabase
+      window.supabase = {
+        createClient: function(url, key, options) {
+          return {
+            auth: {
+              signInWithPassword: async (credentials) => ({ data: { user: null, session: null }, error: null }),
+              onAuthStateChange: (callback) => ({ data: { subscription: { unsubscribe: () => {} } } })
+            },
+            from: (table) => ({
+              select: (query) => Promise.resolve({ data: [], error: null })
+            }),
+            channel: () => ({
+              on: () => ({}),
+              subscribe: () => 'SUBSCRIBED'
+            })
+          };
+        }
+      };
+      console.log('Supabase fallback created');
+    </script>
+</head>
+<body>
+    <div>Testing module loading...</div>
+    <script type="module">
+        console.log('Starting module test...');
+        try {
+            console.log('Testing supabaseClient import...');
+            const { supabase } = await import('./supabaseClient.js');
+            console.log('✅ supabaseClient loaded');
+            
+            console.log('Testing auth import...');
+            const { signIn } = await import('./auth.js');
+            console.log('✅ auth loaded');
+            
+            console.log('Testing utils import...');
+            const { ErrorHandler } = await import('./utils.js');
+            console.log('✅ utils loaded');
+            
+            console.log('All modules loaded successfully');
+        } catch (error) {
+            console.error('❌ Module loading failed:', error);
+        }
+    </script>
+</body>
+</html>

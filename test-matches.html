@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>FIFA Tracker - Matches NativeWind Design</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="css/tailwind-play-output.css" rel="stylesheet">
+    <link href="css/nativewind-design.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="nativewind-theme">
+
+<!-- MAIN APP - NATIVEWIND DESIGN TEST -->
+<div class="app-container">
+    
+    <!-- NATIVE BOTTOM NAVIGATION -->
+    <nav class="native-bottom-nav">
+      <div class="nav-grid">
+        <a href="#" class="nav-item active">
+          <i class="fas fa-futbol nav-icon"></i>
+          <span class="nav-label">Spiele</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-users nav-icon"></i>
+          <span class="nav-label">Kader</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-ban nav-icon"></i>
+          <span class="nav-label">Sperren</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-euro-sign nav-icon"></i>
+          <span class="nav-label">Finanzen</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-chart-bar nav-icon"></i>
+          <span class="nav-label">Stats</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-star nav-icon"></i>
+          <span class="nav-label">Spieler</span>
+        </a>
+        <button class="nav-item logout-nav" title="Abmelden">
+          <i class="fas fa-sign-out-alt nav-icon"></i>
+          <span class="nav-label">Logout</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="page-container">
+        <div class="content-wrapper">
+            <!-- Match Center -->
+            <div class="mb-6 text-center">
+                <h1 class="text-2xl font-bold text-text-primary mb-2">Match Center</h1>
+                <p class="text-text-secondary">Verwalten Sie Ihre FIFA-Spiele</p>
+            </div>
+            
+            <div class="mb-4">
+                <button class="btn btn-primary btn-full">
+                    <i class="fas fa-plus"></i> <span>Neues Match hinzufügen</span>
+                </button>
+            </div>
+            
+            <!-- Match Date Header -->
+            <div class="native-card text-center mb-4">
+                <h3 class="card-title" style="color: var(--primary-emerald);">Spiele am 15.01.2024</h3>
+            </div>
+            
+            <!-- Sample Match Cards -->
+            <div class="space-y-4">
+                <!-- Match 1 - AEK vs Real -->
+                <div class="native-card">
+                    <div class="card-header">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-bold text-white">AEK</span>
+                            </div>
+                            <span class="text-2xl font-bold text-text-primary">2 : 1</span>
+                            <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-bold text-white">RM</span>
+                            </div>
+                        </div>
+                        <div class="text-sm text-text-secondary">
+                            <i class="fas fa-trophy text-warning mr-1"></i>
+                            Match #15
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="flex justify-between items-center text-sm">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-star text-warning"></i>
+                                <span>Man of the Match: Messi</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-clock text-text-tertiary"></i>
+                                <span>14:30</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-secondary btn-sm">
+                            <i class="fas fa-edit"></i>
+                            <span>Bearbeiten</span>
+                        </button>
+                        <button class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                            <span>Löschen</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Match 2 - Real vs AEK -->
+                <div class="native-card">
+                    <div class="card-header">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-bold text-white">RM</span>
+                            </div>
+                            <span class="text-2xl font-bold text-text-primary">0 : 3</span>
+                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-bold text-white">AEK</span>
+                            </div>
+                        </div>
+                        <div class="text-sm text-text-secondary">
+                            <i class="fas fa-trophy text-warning mr-1"></i>
+                            Match #14
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="flex justify-between items-center text-sm">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-star text-warning"></i>
+                                <span>Man of the Match: De Bruyne</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-clock text-text-tertiary"></i>
+                                <span>16:15</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-secondary btn-sm">
+                            <i class="fas fa-edit"></i>
+                            <span>Bearbeiten</span>
+                        </button>
+                        <button class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                            <span>Löschen</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="native-card">
+                    <div class="flex justify-between items-center">
+                        <button class="btn btn-secondary btn-sm">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>Vorheriger Tag</span>
+                        </button>
+                        <span class="text-sm text-text-secondary">15.01.2024</span>
+                        <button class="btn btn-secondary btn-sm">
+                            <span>Nächster Tag</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Sample Modal -->
+<div class="modal" style="display: none;" id="sample-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Match hinzufügen</h3>
+            <button class="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form class="space-y-4">
+                <div class="form-group">
+                    <label class="form-label">Datum</label>
+                    <input type="date" class="form-input" value="2024-01-15">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label">Team 1</label>
+                        <select class="form-input">
+                            <option>AEK Athen</option>
+                            <option>Real Madrid</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Team 2</label>
+                        <select class="form-input">
+                            <option>Real Madrid</option>
+                            <option>AEK Athen</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label">Tore Team 1</label>
+                        <input type="number" class="form-input" min="0" value="2">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tore Team 2</label>
+                        <input type="number" class="form-input" min="0" value="1">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Man of the Match</label>
+                    <select class="form-input">
+                        <option>Messi</option>
+                        <option>De Bruyne</option>
+                        <option>Ronaldo</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary">Abbrechen</button>
+            <button class="btn btn-primary">Match speichern</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Navigation active state demo
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        item.classList.add('active');
+    });
+});
+
+// Modal demo
+document.querySelector('.btn-primary.btn-full').addEventListener('click', () => {
+    document.getElementById('sample-modal').style.display = 'flex';
+});
+
+document.querySelector('.modal-close').addEventListener('click', () => {
+    document.getElementById('sample-modal').style.display = 'none';
+});
+
+document.querySelector('.modal').addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal')) {
+        document.getElementById('sample-modal').style.display = 'none';
+    }
+});
+</script>
+
+</body>
+</html>

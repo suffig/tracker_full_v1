@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Main.js Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="login-area"></div>
+    <div class="app-container" style="display:none;">
+        <nav class="native-bottom-nav">
+            <div class="nav-grid">
+                <a id="nav-matches" href="#" class="nav-item active">
+                    <span class="nav-label">Spiele</span>
+                </a>
+                <a id="nav-squad" href="#" class="nav-item">
+                    <span class="nav-label">Kader</span>
+                </a>
+                <a id="nav-bans" href="#" class="nav-item">
+                    <span class="nav-label">Sperren</span>
+                </a>
+                <a id="nav-finanzen" href="#" class="nav-item">
+                    <span class="nav-label">Finanzen</span>
+                </a>
+                <a id="nav-stats" href="#" class="nav-item">
+                    <span class="nav-label">Stats</span>
+                </a>
+                <a id="nav-spieler" href="#" class="nav-item">
+                    <span class="nav-label">Spieler</span>
+                </a>
+                <button id="logout-btn" class="nav-item logout-nav" title="Abmelden">
+                    <span class="nav-label">Logout</span>
+                </button>
+            </div>
+        </nav>
+        <main class="page-container">
+            <div id="tab-loader" class="loading-overlay" style="display:none;">
+                <div class="loading-card">
+                    <div class="spinner"></div>
+                    <div class="text-text-secondary font-medium">Lädt...</div>
+                </div>
+            </div>
+            <div id="app" class="content-wrapper"></div>
+        </main>
+    </div>
+    <div id="modal-root"></div>
+    
+    <div id="status">Loading main.js...</div>
+    
+    <script type="module">
+        const statusDiv = document.getElementById('status');
+        
+        try {
+            console.log("Loading main.js...");
+            await import('./main.js');
+            console.log("✅ main.js loaded successfully");
+            statusDiv.innerHTML = "✅ main.js loaded successfully";
+        } catch (error) {
+            console.error("main.js loading failed:", error);
+            statusDiv.innerHTML = `❌ Error loading main.js: ${error.message}`;
+        }
+    </script>
+</body>
+</html>

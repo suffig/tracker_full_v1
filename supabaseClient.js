@@ -96,8 +96,10 @@ function createFallbackClient() {
     },
     from: (table) => {
       const data = sampleData[table] || [];
-      return {
-        select: (query = '*') => Promise.resolve({ data: [...data], error: null }),
+      let queryState = {};
+      
+      const queryBuilder = {
+        select: (query = '*') => queryBuilder,
         insert: (newData) => {
           const id = Math.max(0, ...data.map(item => item.id || 0)) + 1;
           const item = { id, ...newData, created_at: new Date().toISOString() };
@@ -120,21 +122,66 @@ function createFallbackClient() {
           }
         }),
         eq: function(column, value) {
-          return {
-            ...this,
-            then: (resolve) => {
-              const filtered = data.filter(item => item[column] === value);
-              resolve({ data: filtered, error: null });
-            }
-          };
+          queryState.eq = { [column]: value };
+          return queryBuilder;
         },
-        order: function(column, options = {}) { return this; },
-        limit: function(count) { return this; }
+        order: function(column, options = {}) {
+          queryState.order = { column, ascending: options.ascending !== false };
+          return queryBuilder;
+        },
+        limit: function(count) {
+          queryState.limit = count;
+          return queryBuilder;
+        },
+        // Make it thenable (awaitable)
+        then: function(resolve, reject) {
+          try {
+            let result = [...data];
+            
+            // Apply filters
+            if (queryState.eq) {
+              Object.entries(queryState.eq).forEach(([column, value]) => {
+                result = result.filter(item => item[column] === value);
+              });
+            }
+            
+            // Apply ordering
+            if (queryState.order) {
+              const { column, ascending } = queryState.order;
+              result.sort((a, b) => {
+                if (ascending) {
+                  return a[column] > b[column] ? 1 : -1;
+                } else {
+                  return b[column] > a[column] ? 1 : -1;
+                }
+              });
+            }
+            
+            // Apply limit
+            if (queryState.limit) {
+              result = result.slice(0, queryState.limit);
+            }
+            
+            queryState = {}; // Reset for next query
+            resolve({ data: result, error: null });
+          } catch (error) {
+            reject({ data: null, error });
+          }
+        }
       };
+      
+      return queryBuilder;
     },
     channel: () => ({
-      on: () => ({}),
-      subscribe: () => 'SUBSCRIBED',
+      on: function(event, options, callback) {
+        console.log('📡 Demo: Setting up realtime listener for', event, options?.table);
+        return this;
+      },
+      subscribe: function(callback) {
+        console.log('📡 Demo: Subscribing to realtime channel');
+        if (callback) callback('SUBSCRIBED');
+        return 'SUBSCRIBED';
+      },
       unsubscribe: () => Promise.resolve({ error: null })
     }),
     removeChannel: () => Promise.resolve({ error: null })

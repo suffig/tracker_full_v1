@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>FIFA Tracker - NativeWind Design Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="css/tailwind-play-output.css" rel="stylesheet">
+    <link href="css/nativewind-design.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="nativewind-theme">
+
+<!-- MAIN APP - NATIVEWIND DESIGN TEST -->
+<div class="app-container">
+    
+    <!-- NATIVE BOTTOM NAVIGATION -->
+    <nav class="native-bottom-nav">
+      <div class="nav-grid">
+        <a href="#" class="nav-item active">
+          <i class="fas fa-futbol nav-icon"></i>
+          <span class="nav-label">Spiele</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-users nav-icon"></i>
+          <span class="nav-label">Kader</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-ban nav-icon"></i>
+          <span class="nav-label">Sperren</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-euro-sign nav-icon"></i>
+          <span class="nav-label">Finanzen</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-chart-bar nav-icon"></i>
+          <span class="nav-label">Stats</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-star nav-icon"></i>
+          <span class="nav-label">Spieler</span>
+        </a>
+        <button class="nav-item logout-nav" title="Abmelden">
+          <i class="fas fa-sign-out-alt nav-icon"></i>
+          <span class="nav-label">Logout</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="page-container">
+        <div class="content-wrapper">
+            <!-- Team Management Demo -->
+            <div class="mb-6 text-center">
+                <h1 class="text-2xl font-bold text-text-primary mb-2">Team Management</h1>
+                <p class="text-text-secondary">Verwalten Sie Ihre FIFA-Teams und Spieler</p>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- AEK Athen Team -->
+                <div class="accordion">
+                    <div class="accordion-header active">
+                        <div class="accordion-title">
+                            <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-users text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-lg">AEK Athen</h3>
+                                <p class="text-sm text-text-secondary">Marktwert: <span>125M €</span></p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down accordion-icon"></i>
+                    </div>
+                    
+                    <div class="accordion-content active">
+                        <button class="btn btn-primary btn-full mb-4">
+                            <i class="fas fa-plus"></i>
+                            <span>Neuen Spieler hinzufügen</span>
+                        </button>
+                        
+                        <!-- Sample Player Cards -->
+                        <div class="grid gap-4">
+                            <div class="native-card team-aek">
+                                <div class="card-header">
+                                    <div class="flex items-center gap-3">
+                                        <span class="position-badge position-att">ST</span>
+                                        <div>
+                                            <h3 class="card-title">Lionel Messi</h3>
+                                            <p class="card-subtitle">AEK Athen</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-xl font-bold text-interactive-success">25M €</div>
+                                </div>
+                                <div class="card-footer">
+                                    <button class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                        <span>Bearbeiten</span>
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-arrow-right"></i>
+                                        <span>Zu Ehemalige</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="native-card team-aek">
+                                <div class="card-header">
+                                    <div class="flex items-center gap-3">
+                                        <span class="position-badge position-mid">ZM</span>
+                                        <div>
+                                            <h3 class="card-title">Kevin De Bruyne</h3>
+                                            <p class="card-subtitle">AEK Athen</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-xl font-bold text-interactive-success">22M €</div>
+                                </div>
+                                <div class="card-footer">
+                                    <button class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                        <span>Bearbeiten</span>
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-arrow-right"></i>
+                                        <span>Zu Ehemalige</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real Madrid Team -->
+                <div class="accordion">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-users text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-lg">Real Madrid</h3>
+                                <p class="text-sm text-text-secondary">Marktwert: <span>98M €</span></p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down accordion-icon"></i>
+                    </div>
+                </div>
+
+                <!-- Ehemalige Spieler -->
+                <div class="accordion">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="w-12 h-12 bg-gray-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-users text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-lg">Ehemalige Spieler</h3>
+                                <p class="text-sm text-text-secondary">Ehemalige Spieler</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down accordion-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+// Simple accordion functionality for demo
+document.querySelectorAll('.accordion-header').forEach(header => {
+    header.addEventListener('click', () => {
+        const accordion = header.parentElement;
+        const content = accordion.querySelector('.accordion-content');
+        const icon = header.querySelector('.accordion-icon');
+        
+        // Toggle active state
+        header.classList.toggle('active');
+        
+        if (content) {
+            content.classList.toggle('active');
+        }
+        
+        // Rotate icon
+        if (header.classList.contains('active')) {
+            icon.style.transform = 'rotate(180deg)';
+        } else {
+            icon.style.transform = 'rotate(0deg)';
+        }
+    });
+});
+
+// Navigation active state demo
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        item.classList.add('active');
+    });
+});
+</script>
+
+</body>
+</html>

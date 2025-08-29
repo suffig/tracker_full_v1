@@ -41,8 +41,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Original Tailwind CSS -->
     <link href="css/tailwind-play-output.css" rel="stylesheet">
-    <!-- New Modern Design -->
-    <link href="css/new-design.css" rel="stylesheet">
+    <!-- NativeWind Mobile-First Design -->
+    <link href="css/nativewind-design.css" rel="stylesheet">
     <!-- Flowbite CSS - Local Minimal Replacement -->
     <link href="assets/flowbite-minimal.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
@@ -53,17 +53,16 @@
     <!-- Supabase JavaScript Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="modern-theme">
-<!-- LOGIN AREA - NEW DESIGN -->
+<body class="nativewind-theme">
+<!-- LOGIN AREA - NATIVEWIND DESIGN -->
 <div id="login-area"></div>
 
-<!-- MAIN APP - NEW DESIGN -->
-<div class="app-container modern-design" style="display:none;">
-    <!-- Header removed as per requirement #4 -->
-
-    <!-- MODERN BOTTOM NAVIGATION -->
-    <nav class="modern-bottom-nav">
-      <div class="nav-container">
+<!-- MAIN APP - NATIVEWIND DESIGN -->
+<div class="app-container" style="display:none;">
+    
+    <!-- NATIVE BOTTOM NAVIGATION -->
+    <nav class="native-bottom-nav">
+      <div class="nav-grid">
         <a id="nav-matches" href="#" class="nav-item active">
           <i class="fas fa-futbol nav-icon"></i>
           <span class="nav-label">Spiele</span>
@@ -97,14 +96,14 @@
 
     <!-- MAIN CONTENT -->
     <main class="page-container">
-        <!-- Enhanced loader -->
-        <div id="tab-loader" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
-            <div class="bg-white rounded-xl p-6 flex flex-col items-center gap-4 shadow-xl">
+        <!-- Enhanced NativeWind loader -->
+        <div id="tab-loader" class="loading-overlay" style="display:none;">
+            <div class="loading-card">
                 <div class="spinner"></div>
-                <div class="text-gray-600 font-medium">Lädt...</div>
+                <div class="text-text-secondary font-medium">Lädt...</div>
             </div>
         </div>
-        <div id="app"></div>
+        <div id="app" class="content-wrapper"></div>
     </main>
 </div>
 

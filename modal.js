@@ -11,8 +11,14 @@ export function showModal(html) {
     modal.innerHTML = `
         <div class="modal" onclick="window.hideModal && window.hideModal()">
             <div class="modal-content" onclick="event.stopPropagation();">
-                <button class="close-modal-btn" aria-label="Schließen" onclick="window.hideModal && window.hideModal(); event.stopPropagation();"></button>
-                ${html}
+                <div class="modal-header">
+                    <button class="modal-close" aria-label="Schließen" onclick="window.hideModal && window.hideModal(); event.stopPropagation();">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ${html}
+                </div>
             </div>
         </div>
     `;

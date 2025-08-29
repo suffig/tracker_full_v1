@@ -534,16 +534,16 @@ async function renderLoginArea() {
             if (document.getElementById('pw')) pwValue = document.getElementById('pw').value;
             loginDiv.innerHTML = `
                 <div class="login-container">
-                    <div class="login-card fade-in">
-                        <div class="login-logo">
-                            <div class="login-logo-icon">
+                    <div class="login-card">
+                        <div class="login-header">
+                            <div class="login-logo">
                                 <i class="fas fa-futbol"></i>
                             </div>
                             <h1 class="login-title">FIFA Tracker</h1>
-                            <p class="login-subtitle">Melden Sie sich an, um fortzufahren</p>
+                            <p class="login-subtitle">Verwalte deine Spiele und Teams</p>
                         </div>
                         
-                        <form id="loginform" class="space-y-6">
+                        <form id="loginform">
                             <div class="form-group">
                                 <label for="email" class="form-label">E-Mail-Adresse</label>
                                 <input 
@@ -568,7 +568,7 @@ async function renderLoginArea() {
                             </div>
                             <button
                                 type="submit"
-                                class="btn btn-primary btn-lg w-full login-btn">
+                                class="btn btn-primary btn-full login-btn">
                                 <i class="fas fa-sign-in-alt"></i> 
                                 <span>Anmelden</span>
                             </button>

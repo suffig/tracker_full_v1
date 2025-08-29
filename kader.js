@@ -30,6 +30,15 @@ function getPositionBadgeClass(pos) {
     return "position-badge bg-gray-700 text-gray-200 border-gray-600";
 }
 
+// --- Position class helper for NativeWind design ---
+function getPositionClass(pos) {
+    if (pos === "TH") return "th";
+    if (["IV", "LV", "RV", "ZDM"].includes(pos)) return "def";
+    if (["ZM", "ZOM", "LM", "RM"].includes(pos)) return "mid";
+    if (["LF", "RF", "ST"].includes(pos)) return "att";
+    return "def";
+}
+
 async function loadPlayersAndFinances(renderFn = renderPlayerLists) {
     try {
         const loadingDiv = document.createElement('div');
@@ -89,15 +98,15 @@ export function renderKaderTab(containerId = "app") {
 
     app.innerHTML = `
         <div class="fade-in">
-            <div class="page-header">
-                <h1 class="page-title">Team Management</h1>
-                <p class="page-subtitle">Verwalten Sie Ihre FIFA-Teams und Spieler</p>
+            <div class="mb-6 text-center">
+                <h1 class="text-2xl font-bold text-text-primary mb-2">Team Management</h1>
+                <p class="text-text-secondary">Verwalten Sie Ihre FIFA-Teams und Spieler</p>
             </div>
             
-            <div class="space-y-6">
-                ${accordionPanelHtml('AEK Athen', 'aek', 'from-blue-500 to-blue-600', 'AEK')}
-                ${accordionPanelHtml('Real Madrid', 'real', 'from-red-500 to-red-600', 'Real')}
-                ${accordionPanelHtml('Ehemalige Spieler', 'ehemalige', 'from-gray-500 to-gray-600', 'Ehemalige')}
+            <div class="space-y-4">
+                ${accordionPanelHtml('AEK Athen', 'aek', 'bg-blue-500', 'AEK')}
+                ${accordionPanelHtml('Real Madrid', 'real', 'bg-red-500', 'Real')}
+                ${accordionPanelHtml('Ehemalige Spieler', 'ehemalige', 'bg-gray-500', 'Ehemalige')}
             </div>
         </div>
     `;
@@ -109,36 +118,34 @@ export function renderKaderTab(containerId = "app") {
     });
 }
 
-function accordionPanelHtml(team, key, gradientClass, teamKey) {
+function accordionPanelHtml(team, key, colorClass, teamKey) {
     const isOpen = openPanel === key;
     return `
-        <div class="modern-card">
-            <button id="panel-toggle-${key}" class="flex justify-between items-center w-full p-0 transition-all">
-                <div class="flex items-center gap-4 p-4 flex-1">
-                    <div class="w-12 h-12 bg-gradient-to-r ${gradientClass} rounded-lg flex items-center justify-center">
+        <div class="accordion">
+            <div id="panel-toggle-${key}" class="accordion-header ${isOpen ? 'active' : ''}">
+                <div class="accordion-title">
+                    <div class="w-12 h-12 ${colorClass} rounded-lg flex items-center justify-center">
                         <i class="fas fa-users text-white text-lg"></i>
                     </div>
-                    <div class="text-left">
+                    <div>
                         <h3 class="font-semibold text-lg">${team}</h3>
-                        <p class="text-sm text-gray-500">
+                        <p class="text-sm text-text-secondary">
                             ${teamKey !== 'Ehemalige' ? `Marktwert: <span id="${key}-marktwert">0M €</span>` : 'Ehemalige Spieler'}
                         </p>
                     </div>
                 </div>
-                <div class="p-4">
-                    <i class="fas fa-chevron-${isOpen ? 'up' : 'down'} text-gray-400"></i>
-                </div>
-            </button>
+                <i class="fas fa-chevron-down accordion-icon"></i>
+            </div>
             
-            ${isOpen ? `
-                <div id="panel-content-${key}" class="border-t border-gray-100 p-4 slide-up">
-                    <button id="add-player-${key}" class="btn btn-primary w-full mb-4">
+            <div class="accordion-content ${isOpen ? 'active' : ''}">
+                ${isOpen ? `
+                    <button id="add-player-${key}" class="btn btn-primary btn-full mb-4">
                         <i class="fas fa-plus"></i>
                         <span>Neuen Spieler hinzufügen</span>
                     </button>
                     <div id="team-${key}-players" class="grid gap-4 ${key === 'ehemalige' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : ''}"></div>
-                </div>
-            ` : ''}
+                ` : ''}
+            </div>
         </div>
     `;
 }
@@ -181,21 +188,22 @@ function renderPlayerList(containerId, arr, team) {
             ? player.value
             : (player.value ? parseFloat(player.value) : 0);
 
+        const teamClass = team === 'AEK' ? 'team-aek' : team === 'Real' ? 'team-real' : 'team-ehemalige';
+        
         const d = document.createElement("div");
-        d.className = "modern-card";
+        d.className = `native-card ${teamClass}`;
         d.innerHTML = `
             <div class="card-header">
                 <div class="flex items-center gap-3">
-                    <span class="${getPositionBadgeClass(player.position)}">${player.position || 'N/A'}</span>
-                    <h3 class="card-title">${player.name}</h3>
+                    <span class="position-badge position-${getPositionClass(player.position)}">${player.position || 'N/A'}</span>
+                    <div>
+                        <h3 class="card-title">${player.name}</h3>
+                        <p class="card-subtitle">${team === 'AEK' ? 'AEK Athen' : team === 'Real' ? 'Real Madrid' : 'Ehemalige'}</p>
+                    </div>
                 </div>
-                <div class="text-xl font-bold text-green-600">${marktwert}M €</div>
+                <div class="text-xl font-bold text-interactive-success">${marktwert}M €</div>
             </div>
-            <div class="card-content">
-                <p class="text-sm text-gray-500">Team: ${team === 'AEK' ? 'AEK Athen' : team === 'Real' ? 'Real Madrid' : 'Ehemalige'}</p>
-                <p class="text-sm text-gray-500">Marktwert: ${marktwert}M €</p>
-            </div>
-            <div class="card-actions">
+            <div class="card-footer">
                 <button class="btn btn-secondary btn-sm edit-btn">
                     <i class="fas fa-edit"></i>
                     <span>Bearbeiten</span>
@@ -228,33 +236,32 @@ function renderEhemaligeList(containerId = "ehemalige-players") {
             : (player.value ? parseFloat(player.value) : 0);
 
         const d = document.createElement("div");
-        d.className = "modern-card";
+        d.className = "native-card team-ehemalige";
         d.innerHTML = `
             <div class="card-header">
                 <div class="flex items-center gap-3">
-                    <span class="${getPositionBadgeClass(player.position)}">${player.position || 'N/A'}</span>
-                    <h3 class="card-title">${player.name}</h3>
+                    <span class="position-badge position-${getPositionClass(player.position)}">${player.position || 'N/A'}</span>
+                    <div>
+                        <h3 class="card-title">${player.name}</h3>
+                        <p class="card-subtitle">Ehemaliger Spieler</p>
+                    </div>
                 </div>
-                <div class="text-xl font-bold text-gray-600">${marktwert ? marktwert + 'M €' : 'N/A'}</div>
+                <div class="text-xl font-bold text-text-tertiary">${marktwert ? marktwert + 'M €' : 'N/A'}</div>
             </div>
-            <div class="card-content">
-                <p class="text-sm text-gray-500">Status: Ehemaliger Spieler</p>
-                <p class="text-sm text-gray-500">Marktwert: ${marktwert ? marktwert + 'M €' : 'Nicht bewertet'}</p>
-            </div>
-            <div class="card-actions">
-                <button class="btn btn-secondary btn-sm edit-btn">
+            <div class="card-footer flex-wrap">
+                <button class="btn btn-secondary btn-xs edit-btn">
                     <i class="fas fa-edit"></i>
                     <span>Bearbeiten</span>
                 </button>
-                <button class="btn btn-danger btn-sm delete-btn">
+                <button class="btn btn-danger btn-xs delete-btn">
                     <i class="fas fa-trash"></i>
                     <span>Löschen</span>
                 </button>
-                <button class="btn btn-primary btn-sm move-aek-btn" style="background: linear-gradient(135deg, var(--accent-blue), #60A5FA);">
+                <button class="btn btn-secondary btn-xs move-aek-btn" style="background: var(--interactive-secondary); color: white;">
                     <i class="fas fa-arrow-left"></i>
                     <span>Zu AEK</span>
                 </button>
-                <button class="btn btn-primary btn-sm move-real-btn" style="background: linear-gradient(135deg, var(--accent-red), #F87171);">
+                <button class="btn btn-danger btn-xs move-real-btn">
                     <i class="fas fa-arrow-right"></i>
                     <span>Zu Real</span>
                 </button>

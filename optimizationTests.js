@@ -303,10 +303,77 @@ class OptimizationTester {
                 failed: this.testResults.filter(r => r.type === 'error').length,
             },
             performance: this.performance,
-            details: this.testResults
+            details: this.testResults,
+            newFeatures: {
+                enhancedModals: 'Implemented with focus management and keyboard navigation',
+                formValidation: 'Real-time validation with visual feedback',
+                themeToggle: 'Dark/light theme with localStorage persistence',
+                keyboardShortcuts: 'Power user shortcuts for common actions',
+                dataExport: 'JSON and CSV export capabilities',
+                accessibility: 'ARIA labels, screen reader support, skip links',
+                searchFilter: 'Advanced search and filtering utilities'
+            }
         };
         
         return report;
+    }
+
+    // New test methods for enhanced features
+    async testEnhancedFeatures() {
+        // Test theme management
+        if (typeof window !== 'undefined' && window.themeManager) {
+            const currentTheme = window.themeManager.getCurrentTheme();
+            if (!['dark', 'light'].includes(currentTheme)) {
+                throw new Error('Invalid theme state');
+            }
+        }
+
+        // Test keyboard shortcuts
+        if (typeof window !== 'undefined' && window.keyboardShortcuts) {
+            const shortcuts = window.keyboardShortcuts.shortcuts;
+            if (shortcuts.size === 0) {
+                throw new Error('No keyboard shortcuts registered');
+            }
+        }
+
+        // Test export utilities
+        const { DataExport } = await import('./utils.js');
+        if (!DataExport || !DataExport.exportToJSON || !DataExport.exportToCSV) {
+            throw new Error('Export utilities not available');
+        }
+
+        // Test form validation
+        const { FormValidator } = await import('./utils.js');
+        if (!FormValidator || !FormValidator.setupRealTimeValidation) {
+            throw new Error('Enhanced form validation not available');
+        }
+    }
+
+    async testAccessibilityFeatures() {
+        // Test ARIA labels presence
+        const buttons = document.querySelectorAll('button');
+        let missingLabels = 0;
+        buttons.forEach(btn => {
+            if (!btn.getAttribute('aria-label') && !btn.textContent.trim()) {
+                missingLabels++;
+            }
+        });
+
+        if (missingLabels > 0) {
+            console.warn(`${missingLabels} buttons missing accessibility labels`);
+        }
+
+        // Test skip links
+        const skipLinks = document.querySelectorAll('.skip-link');
+        if (skipLinks.length === 0) {
+            console.warn('No skip links found for keyboard navigation');
+        }
+
+        // Test focus management
+        const { AccessibilityUtils } = await import('./utils.js');
+        if (!AccessibilityUtils || !AccessibilityUtils.manageFocus) {
+            throw new Error('Accessibility utilities not available');
+        }
     }
 }
 

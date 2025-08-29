@@ -532,38 +532,70 @@ async function renderLoginArea() {
             if (document.getElementById('email')) emailValue = document.getElementById('email').value;
             if (document.getElementById('pw')) pwValue = document.getElementById('pw').value;
             loginDiv.innerHTML = `
-                <div class="min-h-screen bg-gray-900 flex flex-col items-center justify-center px-4 py-8">
-                    <div class="w-full">
+                <div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col items-center justify-center px-6 py-8 relative overflow-hidden">
+                    <!-- Animated background elements -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-transparent to-red-900/20"></div>
+                    <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+                    <div class="absolute bottom-1/4 right-1/4 w-48 h-48 bg-red-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+                    
+                    <div class="w-full max-w-md relative z-10">
                         <div class="flex flex-col items-center mb-8">
-                            <img src="assets/logo.png" alt="FIFA Tracker Logo" class="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 mb-4" loading="eager" decoding="async" />
-                            <h1 class="text-2xl sm:text-3xl font-bold text-gray-100 text-center">FIFA Statistik-Tracker</h1>
-                            <p class="text-gray-600 text-center mt-2">Melden Sie sich an, um fortzufahren</p>
-                        </div>
-                        <form id="loginform" class="login-area flex flex-col gap-6">
-                            <div class="space-y-4">
-                                <input 
-                                    type="email" 
-                                    id="email" 
-                                    required 
-                                    placeholder="E-Mail" 
-                                    autocomplete="email"
-                                    class="w-full rounded-lg border-2 border-gray-600 bg-gray-800 text-white placeholder-gray-400 px-4 py-4 text-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 outline-none" 
-                                    value="${emailValue}" />
-                                <input 
-                                    type="password" 
-                                    id="pw" 
-                                    required 
-                                    placeholder="Passwort" 
-                                    autocomplete="current-password"
-                                    class="w-full rounded-lg border-2 border-gray-600 bg-gray-800 text-white placeholder-gray-400 px-4 py-4 text-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 outline-none" 
-                                    value="${pwValue}" />
+                            <div class="relative mb-6">
+                                <img src="assets/logo.png" alt="FIFA Tracker Logo" 
+                                     class="w-28 h-28 sm:w-32 sm:h-32 drop-shadow-2xl transform hover:scale-105 transition-transform duration-300" 
+                                     loading="eager" decoding="async" />
+                                <div class="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-red-500/20 rounded-full blur-xl -z-10"></div>
                             </div>
-                            <button
-                                type="submit"
-                                class="login-btn w-full bg-blue-600 text-white font-bold text-xl py-4 rounded-xl shadow-lg hover:bg-blue-700 active:scale-95 transition-all duration-150 outline-none ring-2 ring-transparent focus:ring-blue-300 border-2 border-blue-600 hover:border-blue-700 min-h-[56px]">
-                                <i class="fas fa-sign-in-alt mr-2"></i> Anmelden
-                            </button>
-                        </form>
+                            <h1 class="text-3xl sm:text-4xl font-bold text-transparent bg-gradient-to-r from-blue-400 via-white to-red-400 bg-clip-text text-center mb-2">
+                                FIFA STATS TRACKER
+                            </h1>
+                            <p class="text-gray-400 text-center text-sm sm:text-base">Verfolge deine FIFA-Statistiken</p>
+                        </div>
+                        
+                        <div class="bg-white/5 backdrop-blur-xl rounded-3xl p-6 shadow-2xl border border-white/10">
+                            <form id="loginform" class="space-y-6">
+                                <div class="space-y-4">
+                                    <div class="relative">
+                                        <input 
+                                            type="email" 
+                                            id="email" 
+                                            required 
+                                            placeholder="E-Mail Adresse" 
+                                            autocomplete="email"
+                                            class="w-full rounded-2xl border-2 border-white/20 bg-white/10 backdrop-blur-md text-white placeholder-gray-300 px-6 py-4 text-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300 outline-none" 
+                                            value="${emailValue}" />
+                                        <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 to-transparent opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+                                    </div>
+                                    <div class="relative">
+                                        <input 
+                                            type="password" 
+                                            id="pw" 
+                                            required 
+                                            placeholder="Passwort" 
+                                            autocomplete="current-password"
+                                            class="w-full rounded-2xl border-2 border-white/20 bg-white/10 backdrop-blur-md text-white placeholder-gray-300 px-6 py-4 text-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300 outline-none" 
+                                            value="${pwValue}" />
+                                        <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 to-transparent opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+                                    </div>
+                                </div>
+                                <button
+                                    type="submit"
+                                    class="login-btn w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-lg py-5 rounded-2xl shadow-xl hover:shadow-2xl active:scale-98 transition-all duration-200 outline-none focus:ring-4 focus:ring-blue-300/50 border border-blue-500/50 backdrop-blur-md relative overflow-hidden group">
+                                    <span class="relative z-10 flex items-center justify-center">
+                                        🔑 <span class="ml-2">Anmelden</span>
+                                    </span>
+                                    <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Demo mode indicator with better styling -->
+                        <div class="mt-6 text-center">
+                            <div class="inline-flex items-center px-4 py-2 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 text-sm">
+                                <span class="w-2 h-2 bg-amber-400 rounded-full mr-2 animate-pulse"></span>
+                                Demo-Modus (Supabase nicht konfiguriert)
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;

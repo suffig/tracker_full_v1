@@ -65,7 +65,7 @@
         .app-container {
             flex: 1 0 auto;
         }
-        /* --- Bottom Navigation: Immer ganz unten, immer sichtbar --- */
+        /* Enhanced bottom navigation with modern design */
         #bottom-nav {
             position: fixed !important;
             bottom: 0 !important;
@@ -76,15 +76,18 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(30,41,59,0.96);
-            box-shadow: 0 -4px 24px rgba(0,0,0,0.25);
-            border-top: 2px solid #475569;
-            padding: 0.5rem 0.5rem 0.65rem 0.5rem;
-            min-height: 72px;
+            background: rgba(15, 23, 42, 0.98);
+            box-shadow: 
+                0 -8px 32px rgba(0, 0, 0, 0.3),
+                0 -4px 16px rgba(0, 0, 0, 0.2);
+            border-top: 2px solid rgba(71, 85, 105, 0.6);
+            padding: 0.75rem 0.75rem 0.875rem 0.75rem;
+            min-height: 80px;
             max-width: 100vw;
             margin: 0;
             border-radius: 0;
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
         #bottom-nav a {
             flex: 1 1 0;
@@ -94,46 +97,89 @@
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            padding: 8px 0 4px 0;
-            border-radius: 16px;
-            margin: 0 2px;
-            transition: background 0.16s, color 0.12s, box-shadow 0.12s;
-            color: #e5e7eb;
-            font-weight: 500;
+            padding: 12px 0 8px 0;
+            border-radius: 18px;
+            margin: 0 3px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #cbd5e1;
+            font-weight: 600;
             font-size: 13px;
+            position: relative;
+            overflow: hidden;
         }
+        
+        /* Ripple effect for navigation items */
+        #bottom-nav a::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(56, 189, 248, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s ease, height 0.3s ease;
+        }
+        
+        #bottom-nav a:active::before {
+            width: 100px;
+            height: 100px;
+        }
+        
         #bottom-nav a.active,
         #bottom-nav a:focus-visible {
-            background: linear-gradient(135deg, #1e293b 80%, #334155 100%);
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.9) 100%);
             color: #38bdf8 !important;
+            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.25);
+            border: 1px solid rgba(56, 189, 248, 0.3);
         }
-        #bottom-nav a.active i { color: #38bdf8 !important; }
-        #bottom-nav a.active span:not(.nav-indicator) { color: #38bdf8 !important; }
-        #bottom-nav a:active { background: #334155; }
+        #bottom-nav a.active i { 
+            color: #38bdf8 !important;
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+        }
+        #bottom-nav a.active span:not(.nav-indicator) { 
+            color: #38bdf8 !important; 
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+        }
+        #bottom-nav a:active { 
+            background: rgba(51, 65, 85, 0.8); 
+            transform: scale(0.96);
+        }
         #bottom-nav a i {
-            font-size: 26px;
-            margin-bottom: 2px;
+            font-size: 28px;
+            margin-bottom: 4px;
+            transition: all 0.2s ease;
         }
         #bottom-nav a span:not(.nav-indicator) {
             font-size: 11px;
-            margin-top: 1px;
-            font-weight: 600;
+            margin-top: 2px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
         }
         .nav-indicator {
             display: block;
-            width: 8px;
-            height: 8px;
-            margin: 4px auto 0 auto;
+            width: 10px;
+            height: 10px;
+            margin: 6px auto 0 auto;
             border-radius: 50%;
             background: transparent;
-            transition: background 0.17s, box-shadow 0.17s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
-        .indicator-squad    { background: #2563eb; }
-        .indicator-matches  { background: #e11d48; }
-        .indicator-bans     { background: #eab308; }
-        .indicator-finanzen { background: #16a34a; }
-        .indicator-stats    { background: #8b5cf6; }
-        .indicator-spieler  { background: orange; }
+        
+        /* Enhanced indicator animations */
+        #bottom-nav a.active .nav-indicator {
+            transform: scale(1.3);
+            box-shadow: 0 4px 16px rgba(56, 189, 248, 0.5);
+        }
+        
+        .indicator-squad    { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+        .indicator-matches  { background: linear-gradient(135deg, #dc2626, #ef4444); }
+        .indicator-bans     { background: linear-gradient(135deg, #eab308, #fbbf24); }
+        .indicator-finanzen { background: linear-gradient(135deg, #16a34a, #22c55e); }
+        .indicator-stats    { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+        .indicator-spieler  { background: linear-gradient(135deg, #ea580c, #f97316); }
         /* Modal Buttons & Form Buttons */
         .modal-content button,
         .modal-content .btn,
@@ -230,12 +276,20 @@
       </a>
     </nav>
 
-    <main class="p-3 pb-28 lg:pb-8 relative min-h-[calc(100vh-140px)] bg-slate-700">
-        <!-- Loader with enhanced visibility and backdrop blur -->
-        <div id="tab-loader" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
-            <div class="bg-white bg-opacity-20 backdrop-blur-md rounded-2xl p-6 flex flex-col items-center space-y-4">
-                <div class="w-12 h-12 border-4 border-blue-400 border-t-transparent border-solid rounded-full animate-spin"></div>
-                <div class="text-white text-sm font-medium">Lädt...</div>
+    <main class="p-4 pb-32 lg:pb-12 relative min-h-[calc(100vh-160px)] bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800">
+        <!-- Enhanced loader with glassmorphism design -->
+        <div id="tab-loader" class="fixed top-0 left-0 w-full h-full bg-black/60 backdrop-blur-lg flex items-center justify-center z-50" style="display:none;">
+            <div class="bg-white/10 backdrop-blur-xl rounded-3xl p-8 flex flex-col items-center space-y-6 border border-white/20 shadow-2xl">
+                <div class="relative">
+                    <div class="w-16 h-16 border-4 border-blue-400/30 border-t-blue-400 border-solid rounded-full animate-spin"></div>
+                    <div class="absolute inset-2 w-12 h-12 border-4 border-red-400/30 border-b-red-400 border-solid rounded-full animate-spin animate-reverse"></div>
+                </div>
+                <div class="text-white text-lg font-semibold tracking-wide">Lädt...</div>
+                <div class="flex space-x-1">
+                    <div class="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+                    <div class="w-2 h-2 bg-red-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                </div>
             </div>
         </div>
         <div id="app"></div>

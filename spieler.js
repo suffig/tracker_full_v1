@@ -4,50 +4,57 @@ export async function renderSpielerTab(containerId = "app") {
 	console.log("renderSpielerTab aufgerufen!", { containerId });
     const app = document.getElementById(containerId);
     app.innerHTML = `
-    <div class="mb-4">
-        <h2 class="text-lg font-semibold mb-3">Spieler-Übersicht</h2>
-        <div class="flex flex-col sm:flex-row gap-3 sm:gap-3">
-            <button id="show-tore" class="flex-1 transition-all duration-150 bg-gradient-to-r from-blue-400 to-blue-600 text-white font-bold rounded-xl px-4 py-3 sm:py-2 shadow-lg hover:from-fuchsia-500 hover:to-blue-400 hover:scale-105 focus:ring-2 focus:ring-blue-300 focus:outline-none min-h-[48px] text-sm sm:text-base">
-                <i class="fas fa-futbol mr-2"></i> Torschützen
+        <div class="mb-6 text-center">
+            <h1 class="text-2xl font-bold text-text-primary mb-2">Spieler-Übersicht</h1>
+            <p class="text-text-secondary">Torschützen und Spieler des Spiels</p>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <button id="show-tore" class="btn btn-primary">
+                <i class="fas fa-futbol"></i>
+                <span>Torschützen</span>
             </button>
-            <button id="show-sds" class="flex-1 transition-all duration-150 bg-gradient-to-r from-yellow-300 to-yellow-500 text-yellow-900 font-bold rounded-xl px-4 py-3 sm:py-2 shadow-lg hover:from-fuchsia-500 hover:to-yellow-400 hover:scale-105 focus:ring-2 focus:ring-yellow-300 focus:outline-none min-h-[48px] text-sm sm:text-base">
-                <i class="fas fa-star mr-2"></i> Spieler des Spiels
+            <button id="show-sds" class="btn btn-secondary">
+                <i class="fas fa-star"></i>
+                <span>Spieler des Spiels</span>
             </button>
         </div>
-    </div>
-    <div id="spieler-content"></div>
+        
+        <div id="spieler-content">
+            <div class="loading-card">
+                <div class="spinner"></div>
+                <span class="text-text-secondary">Lädt Spielerdaten...</span>
+            </div>
+        </div>
     `;
 
-    document.getElementById('show-tore').onclick = () => renderTorschuetzen();
-    document.getElementById('show-sds').onclick = () => renderSdS();
+    document.getElementById('show-tore').onclick = () => {
+        document.getElementById('show-tore').className = "btn btn-primary";
+        document.getElementById('show-sds').className = "btn btn-secondary";
+        renderTorschuetzen();
+    };
+    document.getElementById('show-sds').onclick = () => {
+        document.getElementById('show-sds').className = "btn btn-primary";
+        document.getElementById('show-tore').className = "btn btn-secondary";
+        renderSdS();
+    };
 
     // Initialanzeige
     renderTorschuetzen();
 
     // Enhanced helper function for team indicators
     function getTeamIndicator(team) {
-        if (team === "Ehemalige") return '<span class="w-3 h-3 bg-slate-400 rounded-full inline-block mr-2"></span>';
-        if (team === "AEK") return '<span class="w-3 h-3 bg-blue-400 rounded-full inline-block mr-2"></span>';
-        return '<span class="w-3 h-3 bg-red-400 rounded-full inline-block mr-2"></span>';
+        if (team === "Ehemalige") return '<span class="w-3 h-3 bg-gray-400 rounded-full inline-block mr-2"></span>';
+        if (team === "AEK") return '<span class="w-3 h-3 bg-blue-500 rounded-full inline-block mr-2"></span>';
+        return '<span class="w-3 h-3 bg-red-500 rounded-full inline-block mr-2"></span>';
     }
 
     // Hilfsfunktion für Card-Klasse nach Team
     function getCardClass(team) {
-        if (team === "Ehemalige") return "text-slate-300";
-        if (team === "AEK") return "text-blue-200";
-        return "text-red-200";
+        if (team === "Ehemalige") return "team-ehemalige";
+        if (team === "AEK") return "team-aek";
+        return "team-real";
     }
-
-    // Hilfsfunktion für bessere Kontraste in Top 3 Cards
-    function getCardClassForTop3(team, position) {
-        // Für bessere Lesbarkeit verwenden wir dunklere Schrift auf den Medal-Overlays
-        if (team === "Ehemalige") {
-            // Slate background - weiße Schrift mit starkem Schatten
-            return "text-slate-100 font-bold drop-shadow-lg";
-        }
-        if (team === "AEK") {
-            // Blaue Hintergründe - hellere Schrift für besseren Kontrast
-            return "text-blue-50 font-bold drop-shadow-lg";
         }
         // Real Madrid - verschiedene Kontraste je nach Medal-Position
         if (position === 0) { // Gold - gelber Overlay, dunkle Schrift

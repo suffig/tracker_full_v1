@@ -74,44 +74,103 @@ export async function renderFinanzenTab(containerId = "app") {
 function renderFinanzenTabInner(containerId = "app") {
     const app = document.getElementById(containerId);
     app.innerHTML = `
-        <div class="mb-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-            <h2 class="text-lg font-semibold text-slate-100">Finanzen</h2>
-            <button id="add-trans-btn" class="bg-green-600 hover:bg-green-700 text-white px-2 py-2 rounded-lg text-sm flex items-center justify-center font-semibold transition shadow w-8 h-8">
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        <div class="mb-6 text-center">
+            <h1 class="text-2xl font-bold text-text-primary mb-2">Finanz Management</h1>
+            <p class="text-text-secondary">Verwalten Sie Teamfinanzen und Transaktionen</p>
+        </div>
+        
+        <div class="mb-6">
+            <button id="add-trans-btn" class="btn btn-primary btn-full">
+                <i class="fas fa-plus"></i>
+                <span>Neue Transaktion hinzufügen</span>
             </button>
         </div>
-        <div class="flex flex-col sm:flex-row gap-3 mb-6">
-            <div class="bg-blue-700 text-blue-100 rounded-lg p-3 flex-1 min-w-0 border border-blue-600 shadow-lg">
-                <div class="flex items-center gap-2 mb-2">
-                    <div class="w-3 h-3 bg-blue-400 rounded-full"></div>
-                    <span class="font-bold text-lg">AEK</span>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="native-card team-aek">
+                <div class="card-header">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-euro-sign text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="card-title">AEK Athen</h3>
+                            <p class="card-subtitle">Team Finanzen</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="space-y-1 text-sm">
-                    <div>Kontostand: <span class="font-bold text-blue-200">${(finances.aekAthen.balance || 0).toLocaleString('de-DE')} €</span></div>
-                    <div>Schulden: <span class="font-bold text-blue-200">${(finances.aekAthen.debt || 0).toLocaleString('de-DE')} €</span></div>
+                <div class="card-content">
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-surface-tertiary rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-wallet text-interactive-success"></i>
+                                <span class="text-sm font-medium">Kontostand</span>
+                            </div>
+                            <span class="text-lg font-bold text-interactive-success">
+                                ${(finances.aekAthen.balance || 0).toLocaleString('de-DE')} €
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-surface-tertiary rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-credit-card text-interactive-danger"></i>
+                                <span class="text-sm font-medium">Schulden</span>
+                            </div>
+                            <span class="text-lg font-bold text-interactive-danger">
+                                ${(finances.aekAthen.debt || 0).toLocaleString('de-DE')} €
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="bg-red-700 text-red-100 rounded-lg p-3 flex-1 min-w-0 border border-red-600 shadow-lg">
-                <div class="flex items-center gap-2 mb-2">
-                    <div class="w-3 h-3 bg-red-400 rounded-full"></div>
-                    <span class="font-bold text-lg">Real</span>
+            
+            <div class="native-card team-real">
+                <div class="card-header">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-euro-sign text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="card-title">Real Madrid</h3>
+                            <p class="card-subtitle">Team Finanzen</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="space-y-1 text-sm">
-                    <div>Kontostand: <span class="font-bold text-red-200">${(finances.realMadrid.balance || 0).toLocaleString('de-DE')} €</span></div>
-                    <div>Schulden: <span class="font-bold text-red-200">${(finances.realMadrid.debt || 0).toLocaleString('de-DE')} €</span></div>
+                <div class="card-content">
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-surface-tertiary rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-wallet text-interactive-success"></i>
+                                <span class="text-sm font-medium">Kontostand</span>
+                            </div>
+                            <span class="text-lg font-bold text-interactive-success">
+                                ${(finances.realMadrid.balance || 0).toLocaleString('de-DE')} €
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-surface-tertiary rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-credit-card text-interactive-danger"></i>
+                                <span class="text-sm font-medium">Schulden</span>
+                            </div>
+                            <span class="text-lg font-bold text-interactive-danger">
+                                ${(finances.realMadrid.debt || 0).toLocaleString('de-DE')} €
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="mb-3">
-            <h3 class="text-lg font-semibold text-slate-100 flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-                Transaktionen
-            </h3>
-        </div>
-        <div class="overflow-x-auto w-full" style="max-width:100vw;">
-          <div id="transactions-list" class="space-y-2"></div>
+        
+        <div class="native-card">
+            <div class="card-header">
+                <h3 class="card-title">Transaktionen</h3>
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-receipt text-text-tertiary"></i>
+                    <span class="text-sm text-text-secondary">${transactions.length} Einträge</span>
+                </div>
+            </div>
+            <div class="card-content">
+                <div id="transactions-list" class="space-y-3"></div>
+            </div>
         </div>
     `;
 

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>FIFA Tracker - Complete NativeWind Design System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="css/tailwind-play-output.css" rel="stylesheet">
+    <link href="css/nativewind-design.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="nativewind-theme">
+
+<!-- MAIN APP - COMPLETE NATIVEWIND DESIGN DEMO -->
+<div class="app-container">
+    
+    <!-- NATIVE BOTTOM NAVIGATION -->
+    <nav class="native-bottom-nav">
+      <div class="nav-grid">
+        <a href="#" class="nav-item" data-tab="matches">
+          <i class="fas fa-futbol nav-icon"></i>
+          <span class="nav-label">Spiele</span>
+        </a>
+        <a href="#" class="nav-item active" data-tab="squad">
+          <i class="fas fa-users nav-icon"></i>
+          <span class="nav-label">Kader</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="bans">
+          <i class="fas fa-ban nav-icon"></i>
+          <span class="nav-label">Sperren</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="finances">
+          <i class="fas fa-euro-sign nav-icon"></i>
+          <span class="nav-label">Finanzen</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="stats">
+          <i class="fas fa-chart-bar nav-icon"></i>
+          <span class="nav-label">Stats</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="players">
+          <i class="fas fa-star nav-icon"></i>
+          <span class="nav-label">Spieler</span>
+        </a>
+        <button class="nav-item logout-nav" title="Abmelden">
+          <i class="fas fa-sign-out-alt nav-icon"></i>
+          <span class="nav-label">Logout</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="page-container">
+        <div class="content-wrapper" id="main-content">
+            <!-- Content will be dynamically loaded here -->
+        </div>
+    </main>
+</div>
+
+<script>
+// Tab content templates
+const tabContent = {
+    squad: `
+        <div class="mb-6 text-center">
+            <h1 class="text-2xl font-bold text-text-primary mb-2">Team Management</h1>
+            <p class="text-text-secondary">Verwalten Sie Ihre FIFA-Teams und Spieler</p>
+        </div>
+        
+        <div class="space-y-4">
+            <div class="accordion">
+                <div class="accordion-header active">
+                    <div class="accordion-title">
+                        <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-users text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-lg">AEK Athen</h3>
+                            <p class="text-sm text-text-secondary">Marktwert: <span>125M €</span></p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-down accordion-icon" style="transform: rotate(180deg);"></i>
+                </div>
+                
+                <div class="accordion-content active">
+                    <button class="btn btn-primary btn-full mb-4">
+                        <i class="fas fa-plus"></i>
+                        <span>Neuen Spieler hinzufügen</span>
+                    </button>
+                    
+                    <div class="grid gap-4">
+                        <div class="native-card team-aek">
+                            <div class="card-header">
+                                <div class="flex items-center gap-3">
+                                    <span class="position-badge position-att">ST</span>
+                                    <div>
+                                        <h3 class="card-title">Lionel Messi</h3>
+                                        <p class="card-subtitle">AEK Athen</p>
+                                    </div>
+                                </div>
+                                <div class="text-xl font-bold text-interactive-success">25M €</div>
+                            </div>
+                            <div class="card-footer">
+                                <button class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                    <span>Bearbeiten</span>
+                                </button>
+                                <button class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-arrow-right"></i>
+                                    <span>Zu Ehemalige</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `,
+    
+    bans: `
+        <div class="mb-6 text-center">
+            <h1 class="text-2xl font-bold text-text-primary mb-2">Sperren Verwaltung</h1>
+            <p class="text-text-secondary">Verwalten Sie Spielersperren und Sanktionen</p>
+        </div>
+        
+        <div class="mb-4">
+            <button class="btn btn-primary btn-full">
+                <i class="fas fa-ban"></i>
+                <span>Neue Sperre hinzufügen</span>
+            </button>
+        </div>
+        
+        <div class="space-y-6">
+            <div class="native-card">
+                <div class="card-header">
+                    <h3 class="card-title text-interactive-danger">Aktive Sperren</h3>
+                    <div class="badge badge-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="native-card team-real mb-3">
+                        <div class="card-header">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-interactive-danger rounded-full flex items-center justify-center">
+                                    <i class="fas fa-square text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="card-title">Sergio Ramos</h4>
+                                    <p class="card-subtitle">Real Madrid</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-interactive-danger">2</div>
+                                <div class="text-xs text-text-secondary">verbleibend</div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="grid grid-cols-2 gap-2 text-sm">
+                                <div>
+                                    <span class="text-text-secondary">Typ:</span>
+                                    <span class="font-medium">Rote Karte</span>
+                                </div>
+                                <div>
+                                    <span class="text-text-secondary">Gesamt:</span>
+                                    <span class="font-medium">2 Spiele</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-secondary btn-xs">
+                                <i class="fas fa-edit"></i>
+                                <span>Bearbeiten</span>
+                            </button>
+                            <button class="btn btn-danger btn-xs">
+                                <i class="fas fa-trash"></i>
+                                <span>Löschen</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `,
+    
+    finances: `
+        <div class="mb-6 text-center">
+            <h1 class="text-2xl font-bold text-text-primary mb-2">Finanz Management</h1>
+            <p class="text-text-secondary">Verwalten Sie Teamfinanzen und Transaktionen</p>
+        </div>
+        
+        <div class="mb-6">
+            <button class="btn btn-primary btn-full">
+                <i class="fas fa-plus"></i>
+                <span>Neue Transaktion hinzufügen</span>
+            </button>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="native-card team-aek">
+                <div class="card-header">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-euro-sign text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="card-title">AEK Athen</h3>
+                            <p class="card-subtitle">Team Finanzen</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-surface-tertiary rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-wallet text-interactive-success"></i>
+                                <span class="text-sm font-medium">Kontostand</span>
+                            </div>
+                            <span class="text-lg font-bold text-interactive-success">2,500,000 €</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-surface-tertiary rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-credit-card text-interactive-danger"></i>
+                                <span class="text-sm font-medium">Schulden</span>
+                            </div>
+                            <span class="text-lg font-bold text-interactive-danger">500,000 €</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="native-card team-real">
+                <div class="card-header">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-euro-sign text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="card-title">Real Madrid</h3>
+                            <p class="card-subtitle">Team Finanzen</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-surface-tertiary rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-wallet text-interactive-success"></i>
+                                <span class="text-sm font-medium">Kontostand</span>
+                            </div>
+                            <span class="text-lg font-bold text-interactive-success">3,200,000 €</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-surface-tertiary rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-credit-card text-interactive-danger"></i>
+                                <span class="text-sm font-medium">Schulden</span>
+                            </div>
+                            <span class="text-lg font-bold text-interactive-danger">200,000 €</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `,
+    
+    stats: `
+        <div class="mb-6 text-center">
+            <h1 class="text-2xl font-bold text-text-primary mb-2">Statistiken</h1>
+            <p class="text-text-secondary">Detaillierte Spielstatistiken und Analysen</p>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="native-card text-center">
+                <div class="card-content">
+                    <i class="fas fa-futbol text-3xl text-primary-emerald mb-2"></i>
+                    <div class="text-2xl font-bold text-text-primary">42</div>
+                    <div class="text-sm text-text-secondary">Spiele</div>
+                </div>
+            </div>
+            
+            <div class="native-card text-center">
+                <div class="card-content">
+                    <i class="fas fa-bullseye text-3xl text-interactive-success mb-2"></i>
+                    <div class="text-2xl font-bold text-text-primary">128</div>
+                    <div class="text-sm text-text-secondary">Tore</div>
+                </div>
+            </div>
+            
+            <div class="native-card text-center">
+                <div class="card-content">
+                    <i class="fas fa-square text-3xl text-warning mb-2"></i>
+                    <div class="text-2xl font-bold text-text-primary">23</div>
+                    <div class="text-sm text-text-secondary">Gelbe Karten</div>
+                </div>
+            </div>
+            
+            <div class="native-card text-center">
+                <div class="card-content">
+                    <i class="fas fa-square text-3xl text-interactive-danger mb-2"></i>
+                    <div class="text-2xl font-bold text-text-primary">8</div>
+                    <div class="text-sm text-text-secondary">Rote Karten</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="native-card">
+            <div class="card-header">
+                <h3 class="card-title">Durchschnittswerte</h3>
+                <i class="fas fa-chart-line text-text-tertiary"></i>
+            </div>
+            <div class="card-content">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex justify-between items-center p-3 bg-surface-tertiary rounded-lg">
+                        <span class="text-sm font-medium">Tore pro Spiel</span>
+                        <span class="text-lg font-bold text-interactive-success">3.05</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-surface-tertiary rounded-lg">
+                        <span class="text-sm font-medium">Karten pro Spiel</span>
+                        <span class="text-lg font-bold text-interactive-warning">0.74</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `,
+    
+    players: `
+        <div class="mb-6 text-center">
+            <h1 class="text-2xl font-bold text-text-primary mb-2">Spieler-Übersicht</h1>
+            <p class="text-text-secondary">Torschützen und Spieler des Spiels</p>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <button class="btn btn-primary">
+                <i class="fas fa-futbol"></i>
+                <span>Torschützen</span>
+            </button>
+            <button class="btn btn-secondary">
+                <i class="fas fa-star"></i>
+                <span>Spieler des Spiels</span>
+            </button>
+        </div>
+        
+        <div class="space-y-4">
+            <div class="native-card team-aek">
+                <div class="card-header">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-trophy text-white"></i>
+                        </div>
+                        <div>
+                            <h4 class="card-title">Lionel Messi</h4>
+                            <p class="card-subtitle">AEK Athen</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-2xl font-bold text-interactive-success">18</div>
+                        <div class="text-xs text-text-secondary">Tore</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="native-card team-real">
+                <div class="card-header">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center">
+                            <i class="fas fa-medal text-white"></i>
+                        </div>
+                        <div>
+                            <h4 class="card-title">Karim Benzema</h4>
+                            <p class="card-subtitle">Real Madrid</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-2xl font-bold text-interactive-success">15</div>
+                        <div class="text-xs text-text-secondary">Tore</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `,
+    
+    matches: `
+        <div class="mb-6 text-center">
+            <h1 class="text-2xl font-bold text-text-primary mb-2">Match Center</h1>
+            <p class="text-text-secondary">Verwalten Sie Ihre FIFA-Spiele</p>
+        </div>
+        
+        <div class="mb-4">
+            <button class="btn btn-primary btn-full">
+                <i class="fas fa-plus"></i> <span>Neues Match hinzufügen</span>
+            </button>
+        </div>
+        
+        <div class="native-card text-center mb-4">
+            <h3 class="card-title" style="color: var(--primary-emerald);">Spiele am 15.01.2024</h3>
+        </div>
+        
+        <div class="space-y-4">
+            <div class="native-card">
+                <div class="card-header">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                            <span class="text-xs font-bold text-white">AEK</span>
+                        </div>
+                        <span class="text-2xl font-bold text-text-primary">2 : 1</span>
+                        <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                            <span class="text-xs font-bold text-white">RM</span>
+                        </div>
+                    </div>
+                    <div class="text-sm text-text-secondary">
+                        <i class="fas fa-trophy text-warning mr-1"></i>
+                        Match #15
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="flex justify-between items-center text-sm">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-star text-warning"></i>
+                            <span>Man of the Match: Messi</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-clock text-text-tertiary"></i>
+                            <span>14:30</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-secondary btn-sm">
+                        <i class="fas fa-edit"></i>
+                        <span>Bearbeiten</span>
+                    </button>
+                    <button class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i>
+                        <span>Löschen</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `
+};
+
+// Tab switching functionality
+function switchTab(tabName) {
+    const content = document.getElementById('main-content');
+    content.innerHTML = tabContent[tabName] || tabContent.squad;
+    
+    // Update navigation
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+}
+
+// Initialize navigation
+document.querySelectorAll('.nav-item[data-tab]').forEach(item => {
+    item.addEventListener('click', (e) => {
+        e.preventDefault();
+        const tab = item.getAttribute('data-tab');
+        switchTab(tab);
+    });
+});
+
+// Load initial content
+switchTab('squad');
+
+// Accordion functionality
+document.addEventListener('click', (e) => {
+    if (e.target.closest('.accordion-header')) {
+        const header = e.target.closest('.accordion-header');
+        const accordion = header.parentElement;
+        const content = accordion.querySelector('.accordion-content');
+        const icon = header.querySelector('.accordion-icon');
+        
+        header.classList.toggle('active');
+        
+        if (content) {
+            content.classList.toggle('active');
+        }
+        
+        if (header.classList.contains('active')) {
+            icon.style.transform = 'rotate(180deg)';
+        } else {
+            icon.style.transform = 'rotate(0deg)';
+        }
+    }
+});
+</script>
+
+</body>
+</html>

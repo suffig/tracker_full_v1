@@ -346,31 +346,31 @@ function matchHtml(match, nr) {
                         'border-l-4 border-l-gray-500';
     
     return `
-    <div class="bg-white border border-gray-300 rounded-xl p-4 mb-3 text-gray-900 shadow-lg hover:shadow-xl transition-all duration-200 ${resultClass}">
+    <div class="bg-gray-800 !bg-gray-800 border border-gray-600 rounded-xl p-4 mb-3 text-gray-100 shadow-lg hover:shadow-xl transition-all duration-200 ${resultClass}" style="background-color: #1f2937 !important; color: #f3f4f6 !important;">
       <!-- Match Header with Toggle -->
       <div class="flex justify-between items-start mb-3">
         <div class="flex-1">
           <div class="flex items-center gap-3 mb-2">
-            <span class="bg-gradient-to-r from-blue-400 to-blue-300 text-black px-3 py-1 rounded-full text-sm font-bold shadow-lg border-2 border-blue-600">#${nr}</span>
-            <span class="text-gray-700 text-sm font-medium">${match.date}</span>
-            <button class="match-toggle-btn bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-2 rounded-lg text-sm ml-auto transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" data-match-id="${match.id}" title="Details ein-/ausblenden">
+            <span class="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg border-2 border-blue-500">#${nr}</span>
+            <span class="text-gray-300 text-sm font-medium">${match.date}</span>
+            <button class="match-toggle-btn bg-gray-600 hover:bg-gray-500 text-gray-100 px-3 py-2 rounded-lg text-sm ml-auto transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg" data-match-id="${match.id}" title="Details ein-/ausblenden">
               <span class="text-xs font-medium">Details</span>
               <i class="fas fa-chevron-down transform transition-transform duration-200"></i>
             </button>
           </div>
           <!-- Score Display -->
-          <div class="bg-gray-100 rounded-xl p-4 mb-3 border border-gray-200">
+          <div class="bg-gray-700 rounded-xl p-4 mb-3 border border-gray-500" style="background-color: #374151 !important;">
             <div class="flex items-center justify-center">
               <div class="text-center">
-                <span class="text-blue-600 font-bold text-xl block mb-1">${match.teama}</span>
-                <span class="text-3xl font-black text-gray-900">${match.goalsa}</span>
+                <span class="text-blue-400 font-bold text-xl block mb-1">${match.teama}</span>
+                <span class="text-3xl font-black text-gray-100">${match.goalsa}</span>
               </div>
               <div class="mx-6 text-center">
-                <span class="text-gray-900 text-2xl font-bold">:</span>
+                <span class="text-gray-100 text-2xl font-bold">:</span>
               </div>
               <div class="text-center">
-                <span class="text-red-600 font-bold text-xl block mb-1">${match.teamb}</span>
-                <span class="text-3xl font-black text-gray-900">${match.goalsb}</span>
+                <span class="text-red-400 font-bold text-xl block mb-1">${match.teamb}</span>
+                <span class="text-3xl font-black text-gray-100">${match.goalsb}</span>
               </div>
             </div>
           </div>
@@ -389,15 +389,15 @@ function matchHtml(match, nr) {
       <div class="match-details" data-match-id="${match.id}" style="display: none;">
         <!-- Goal Scorers Section -->
         <div class="space-y-3 mb-4">
-          <div class="bg-blue-50 border border-blue-200 rounded-xl p-3">
-            <div class="text-sm font-bold text-blue-800 mb-2 flex items-center gap-2">
+          <div class="bg-blue-900 border border-blue-600 rounded-xl p-3" style="background-color: #1e3a8a !important;">
+            <div class="text-sm font-bold text-blue-200 mb-2 flex items-center gap-2">
               <i class="fas fa-futbol"></i>
               ${match.teama} Torschützen:
             </div>
             <div class="flex flex-wrap gap-2">${goalsHtml(match.goalslista || [])}</div>
           </div>
-          <div class="bg-red-50 border border-red-200 rounded-xl p-3">
-            <div class="text-sm font-bold text-red-800 mb-2 flex items-center gap-2">
+          <div class="bg-red-900 border border-red-600 rounded-xl p-3" style="background-color: #7f1d1d !important;">
+            <div class="text-sm font-bold text-red-200 mb-2 flex items-center gap-2">
               <i class="fas fa-futbol"></i>
               ${match.teamb} Torschützen:
             </div>
@@ -407,8 +407,8 @@ function matchHtml(match, nr) {
         
         <!-- Cards Section -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-          <div class="bg-blue-50 border border-blue-200 rounded-xl p-3">
-            <div class="text-sm font-bold text-blue-800 mb-2 flex items-center gap-2">
+          <div class="bg-blue-900 border border-blue-600 rounded-xl p-3" style="background-color: #1e3a8a !important;">
+            <div class="text-sm font-bold text-blue-200 mb-2 flex items-center gap-2">
               <i class="fas fa-id-card"></i>
               ${match.teama} Karten:
             </div>
@@ -417,8 +417,8 @@ function matchHtml(match, nr) {
               <span class="inline-flex items-center gap-1 bg-red-600 text-red-100 rounded-lg px-3 py-1 text-sm font-medium shadow-md">🟥 ${match.reda || 0}</span>
             </div>
           </div>
-          <div class="bg-red-50 border border-red-200 rounded-xl p-3">
-            <div class="text-sm font-bold text-red-800 mb-2 flex items-center gap-2">
+          <div class="bg-red-900 border border-red-600 rounded-xl p-3" style="background-color: #7f1d1d !important;">
+            <div class="text-sm font-bold text-red-200 mb-2 flex items-center gap-2">
               <i class="fas fa-id-card"></i>
               ${match.teamb} Karten:
             </div>
@@ -430,9 +430,9 @@ function matchHtml(match, nr) {
         </div>
         
         <!-- Footer with Prizes and Man of the Match -->
-        <div class="border-t border-gray-300 pt-4 space-y-3">
+        <div class="border-t border-gray-600 pt-4 space-y-3" style="border-color: #4b5563 !important;">
           <div>
-            <div class="text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
+            <div class="text-sm font-bold text-gray-200 mb-2 flex items-center gap-2" style="color: #e5e7eb !important;">
               <i class="fas fa-coins"></i>
               Preisgelder:
             </div>
@@ -443,7 +443,7 @@ function matchHtml(match, nr) {
           </div>
           ${match.manofthematch ? `
           <div>
-            <div class="text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
+            <div class="text-sm font-bold text-gray-200 mb-2 flex items-center gap-2" style="color: #e5e7eb !important;">
               <i class="fas fa-star"></i>
               Spieler des Spiels:
             </div>

@@ -251,6 +251,16 @@ function showLoginArea() {
     
     if (loginArea) {
         loginArea.style.display = 'block';
+        
+        // Check if using fallback mode
+        const demoModeNote = usingFallback ? `
+            <div class="demo-mode-notice">
+                <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
+                    <strong>Demo-Modus:</strong> Verwenden Sie beliebige E-Mail und Passwort (mindestens 3 Zeichen) zum Testen.
+                </div>
+            </div>
+        ` : '';
+        
         loginArea.innerHTML = `
             <div class="login-container">
                 <div class="login-card">
@@ -259,15 +269,19 @@ function showLoginArea() {
                         <p class="text-text-secondary">Melden Sie sich an, um fortzufahren</p>
                     </div>
                     
+                    ${demoModeNote}
+                    
                     <form id="login-form" class="login-form">
                         <div class="form-group">
                             <label for="email" class="form-label">E-Mail</label>
-                            <input type="email" id="email" class="form-input" required>
+                            <input type="email" id="email" class="form-input" required 
+                                   placeholder="${usingFallback ? 'demo@test.com' : 'ihre.email@example.com'}">
                         </div>
                         
                         <div class="form-group">
                             <label for="password" class="form-label">Passwort</label>
-                            <input type="password" id="password" class="form-input" required>
+                            <input type="password" id="password" class="form-input" required 
+                                   placeholder="${usingFallback ? 'test123' : 'Ihr Passwort'}">
                         </div>
                         
                         <button type="submit" class="btn-primary w-full">
@@ -278,8 +292,10 @@ function showLoginArea() {
                     
                     <div class="login-footer">
                         <p class="text-text-secondary text-sm">
-                            Noch kein Account? 
-                            <a href="#" id="signup-link" class="text-primary-500 hover:underline">Registrieren</a>
+                            ${usingFallback ? 
+                                'Demo-Modus aktiv - Verwenden Sie beliebige Anmeldedaten' : 
+                                'Noch kein Account? <a href="#" id="signup-link" class="text-primary-500 hover:underline">Registrieren</a>'
+                            }
                         </p>
                     </div>
                 </div>

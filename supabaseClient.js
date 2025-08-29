@@ -60,6 +60,10 @@ const sampleData = {
 function createFallbackClient() {
   console.warn('⚠️ Using fallback client - Supabase not available');
   
+  // Track auth state for fallback
+  let fallbackAuthState = null;
+  let authChangeCallbacks = [];
+  
   return {
     auth: {
       signInWithPassword: async ({ email, password }) => {
@@ -67,8 +71,19 @@ function createFallbackClient() {
         if (!email || !password) {
           return { error: new Error('Email and password required') };
         }
+        if (password.length < 3) {
+          return { error: new Error('Invalid credentials') };
+        }
+        
         const user = { id: 'demo', email, created_at: new Date().toISOString() };
         const session = { user, access_token: 'demo_token', expires_at: Date.now() / 1000 + 3600 };
+        fallbackAuthState = { user, session };
+        
+        // Notify auth state change callbacks
+        authChangeCallbacks.forEach(callback => {
+          callback('SIGNED_IN', session);
+        });
+        
         return { data: { user, session }, error: null };
       },
       signUp: async ({ email, password }) => {
@@ -77,21 +92,28 @@ function createFallbackClient() {
       },
       signOut: async () => {
         console.log('👋 Fallback logout');
+        fallbackAuthState = null;
+        
+        // Notify auth state change callbacks
+        authChangeCallbacks.forEach(callback => {
+          callback('SIGNED_OUT', null);
+        });
+        
         return { error: null };
       },
       getSession: async () => {
-        const user = { id: 'demo', email: 'demo@tracker.com', created_at: new Date().toISOString() };
-        const session = { user, access_token: 'demo_token', expires_at: Date.now() / 1000 + 3600 };
-        return { data: { session } };
+        // Return null session initially - no auto-login
+        return { data: { session: fallbackAuthState?.session || null } };
       },
       onAuthStateChange: (callback) => {
         console.log('🔄 Setting up fallback auth state listener');
-        setTimeout(() => {
-          const user = { id: 'demo', email: 'demo@tracker.com', created_at: new Date().toISOString() };
-          const session = { user, access_token: 'demo_token', expires_at: Date.now() / 1000 + 3600 };
-          callback('SIGNED_IN', session);
-        }, 100);
-        return { data: { subscription: { unsubscribe: () => {} } } };
+        authChangeCallbacks.push(callback);
+        
+        // Don't auto-trigger sign in - wait for actual login
+        return { data: { subscription: { unsubscribe: () => {
+          const index = authChangeCallbacks.indexOf(callback);
+          if (index > -1) authChangeCallbacks.splice(index, 1);
+        } } } };
       }
     },
     from: (table) => {

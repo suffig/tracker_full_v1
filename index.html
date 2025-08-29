@@ -180,7 +180,7 @@
         .indicator-finanzen { background: linear-gradient(135deg, #16a34a, #22c55e); }
         .indicator-stats    { background: linear-gradient(135deg, #7c3aed, #a855f7); }
         .indicator-spieler  { background: linear-gradient(135deg, #ea580c, #f97316); }
-        /* Modal Buttons & Form Buttons */
+        /* Enhanced modal buttons & form buttons */
         .modal-content button,
         .modal-content .btn,
         .modal-content input[type=submit] {
@@ -189,23 +189,153 @@
             justify-content: center;
             width: 100%;
             min-width: 0;
-            padding: 1.1em 0;
-            font-size: 1.10rem;
-            font-weight: 600;
-            border-radius: 16px;
+            padding: 1.25em 1.5em;
+            font-size: 1.125rem;
+            font-weight: 700;
+            border-radius: 20px;
             border: none;
             margin: 0;
-            letter-spacing: 0.01em;
-            margin-bottom: 0;
-            margin-top: 0;
+            letter-spacing: 0.02em;
             position: relative;
-            transition: background 0.17s, color 0.13s, box-shadow 0.13s, scale 0.13s;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
         }
-        /* Button styles moved to main CSS file for consistency */
+        
+        /* Primary button styling */
+        .modal-content button[type="submit"],
+        .modal-content .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: 2px solid rgba(59, 130, 246, 0.5);
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+        }
+        
+        .modal-content button[type="submit"]:hover,
+        .modal-content .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.4);
+        }
+        
+        /* Secondary button styling */
+        .modal-content .btn-secondary {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .modal-content .btn-secondary:hover {
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Cancel/close button styling */
+        .modal-content .btn-cancel {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: 2px solid rgba(239, 68, 68, 0.5);
+            box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
+        }
+        
+        .modal-content .btn-cancel:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(239, 68, 68, 0.4);
+        }
+        
+        /* Close button enhancement */
+        .close-modal-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px !important;
+            height: 40px !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+        
+        .close-modal-btn:hover {
+            background: rgba(255, 255, 255, 0.2) !important;
+            transform: scale(1.1);
+            border-color: rgba(255, 255, 255, 0.5) !important;
+        }
+        
+        .close-modal-btn::before {
+            content: "✕";
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        /* Modal overlay enhancement */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .modal-content {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.95) 0%, rgba(51, 65, 85, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            padding: 2rem;
+            margin: 1rem;
+            max-width: 90vw;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.8),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+            position: relative;
+            animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes scaleIn {
+            from { 
+                opacity: 0; 
+                transform: scale(0.9) translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: scale(1) translateY(0); 
+            }
+        }
+        
+        /* Form button row enhancement */
         .modal-content .form-btn-row {
             display: flex;
-            gap: 0.7rem;
-            margin-top: 1.2rem;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
         /* Team colors and position badges moved to main CSS file for consistency */
         .badge-def { background: #1e3a8a !important; color: #dbeafe !important; border: 1.5px solid #1e40af !important; }

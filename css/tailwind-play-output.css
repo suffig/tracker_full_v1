@@ -1824,12 +1824,46 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
     backdrop-filter: blur(10px);
     transition: all 0.2s ease;
     font-size: 16px; /* Prevents zoom on iOS */
+    color: white;
+    padding: 0.75rem 1rem;
+  }
+  
+  input::placeholder, select option, textarea::placeholder {
+    color: rgba(255, 255, 255, 0.6);
   }
   
   input:focus, select:focus, textarea:focus {
     border-color: #60a5fa;
     box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.15);
     background: rgba(51, 65, 85, 1);
+    outline: none;
+  }
+  
+  /* Enhanced modal form inputs */
+  .modal-content input,
+  .modal-content select,
+  .modal-content textarea {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+  }
+  
+  .modal-content input:focus,
+  .modal-content select:focus,
+  .modal-content textarea:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.2);
+  }
+  
+  .modal-content label {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+    font-size: 1rem;
   }
   
   /* Enhanced typography for mobile readability */

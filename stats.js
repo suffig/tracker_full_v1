@@ -2,128 +2,52 @@ import { supabase } from './supabaseClient.js';
 
 export async function renderStatsTab(containerId = "app") {
 	console.log("renderStatsTab aufgerufen!", { containerId });
-    
-    const app = document.getElementById(containerId);
-    app.innerHTML = `
-        <div class="mb-6 text-center">
-            <h1 class="text-2xl font-bold text-text-primary mb-2">Statistiken</h1>
-            <p class="text-text-secondary">Detaillierte Spielstatistiken und Analysen</p>
-        </div>
-        
-        <div class="loading-card">
-            <div class="spinner"></div>
-            <span class="text-text-secondary">Lädt Statistiken...</span>
-        </div>
-    `;
-    
-    try {
-        // Lade Daten
-        const [
-            { data: bans = [], error: errorBans },
-            { data: matches = [], error: errorMatches },
-            { data: players = [], error: errorPlayers }
-        ] = await Promise.all([
-            supabase.from('bans').select('*'),
-            supabase.from('matches').select('*'),
-            supabase.from('players').select('*')
-        ]);
-        
-        if (errorBans || errorMatches || errorPlayers) {
-            app.innerHTML = `
-                <div class="native-card text-center">
-                    <i class="fas fa-exclamation-triangle text-6xl text-interactive-danger mb-4"></i>
-                    <h3 class="card-title mb-2">Fehler beim Laden</h3>
-                    <p class="text-text-secondary">Statistiken konnten nicht geladen werden.</p>
-                </div>
-            `;
-            return;
-        }
-
-        // Statistiken berechnen
-        const totalMatches = matches.length;
-        const totalGoals = matches.reduce((sum, m) => sum + (m.goalsa || 0) + (m.goalsb || 0), 0);
-        let gelbA = 0, rotA = 0, gelbB = 0, rotB = 0;
-        matches.forEach(m => {
-            gelbA += m.yellowa || 0;
-            rotA += m.reda || 0;
-            gelbB += m.yellowb || 0;
-            rotB += m.redb || 0;
-        });
-        const totalGelb = gelbA + gelbB;
-        const totalRot = rotA + rotB;
-        const avgGoalsPerMatch = totalMatches ? (totalGoals / totalMatches).toFixed(2) : "0.00";
-
-        app.innerHTML = `
-            <div class="mb-6 text-center">
-                <h1 class="text-2xl font-bold text-text-primary mb-2">Statistiken</h1>
-                <p class="text-text-secondary">Detaillierte Spielstatistiken und Analysen</p>
-            </div>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="native-card text-center">
-                    <div class="card-content">
-                        <i class="fas fa-futbol text-3xl text-primary-emerald mb-2"></i>
-                        <div class="text-2xl font-bold text-text-primary">${totalMatches}</div>
-                        <div class="text-sm text-text-secondary">Spiele</div>
-                    </div>
-                </div>
-                
-                <div class="native-card text-center">
-                    <div class="card-content">
-                        <i class="fas fa-bullseye text-3xl text-interactive-success mb-2"></i>
-                        <div class="text-2xl font-bold text-text-primary">${totalGoals}</div>
-                        <div class="text-sm text-text-secondary">Tore</div>
-                    </div>
-                </div>
-                
-                <div class="native-card text-center">
-                    <div class="card-content">
-                        <i class="fas fa-square text-3xl text-warning mb-2"></i>
-                        <div class="text-2xl font-bold text-text-primary">${totalGelb}</div>
-                        <div class="text-sm text-text-secondary">Gelbe Karten</div>
-                    </div>
-                </div>
-                
-                <div class="native-card text-center">
-                    <div class="card-content">
-                        <i class="fas fa-square text-3xl text-interactive-danger mb-2"></i>
-                        <div class="text-2xl font-bold text-text-primary">${totalRot}</div>
-                        <div class="text-sm text-text-secondary">Rote Karten</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="native-card">
-                <div class="card-header">
-                    <h3 class="card-title">Durchschnittswerte</h3>
-                    <i class="fas fa-chart-line text-text-tertiary"></i>
-                </div>
-                <div class="card-content">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="flex justify-between items-center p-3 bg-surface-tertiary rounded-lg">
-                            <span class="text-sm font-medium">Tore pro Spiel</span>
-                            <span class="text-lg font-bold text-interactive-success">${avgGoalsPerMatch}</span>
-                        </div>
-                        <div class="flex justify-between items-center p-3 bg-surface-tertiary rounded-lg">
-                            <span class="text-sm font-medium">Karten pro Spiel</span>
-                            <span class="text-lg font-bold text-interactive-warning">${((totalGelb + totalRot) / Math.max(totalMatches, 1)).toFixed(2)}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-    } catch (error) {
-        console.error('Error loading stats:', error);
-        app.innerHTML = `
-            <div class="native-card text-center">
-                <i class="fas fa-exclamation-triangle text-6xl text-interactive-danger mb-4"></i>
-                <h3 class="card-title mb-2">Fehler beim Laden</h3>
-                <p class="text-text-secondary">Ein unerwarteter Fehler ist aufgetreten.</p>
-            </div>
-        `;
+    // Lade Daten
+    const [
+        { data: bans = [], error: errorBans },
+        { data: matches = [], error: errorMatches },
+        { data: players = [], error: errorPlayers }
+    ] = await Promise.all([
+        supabase.from('bans').select('*'),
+        supabase.from('matches').select('*'),
+        supabase.from('players').select('*')
+    ]);
+    if (errorBans || errorMatches || errorPlayers) {
+        document.getElementById(containerId).innerHTML =
+            `<div class="text-red-700 dark:text-red-300 p-4">Fehler beim Laden der Statistiken: ${errorBans?.message || ''} ${errorMatches?.message || ''} ${errorPlayers?.message || ''}</div>`;
+        return;
     }
-}
+
+    // Spielerlisten
+    const aekPlayers = players.filter(p => p.team === "AEK");
+    const realPlayers = players.filter(p => p.team === "Real");
+
+    // Übersicht: Tore, Karten, etc.
+    const totalMatches = matches.length;
+    const totalGoals = matches.reduce((sum, m) => sum + (m.goalsa || 0) + (m.goalsb || 0), 0);
+    let gelbA = 0, rotA = 0, gelbB = 0, rotB = 0;
+    matches.forEach(m => {
+        gelbA += m.yellowa || 0;
+        rotA += m.reda || 0;
+        gelbB += m.yellowb || 0;
+        rotB += m.redb || 0;
+    });
+    const totalGelb = gelbA + gelbB;
+    const totalRot = rotA + rotB;
+    const avgGoalsPerMatch = totalMatches ? (totalGoals / totalMatches).toFixed(2) : "0.00";
+    const avgCardsPerMatch = totalMatches ? ((gelbA+rotA+gelbB+rotB)/totalMatches).toFixed(2) : "0.00";
+
+    // Höchster Sieg pro Team
+    function getHighestWin(team) {
+        let maxDiff = -1;
+        let result = null;
+        matches.forEach(m => {
+            let diff = 0, goalsFor = 0, goalsAgainst = 0, date = m.date || "";
+            if (team === "AEK") {
+                diff = (m.goalsa || 0) - (m.goalsb || 0);
+                goalsFor = m.goalsa || 0;
+                goalsAgainst = m.goalsb || 0;
+            } else {
                 diff = (m.goalsb || 0) - (m.goalsa || 0);
                 goalsFor = m.goalsb || 0;
                 goalsAgainst = m.goalsa || 0;

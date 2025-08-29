@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="login-area">Loading...</div>
+    <div class="app-container" style="display:none;">App Container</div>
+    <div id="app">App</div>
+    
+    <script type="module">
+        console.log("Module script loaded!");
+        document.getElementById('login-area').textContent = "Module Working!";
+    </script>
+</body>
+</html>

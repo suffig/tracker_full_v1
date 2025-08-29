@@ -140,21 +140,16 @@ export async function renderMatchesTab(containerId = "app") {
     }
 
     app.innerHTML = `
-        <div class="mb-6 text-center">
-            <h1 class="text-2xl font-bold text-text-primary mb-2">Match Center</h1>
-            <p class="text-text-secondary">Verwalten Sie Ihre FIFA-Spiele</p>
-        </div>
-        
-        <div class="mb-4">
-            <button id="add-match-btn" class="btn btn-primary btn-full">
-                <i class="fas fa-plus"></i> <span>Neues Match hinzufügen</span>
+        <div class="flex flex-col sm:flex-row sm:justify-between mb-4 gap-2">
+            <h2 class="text-lg font-semibold">Matches</h2>
+            <button id="add-match-btn" class="bg-green-600 text-white w-full sm:w-auto px-4 py-2 rounded-lg text-base flex items-center justify-center gap-2 active:scale-95 transition">
+                <i class="fas fa-plus"></i> <span>Match hinzufügen</span>
             </button>
         </div>
-        
-        <div id="matches-list" class="space-y-4">
-            <div class="loading-card">
-                <div class="spinner"></div>
-                <span class="text-text-secondary">Lädt Matches...</span>
+        <div id="matches-list" class="space-y-3">
+            <div class="flex items-center justify-center py-8">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span class="ml-2 text-gray-600">Lädt Matches...</span>
             </div>
         </div>
     `;
@@ -184,13 +179,7 @@ function renderMatchesList() {
 
     try {
         if (!matchesData.matches.length) {
-            container.innerHTML = `
-                <div class="native-card text-center">
-                    <i class="fas fa-futbol text-6xl text-text-tertiary mb-4"></i>
-                    <h3 class="card-title mb-2">Noch keine Matches</h3>
-                    <p class="text-text-secondary">Fügen Sie Ihr erstes Match hinzu!</p>
-                </div>
-            `;
+            container.innerHTML = `<div class="text-gray-700 text-sm text-center py-4">Noch keine Matches eingetragen.</div>`;
             return;
         }
 
@@ -207,20 +196,10 @@ function renderMatchesList() {
 
         // Überschrift mit Datum, schön formatiert
         const dateStr = matchViewDate ? matchViewDate.split('-').reverse().join('.') : '';
-        let html = `
-            <div class="native-card text-center mb-4">
-                <h3 class="card-title text-primary-emerald">Spiele am ${dateStr}</h3>
-            </div>
-        `;
+        let html = `<div class="text-center font-semibold text-base mb-2">Spiele am <span class="text-sky-700 dark:text-sky-400">${dateStr}</span></div>`;
 
         if (!filteredMatches.length) {
-            html += `
-                <div class="native-card text-center">
-                    <i class="fas fa-calendar-times text-4xl text-text-tertiary mb-3"></i>
-                    <h3 class="card-title mb-2">Keine Spiele</h3>
-                    <p class="text-text-secondary">Für diesen Tag sind keine Spiele eingetragen.</p>
-                </div>
-            `;
+            html += `<div class="text-gray-700 text-sm text-center py-4">Keine Spiele für diesen Tag.</div>`;
         } else {
             html += filteredMatches.map(match => {
                 // Durchgehende Nummerierung, unabhängig vom Tag!

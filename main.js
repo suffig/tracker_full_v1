@@ -1,7 +1,25 @@
-// FIFA Tracker - Hybrid Main.js with dynamic module loading to avoid ES6 issues
-console.log("Starting FIFA Tracker...");
+import { supabase, supabaseDb, usingFallback } from './supabaseClient.js';
+import { connectionMonitor, isDatabaseAvailable } from './connectionMonitor.js';
+import { dataManager } from './dataManager.js';
+import { loadingManager, ErrorHandler, eventBus } from './utils.js';
 
-// Global variables
+import { signUp, signIn, signOut } from './auth.js';
+import { renderKaderTab } from './kader.js';
+import { renderBansTab } from './bans.js';
+import { renderMatchesTab } from './matches.js';
+import { renderStatsTab } from './stats.js';
+import { renderFinanzenTab } from './finanzen.js';
+import { renderSpielerTab } from './spieler.js';
+
+// --- NEU: Reset-Functions für alle Module importieren ---
+import { resetKaderState } from './kader.js';
+import { resetBansState } from './bans.js';
+import { resetFinanzenState } from './finanzen.js';
+import { resetMatchesState } from './matches.js';
+// Falls du sie hast:
+import { resetStatsState } from './stats.js';
+import { resetSpielerState } from './spieler.js';
+
 let currentTab = "matches";
 let liveSyncInitialized = false;
 let tabButtonsInitialized = false;
@@ -9,126 +27,9 @@ let realtimeChannel = null;
 let isAppVisible = true;
 let inactivityCleanupTimer = null;
 
-// Dynamic module cache
-const moduleCache = {};
+console.log("main.js gestartet");
 
-// Dynamic module loader function
-async function loadModule(path) {
-    if (moduleCache[path]) {
-        return moduleCache[path];
-    }
-    
-    try {
-        const module = await import(path);
-        moduleCache[path] = module;
-        return module;
-    } catch (error) {
-        console.error(`Failed to load module ${path}:`, error);
-        throw error;
-    }
-}
-
-// Initialize core modules
-let supabase, supabaseDb, usingFallback;
-let connectionMonitor, isDatabaseAvailable;
-let dataManager;
-let loadingManager, ErrorHandler, eventBus;
-let authFunctions = {};
-let tabRenderers = {};
-let resetFunctions = {};
-
-// Core initialization function
-async function initializeCore() {
-    try {
-        console.log("🔄 Loading core modules...");
-        
-        // Load supabase client
-        const supabaseModule = await loadModule('./supabaseClient.js');
-        supabase = supabaseModule.supabase;
-        supabaseDb = supabaseModule.supabaseDb;
-        usingFallback = supabaseModule.usingFallback;
-        console.log("✅ Supabase module loaded");
-        
-        // Load utilities
-        const utilsModule = await loadModule('./utils.js');
-        loadingManager = utilsModule.loadingManager;
-        ErrorHandler = utilsModule.ErrorHandler;
-        eventBus = utilsModule.eventBus;
-        console.log("✅ Utils module loaded");
-        
-        // Load connection monitor if available
-        try {
-            const connModule = await loadModule('./connectionMonitor.js');
-            connectionMonitor = connModule.connectionMonitor;
-            isDatabaseAvailable = connModule.isDatabaseAvailable;
-            console.log("✅ Connection monitor loaded");
-        } catch (error) {
-            console.warn("Connection monitor not available, continuing without it");
-            isDatabaseAvailable = () => Promise.resolve(true);
-        }
-        
-        // Load data manager if available
-        try {
-            const dataModule = await loadModule('./dataManager.js');
-            dataManager = dataModule.dataManager;
-            console.log("✅ Data manager loaded");
-        } catch (error) {
-            console.warn("Data manager not available, continuing without it");
-        }
-        
-        // Load auth module
-        const authModule = await loadModule('./auth.js');
-        authFunctions.signUp = authModule.signUp;
-        authFunctions.signIn = authModule.signIn;
-        authFunctions.signOut = authModule.signOut;
-        console.log("✅ Auth module loaded");
-        
-        // Load tab renderers
-        const modules = [
-            { name: 'kader', file: './kader.js', render: 'renderKaderTab', reset: 'resetKaderState' },
-            { name: 'bans', file: './bans.js', render: 'renderBansTab', reset: 'resetBansState' },
-            { name: 'matches', file: './matches.js', render: 'renderMatchesTab', reset: 'resetMatchesState' },
-            { name: 'stats', file: './stats.js', render: 'renderStatsTab', reset: 'resetStatsState' },
-            { name: 'finanzen', file: './finanzen.js', render: 'renderFinanzenTab', reset: 'resetFinanzenState' },
-            { name: 'spieler', file: './spieler.js', render: 'renderSpielerTab', reset: 'resetSpielerState' }
-        ];
-        
-        for (const module of modules) {
-            try {
-                const mod = await loadModule(module.file);
-                tabRenderers[module.name] = mod[module.render];
-                if (mod[module.reset]) {
-                    resetFunctions[module.name] = mod[module.reset];
-                }
-                console.log(`✅ ${module.name} module loaded`);
-            } catch (error) {
-                console.error(`❌ Failed to load ${module.name} module:`, error);
-                // Create fallback renderer
-                tabRenderers[module.name] = () => {
-                    const app = document.getElementById('app');
-                    if (app) {
-                        app.innerHTML = `
-                            <div class="content-container">
-                                <h1 class="text-title-primary font-bold text-lg mb-4">${module.name.charAt(0).toUpperCase() + module.name.slice(1)}</h1>
-                                <p class="text-text-secondary">Modul konnte nicht geladen werden. Bitte versuchen Sie es später erneut.</p>
-                            </div>
-                        `;
-                    }
-                };
-            }
-        }
-        
-        console.log("✅ All modules loaded successfully");
-        return true;
-        
-    } catch (error) {
-        console.error("❌ Core initialization failed:", error);
-        ErrorHandler?.showUserError?.('Fehler beim Laden der Anwendung. Bitte laden Sie die Seite neu.', 'error');
-        return false;
-    }
-}
-
-// Connection status indicator
+// --- Connection status indicator with enhanced messaging ---
 function updateConnectionStatus(status) {
     let indicator = document.getElementById('connection-status');
     if (!indicator) {
@@ -137,6 +38,9 @@ function updateConnectionStatus(status) {
         indicator.className = 'fixed top-2 right-2 z-50 px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer';
         indicator.title = 'Klicken für Details';
         document.body.appendChild(indicator);
+        
+        // Add click handler for detailed status
+        indicator.addEventListener('click', showConnectionDetails);
     }
     
     // Clear previous classes
@@ -144,440 +48,787 @@ function updateConnectionStatus(status) {
     
     if (status.connected) {
         const baseClass = 'fixed top-2 right-2 z-50 px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer';
-        if (usingFallback) {
-            indicator.className = `${baseClass} bg-yellow-500 text-white`;
-            indicator.textContent = '📡 Demo';
-            indicator.title = 'Demo-Modus aktiv - Keine echte Datenbankverbindung';
+        
+        if (status.connectionType === 'fallback') {
+            indicator.textContent = status.reconnected ? 'Demo-Modus wiederhergestellt' : 'Demo-Modus';
+            indicator.className = baseClass + ' bg-blue-500 text-white';
+            indicator.title = 'Demo-Modus aktiv - Simulierte Daten. Klicken für Details.';
         } else {
-            indicator.className = `${baseClass} bg-green-500 text-white`;
-            indicator.textContent = '🟢 Online';
-            indicator.title = 'Verbunden mit Datenbank';
+            indicator.textContent = status.reconnected ? 'Verbindung wiederhergestellt' : 'Online';
+            indicator.className = baseClass + ' bg-green-500 text-white';
+            indicator.title = 'Datenbankverbindung aktiv. Klicken für Details.';
+        }
+        
+        if (status.reconnected) {
+            // Show temporary success message
+            setTimeout(() => {
+                if (status.connectionType === 'fallback') {
+                    indicator.textContent = 'Demo-Modus';
+                } else {
+                    indicator.textContent = 'Online';
+                }
+            }, 3000);
         }
     } else {
-        indicator.className = `${baseClass} bg-red-500 text-white`;
-        indicator.textContent = '🔴 Offline';
-        indicator.title = 'Keine Verbindung zur Datenbank';
+        const baseClass = 'fixed top-2 right-2 z-50 px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer';
+        
+        if (status.networkOffline) {
+            indicator.textContent = 'Offline';
+            indicator.className = baseClass + ' bg-gray-7000 text-white';
+            indicator.title = 'Keine Internetverbindung. Klicken für Details.';
+        } else if (status.sessionExpired) {
+            indicator.textContent = 'Session abgelaufen';
+            indicator.className = baseClass + ' bg-red-700 text-white';
+            indicator.title = 'Bitte neu anmelden. Klicken für Details.';
+        } else if (status.reconnecting) {
+            indicator.textContent = `Verbinde... (${status.attempt || 0}/5)`;
+            indicator.className = baseClass + ' bg-yellow-500 text-white';
+            indicator.title = 'Wiederverbindung läuft... Klicken für Details.';
+        } else if (status.maxAttemptsReached) {
+            indicator.textContent = 'Verbindung unterbrochen';
+            indicator.className = baseClass + ' bg-red-500 text-white';
+            indicator.title = 'Maximale Wiederverbindungsversuche erreicht. Klicken für Details.';
+        } else {
+            indicator.textContent = 'Verbindung verloren';
+            indicator.className = baseClass + ' bg-red-500 text-white';
+            indicator.title = 'Datenbankverbindung verloren. Klicken für Details.';
+        }
     }
-}
-
-// Initialize connection status
-function initializeConnectionStatus() {
-    updateConnectionStatus({ connected: true });
     
-    // Update status periodically if connection monitor is available
-    if (connectionMonitor) {
-        setInterval(async () => {
-            const isAvailable = await isDatabaseAvailable();
-            updateConnectionStatus({ connected: isAvailable });
-        }, 30000); // Check every 30 seconds
-    }
+    // Store current status for details view
+    indicator.dataset.status = JSON.stringify(status);
 }
 
-// Live sync initialization
-async function initializeLiveSync() {
-    if (liveSyncInitialized || !supabase) return;
+// Show detailed connection information in a modal
+function showConnectionDetails() {
+    const indicator = document.getElementById('connection-status');
+    if (!indicator || !indicator.dataset.status) return;
     
     try {
-        console.log("🔄 Initializing live sync...");
+        const status = JSON.parse(indicator.dataset.status);
+        const diagnostics = connectionMonitor.getDiagnostics();
         
-        // Create realtime channel
-        realtimeChannel = supabase.channel('public:*');
-        
-        // Listen for all table changes
-        const tables = ['players', 'matches', 'bans', 'transactions', 'finances', 'spieler_des_spiels'];
-        
-        tables.forEach(table => {
-            realtimeChannel.on(
-                'postgres_changes',
-                { event: '*', schema: 'public', table: table },
-                (payload) => {
-                    console.log('Real-time update:', payload);
-                    // Trigger refresh of current tab
-                    if (typeof window.refreshCurrentTab === 'function') {
-                        window.refreshCurrentTab();
-                    }
-                }
-            );
-        });
-        
-        realtimeChannel.subscribe((status) => {
-            console.log('Realtime status:', status);
-            if (status === 'SUBSCRIBED') {
-                console.log('✅ Live sync active');
-                liveSyncInitialized = true;
-            }
-        });
-        
-    } catch (error) {
-        console.warn('Live sync not available:', error);
-    }
-}
-
-// Auth initialization
-function initializeAuth() {
-    console.log("🔄 Initializing authentication...");
-    
-    supabase.auth.onAuthStateChange(async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.email);
-        
-        if (event === 'SIGNED_IN' && session) {
-            console.log('✅ User signed in');
-            await showMainApp();
-            await initializeLiveSync();
-        } else if (event === 'SIGNED_OUT') {
-            console.log('👋 User signed out');
-            showLoginArea();
-            cleanup();
-        }
-    });
-    
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) {
-            console.log('✅ Existing session found');
-            showMainApp();
-            initializeLiveSync();
-        } else {
-            console.log('🔑 No session - showing login');
-            showLoginArea();
-        }
-    });
-}
-
-// Show login area
-function showLoginArea() {
-    const loginArea = document.getElementById('login-area');
-    const appContainer = document.querySelector('.app-container');
-    
-    if (loginArea) {
-        loginArea.style.display = 'block';
-        
-        // Check if using fallback mode
-        const demoModeNote = usingFallback ? `
-            <div class="demo-mode-notice">
-                <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
-                    <strong>Demo-Modus:</strong> Verwenden Sie beliebige E-Mail und Passwort (mindestens 3 Zeichen) zum Testen.
-                </div>
-            </div>
-        ` : '';
-        
-        loginArea.innerHTML = `
-            <div class="login-container">
-                <div class="login-card">
-                    <div class="login-header">
-                        <h1 class="text-title-primary">FIFA Tracker</h1>
-                        <p class="text-text-secondary">Melden Sie sich an, um fortzufahren</p>
+        // Create modal HTML
+        const modalHTML = `
+            <div class="modal" id="connection-details-modal">
+                <div class="modal-content">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-100">Verbindungsstatus</h3>
+                        <button onclick="closeConnectionDetails()" class="text-gray-500 hover:text-gray-700">✕</button>
                     </div>
                     
-                    ${demoModeNote}
-                    
-                    <form id="login-form" class="login-form">
-                        <div class="form-group">
-                            <label for="email" class="form-label">E-Mail</label>
-                            <input type="email" id="email" class="form-input" required 
-                                   placeholder="${usingFallback ? 'demo@test.com' : 'ihre.email@example.com'}">
+                    <div class="space-y-4">
+                        <!-- Connection Status -->
+                        <div class="bg-gray-700 p-3 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <span class="font-medium">Status:</span>
+                                <span class="px-2 py-1 rounded text-sm ${status.connected ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'}">
+                                    ${status.connected ? '✅ Verbunden' : '❌ Getrennt'}
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between mt-2">
+                                <span class="font-medium">Typ:</span>
+                                <span class="text-sm text-gray-600">${getConnectionTypeText(diagnostics.connectionType)}</span>
+                            </div>
                         </div>
                         
-                        <div class="form-group">
-                            <label for="password" class="form-label">Passwort</label>
-                            <input type="password" id="password" class="form-input" required 
-                                   placeholder="${usingFallback ? 'test123' : 'Ihr Passwort'}">
-                        </div>
+                        <!-- Error Message -->
+                        ${status.message ? `
+                            <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
+                                <div class="font-medium text-yellow-800">Nachricht:</div>
+                                <div class="text-sm text-yellow-700">${status.message}</div>
+                            </div>
+                        ` : ''}
                         
-                        <button type="submit" class="btn-primary w-full">
-                            <span id="login-text">Anmelden</span>
-                            <div id="login-spinner" class="spinner-sm" style="display:none;"></div>
-                        </button>
-                    </form>
-                    
-                    <div class="login-footer">
-                        <p class="text-text-secondary text-sm">
-                            ${usingFallback ? 
-                                'Demo-Modus aktiv - Verwenden Sie beliebige Anmeldedaten' : 
-                                'Noch kein Account? <a href="#" id="signup-link" class="text-primary-500 hover:underline">Registrieren</a>'
-                            }
-                        </p>
+                        <!-- Metrics -->
+                        ${diagnostics.metrics.totalConnections > 0 ? `
+                            <div class="bg-blue-50 p-3 rounded-lg">
+                                <div class="font-medium text-blue-800 mb-2">Verbindungsstatistiken:</div>
+                                <div class="text-sm text-blue-700 space-y-1">
+                                    <div>Erfolgsrate: ${diagnostics.metrics.successRate}%</div>
+                                    <div>Durchschnittliche Antwortzeit: ${Math.round(diagnostics.metrics.averageResponseTime)}ms</div>
+                                    <div>Letzte Antwortzeit: ${Math.round(diagnostics.metrics.lastResponseTime)}ms</div>
+                                    <div>Verbindungsgeschwindigkeit: ${getSpeedText(diagnostics.connectionSpeed)}</div>
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <!-- Recommendations -->
+                        ${diagnostics.recommendations.length > 0 ? `
+                            <div class="bg-indigo-50 p-3 rounded-lg">
+                                <div class="font-medium text-indigo-800 mb-2">Empfehlungen:</div>
+                                <ul class="text-sm text-indigo-700 space-y-1">
+                                    ${diagnostics.recommendations.map(rec => `<li>• ${rec}</li>`).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                        
+                        <!-- Actions -->
+                        <div class="flex space-x-2 pt-2">
+                            <button onclick="testConnection()" class="flex-1 bg-blue-500 text-white px-3 py-2 rounded text-sm hover:bg-blue-600">
+                                🔄 Verbindung testen
+                            </button>
+                            <button onclick="retryConnection()" class="flex-1 bg-green-500 text-white px-3 py-2 rounded text-sm hover:bg-green-600">
+                                🔌 Neu verbinden
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         `;
-    }
-    
-    if (appContainer) {
-        appContainer.style.display = 'none';
-    }
-    
-    // Setup login form handler
-    const loginForm = document.getElementById('login-form');
-    if (loginForm) {
-        loginForm.addEventListener('submit', handleLogin);
-    }
-    
-    const signupLink = document.getElementById('signup-link');
-    if (signupLink) {
-        signupLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            // For demo: just show message
-            if (ErrorHandler) {
-                ErrorHandler.showUserError('Registrierung: Verwenden Sie beliebige E-Mail und Passwort für Demo-Modus', 'info');
-            }
-        });
-    }
-}
-
-// Handle login
-async function handleLogin(e) {
-    e.preventDefault();
-    
-    const email = document.getElementById('email')?.value;
-    const password = document.getElementById('password')?.value;
-    const loginText = document.getElementById('login-text');
-    const loginSpinner = document.getElementById('login-spinner');
-    
-    if (!email || !password) {
-        if (ErrorHandler) {
-            ErrorHandler.showUserError('Bitte geben Sie E-Mail und Passwort ein', 'error');
+        
+        // Remove existing modal
+        const existingModal = document.getElementById('connection-details-modal');
+        if (existingModal) {
+            existingModal.remove();
         }
-        return;
-    }
-    
-    // Show loading state
-    if (loginText) loginText.style.display = 'none';
-    if (loginSpinner) loginSpinner.style.display = 'block';
-    
-    try {
-        if (authFunctions.signIn) {
-            await authFunctions.signIn(email, password);
-        } else {
-            throw new Error('Auth functions not loaded');
-        }
+        
+        // Add new modal
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
     } catch (error) {
-        console.error('Login failed:', error);
-        if (ErrorHandler) {
-            ErrorHandler.showUserError('Anmeldung fehlgeschlagen: ' + error.message, 'error');
-        }
-    } finally {
-        // Reset loading state
-        if (loginText) loginText.style.display = 'block';
-        if (loginSpinner) loginSpinner.style.display = 'none';
+        console.error('Error showing connection details:', error);
     }
 }
 
-// Show main app
-async function showMainApp() {
-    const loginArea = document.getElementById('login-area');
-    const appContainer = document.querySelector('.app-container');
-    
-    if (loginArea) {
-        loginArea.style.display = 'none';
-    }
-    
-    if (appContainer) {
-        appContainer.style.display = 'block';
-    }
-    
-    // Initialize tab buttons if not already done
-    if (!tabButtonsInitialized) {
-        initializeTabButtons();
-        tabButtonsInitialized = true;
-    }
-    
-    // Load initial tab
-    await switchTab('matches');
-}
-
-// Initialize tab buttons
-function initializeTabButtons() {
-    console.log("🔄 Initializing tab navigation...");
-    
-    const tabButtons = document.querySelectorAll('.nav-item:not(.logout-nav)');
-    const logoutBtn = document.getElementById('logout-btn');
-    
-    tabButtons.forEach(button => {
-        button.addEventListener('click', async (e) => {
-            e.preventDefault();
-            // Map nav IDs to internal tab names
-            const navId = button.id.replace('nav-', '');
-            const tabMapping = {
-                'squad': 'kader',
-                'matches': 'matches',
-                'bans': 'bans',
-                'finanzen': 'finanzen', 
-                'stats': 'stats',
-                'spieler': 'spieler'
-            };
-            const tabName = tabMapping[navId] || navId;
-            await switchTab(tabName);
-        });
-    });
-    
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            if (authFunctions.signOut) {
-                await authFunctions.signOut();
-            }
-        });
+function getConnectionTypeText(type) {
+    switch (type) {
+        case 'real': return '🔗 Echte Datenbankverbindung';
+        case 'fallback': return '🔄 Demo-Modus (Simulierte Daten)';
+        case 'offline': return '📴 Offline';
+        case 'expired': return '🔐 Session abgelaufen';
+        case 'disconnected': return '❌ Verbindung unterbrochen';
+        default: return '❓ Unbekannt';
     }
 }
 
-// Switch tab function
-async function switchTab(tabName) {
-    console.log(`🔄 Switching to tab: ${tabName}`);
-    
-    // Show loading
-    const loader = document.getElementById('tab-loader');
-    if (loader) {
-        loader.style.display = 'flex';
+function getSpeedText(speed) {
+    switch (speed) {
+        case 'fast': return '🚀 Schnell (<100ms)';
+        case 'medium': return '⚡ Mittel (100-500ms)';
+        case 'slow': return '🐌 Langsam (500ms-1s)';
+        case 'very-slow': return '🦴 Sehr langsam (>1s)';
+        default: return '❓ Unbekannt';
+    }
+}
+
+function closeConnectionDetails() {
+    const modal = document.getElementById('connection-details-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+async function testConnection() {
+    const testButton = document.querySelector('[onclick="testConnection()"]');
+    if (testButton) {
+        testButton.textContent = '🔄 Teste...';
+        testButton.disabled = true;
     }
     
     try {
-        // Update active button
-        document.querySelectorAll('.nav-item').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        
-        const activeBtn = document.getElementById(`nav-${tabName}`);
-        if (activeBtn) {
-            activeBtn.classList.add('active');
+        const connected = await connectionMonitor.checkConnection();
+        if (testButton) {
+            testButton.textContent = connected ? '✅ Erfolgreich' : '❌ Fehlgeschlagen';
+            setTimeout(() => {
+                testButton.textContent = '🔄 Verbindung testen';
+                testButton.disabled = false;
+            }, 2000);
         }
-        
-        // Render tab content
-        if (tabRenderers[tabName]) {
-            await tabRenderers[tabName]();
-            currentTab = tabName;
-        } else {
-            console.error(`No renderer found for tab: ${tabName}`);
-            const app = document.getElementById('app');
-            if (app) {
-                app.innerHTML = `
-                    <div class="content-container">
-                        <h1 class="text-title-primary font-bold text-lg mb-4">${tabName.charAt(0).toUpperCase() + tabName.slice(1)}</h1>
-                        <p class="text-text-secondary">Dieser Bereich ist noch nicht verfügbar.</p>
-                    </div>
-                `;
-            }
-        }
-        
     } catch (error) {
-        console.error(`Failed to load tab ${tabName}:`, error);
-        if (ErrorHandler) {
-            ErrorHandler.showUserError('Fehler beim Laden des Bereichs', 'error');
-        }
-    } finally {
-        // Hide loading
-        if (loader) {
-            loader.style.display = 'none';
+        if (testButton) {
+            testButton.textContent = '❌ Fehler';
+            setTimeout(() => {
+                testButton.textContent = '🔄 Verbindung testen';
+                testButton.disabled = false;
+            }, 2000);
         }
     }
 }
 
-// Cleanup function
-function cleanup() {
-    if (realtimeChannel) {
-        supabase?.removeChannel(realtimeChannel);
-        realtimeChannel = null;
-        liveSyncInitialized = false;
+async function retryConnection() {
+    const retryButton = document.querySelector('[onclick="retryConnection()"]');
+    if (retryButton) {
+        retryButton.textContent = '🔄 Verbinde...';
+        retryButton.disabled = true;
     }
     
-    // Reset all module states
-    Object.values(resetFunctions).forEach(resetFn => {
-        try {
-            if (typeof resetFn === 'function') {
-                resetFn();
-            }
-        } catch (error) {
-            console.warn('Reset function failed:', error);
-        }
-    });
+    // Reset connection attempts and try again
+    connectionMonitor.reconnectAttempts = 0;
+    connectionMonitor.reconnectDelay = 1000;
+    
+    await connectionMonitor.attemptReconnection();
+    
+    if (retryButton) {
+        setTimeout(() => {
+            retryButton.textContent = '🔌 Neu verbinden';
+            retryButton.disabled = false;
+        }, 2000);
+    }
+    
+    // Close modal after retry
+    setTimeout(closeConnectionDetails, 1000);
 }
 
-// Global refresh function for real-time updates
-window.refreshCurrentTab = async () => {
-    if (currentTab && tabRenderers[currentTab]) {
-        console.log(`🔄 Refreshing current tab: ${currentTab}`);
-        try {
-            await tabRenderers[currentTab]();
-        } catch (error) {
-            console.warn('Failed to refresh tab:', error);
-        }
+// --- Session expiry UI handler (for supabaseClient.js event dispatch) ---
+window.addEventListener('supabase-session-expired', () => {
+    let indicator = document.getElementById('connection-status');
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'connection-status';
+        indicator.className = 'fixed top-2 right-2 z-50 px-3 py-1 rounded-full text-sm font-medium transition-all duration-300';
+        document.body.appendChild(indicator);
     }
-};
+    indicator.textContent = 'Session abgelaufen – bitte neu anmelden';
+    indicator.className = indicator.className.replace(/bg-\w+-\d+/g, '') + ' bg-red-700 text-white';
+});
 
-// Visibility change handler for performance
-document.addEventListener('visibilitychange', () => {
+// Handle app visibility changes to prevent crashes during inactivity
+function handleVisibilityChange() {
+    const wasVisible = isAppVisible;
     isAppVisible = !document.hidden;
-    
-    if (isAppVisible) {
-        // Clear any pending cleanup
+
+    if (!isAppVisible && wasVisible) {
+        inactivityCleanupTimer = setTimeout(() => {
+            cleanupRealtimeSubscriptions();
+            connectionMonitor.pauseHealthChecks();
+        }, 5 * 60 * 1000);
+    } else if (isAppVisible && !wasVisible) {
         if (inactivityCleanupTimer) {
             clearTimeout(inactivityCleanupTimer);
             inactivityCleanupTimer = null;
         }
-        
-        // Refresh current tab
-        window.refreshCurrentTab();
-    } else {
-        // Schedule cleanup for inactive state
-        inactivityCleanupTimer = setTimeout(() => {
-            console.log('🧹 Cleaning up inactive app state');
-            // Perform minimal cleanup for inactive state
-        }, 300000); // 5 minutes
+        connectionMonitor.resumeHealthChecks();
+        supabase.auth.getSession().then(({data: {session}}) => {
+            if(session) {
+                // NEU: Reset aller lokalen Daten-States
+				tabButtonsInitialized = false;
+                liveSyncInitialized = false;
+                if (typeof resetKaderState === "function") resetKaderState();
+                if (typeof resetBansState === "function") resetBansState();
+                if (typeof resetFinanzenState === "function") resetFinanzenState();
+                if (typeof resetMatchesState === "function") resetMatchesState();
+                if (typeof resetStatsState === "function") resetStatsState();
+                if (typeof resetSpielerState === "function") resetSpielerState();
+                setupTabButtons();
+                subscribeAllLiveSync();
+                renderCurrentTab(); // <-- erzwingt Daten-Reload!
+            } else {
+                renderLoginArea();
+            }
+        });
     }
-});
+}
 
-// Initialize the application
-async function initializeApp() {
-    console.log("🚀 Initializing FIFA Tracker...");
+function cleanupRealtimeSubscriptions() {
+    if (realtimeChannel) {
+        supabase.removeChannel(realtimeChannel);
+        realtimeChannel = null;
+        liveSyncInitialized = false;
+    }
+}
+
+function showTabLoader(show = true) {
+    const loader = document.getElementById('tab-loader');
+    if (loader) {
+        loader.style.display = show ? "flex" : "none";
+    }
+    
+    // Use centralized loading manager
+    if (show) {
+        loadingManager.show('tab-loading');
+    } else {
+        loadingManager.hide('tab-loading');
+    }
+}
+
+// --- Bottom Navbar Indicator ---
+function updateBottomNavActive(tab) {
+    try {
+        // Remove active class from all nav items
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Add active class to current tab
+        const navElement = document.getElementById(`nav-${tab}`);
+        if (navElement) {
+            navElement.classList.add('active');
+        }
+    } catch (error) {
+        console.error('Error updating bottom nav:', error);
+    }
+}
+
+async function switchTab(tab) {
+    try {
+        currentTab = tab;
+        
+        // Update bottom navigation only
+        updateBottomNavActive(tab);
+        showTabLoader(true);
+        
+        // Add small delay for better UX
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        await renderCurrentTab();
+        showTabLoader(false);
+    } catch (error) {
+        console.error('Error switching tab:', error);
+        ErrorHandler.showUserError('Fehler beim Wechseln des Tabs');
+        showTabLoader(false);
+    }
+}
+
+async function renderCurrentTab() {
+    const appDiv = document.getElementById("app");
+    if (!appDiv) {
+        console.error('App container not found');
+        return;
+    }
     
     try {
-        // Wait for DOM to be ready
-        if (document.readyState === 'loading') {
-            await new Promise(resolve => {
-                document.addEventListener('DOMContentLoaded', resolve);
-            });
+        appDiv.innerHTML = "";
+        
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+            appDiv.innerHTML = `<div class="text-red-700 dark:text-red-300 text-center py-6">Nicht angemeldet. Bitte einloggen.</div>`;
+            return;
         }
         
-        // Load core modules
-        const success = await initializeCore();
-        if (!success) {
-            throw new Error('Core module loading failed');
+        console.log("renderCurrentTab mit currentTab:", currentTab);
+        
+        // Use a more structured approach for tab rendering
+        const tabRenderers = {
+            'squad': () => renderKaderTab("app"),
+            'bans': () => renderBansTab("app"),
+            'matches': () => renderMatchesTab("app"),
+            'stats': () => renderStatsTab("app"),
+            'finanzen': () => renderFinanzenTab("app"),
+            'spieler': () => renderSpielerTab("app")
+        };
+        
+        const renderer = tabRenderers[currentTab];
+        if (renderer) {
+            await renderer();
+        } else {
+            console.warn(`No renderer found for tab: ${currentTab}`);
+            appDiv.innerHTML = `<div class="text-yellow-700 text-center py-6">Unbekannter Tab: ${currentTab}</div>`;
         }
-        
-        // Initialize connection status
-        initializeConnectionStatus();
-        
-        // Initialize authentication
-        initializeAuth();
-        
-        console.log("✅ FIFA Tracker initialized successfully");
-        
     } catch (error) {
-        console.error("❌ Application initialization failed:", error);
+        console.error('Error rendering tab:', error);
+        ErrorHandler.handleDatabaseError(error, 'Tab laden');
+        appDiv.innerHTML = `<div class="text-red-700 dark:text-red-300 text-center py-6">Fehler beim Laden des Tabs. Bitte versuchen Sie es erneut.</div>`;
+    }
+}
+
+function setupTabButtons() {
+    // Since we're only using bottom navigation, no desktop tab setup needed
+    tabButtonsInitialized = true;
+}
+
+// Bottom Navigation für Mobile Geräte
+function setupBottomNav() {
+    document.getElementById("nav-squad")?.addEventListener("click", e => { e.preventDefault(); switchTab("squad"); });
+    document.getElementById("nav-matches")?.addEventListener("click", e => { e.preventDefault(); switchTab("matches"); });
+    document.getElementById("nav-bans")?.addEventListener("click", e => { e.preventDefault(); switchTab("bans"); });
+    document.getElementById("nav-finanzen")?.addEventListener("click", e => { e.preventDefault(); switchTab("finanzen"); });
+    document.getElementById("nav-stats")?.addEventListener("click", e => { e.preventDefault(); switchTab("stats"); });
+    document.getElementById("nav-spieler")?.addEventListener("click", e => { e.preventDefault(); switchTab("spieler"); });
+}
+window.addEventListener('DOMContentLoaded', setupBottomNav);
+
+function subscribeAllLiveSync() {
+	cleanupRealtimeSubscriptions();
+    liveSyncInitialized = false; // <-- redundantes Reset, schadet aber nicht!
+    if (liveSyncInitialized || !isAppVisible) return;
+    realtimeChannel = supabase
+        .channel('global_live')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'players' }, () => renderCurrentTab())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'matches' }, () => renderCurrentTab())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, () => renderCurrentTab())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'finances' }, () => renderCurrentTab())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'bans' }, () => renderCurrentTab())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'spieler_des_spiels' }, () => renderCurrentTab())
+        .subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+                liveSyncInitialized = true;
+            } else if (status === 'CHANNEL_ERROR') {
+                liveSyncInitialized = false;
+                if (isAppVisible) setTimeout(() => {
+                    if (!liveSyncInitialized && isAppVisible) subscribeAllLiveSync();
+                }, 5000);
+            } else if (status === 'CLOSED') {
+                liveSyncInitialized = false;
+                if (isDatabaseAvailable() && isAppVisible) setTimeout(() => {
+                    if (isAppVisible) subscribeAllLiveSync();
+                }, 2000);
+            }
+        });
+}
+
+function setupLogoutButton() {
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.onclick = async () => {
+			ErrorHandler.showSuccessMessage('Du wurdest erfolgreich ausgeloggt!');
+            await signOut();
+            let tries = 0;
+            while (tries < 20) {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session) break;
+                await new Promise(res => setTimeout(res, 100));
+                tries++;
+            }
+            // window.location.reload(); // Entfernt!
+            liveSyncInitialized = false;
+            tabButtonsInitialized = false;
+            cleanupRealtimeSubscriptions();
+            if (inactivityCleanupTimer) {
+                clearTimeout(inactivityCleanupTimer);
+                inactivityCleanupTimer = null;
+            }
+            connectionMonitor.removeListener(updateConnectionStatus);
+            renderLoginArea();
+        };
+    }
+}
+
+async function renderLoginArea() {
+	console.log("renderLoginArea aufgerufen");
+    const loginDiv = document.getElementById('login-area');
+    const appContainer = document.querySelector('.app-container');
+    if (!loginDiv || !appContainer) {
+        document.body.innerHTML = `<div style="color:red;padding:2rem;text-align:center">
+          Kritischer Fehler: UI-Container nicht gefunden.<br>
+          Bitte Seite neu laden oder Admin kontaktieren.
+        </div>`;
+        return;
+    }
+    const logoutBtn = document.getElementById('logout-btn');
+    
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log("Current session:", session ? "Active" : "None", session?.user?.email || "No user");
         
-        // Show basic error page
-        document.body.innerHTML = `
-            <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
-                <div style="text-align: center; max-width: 500px;">
-                    <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 16px; color: #1f2937;">
-                        FIFA Tracker Fehler
-                    </h1>
-                    <p style="color: #6b7280; margin-bottom: 24px;">
-                        Die Anwendung konnte nicht geladen werden. Bitte laden Sie die Seite neu.
-                    </p>
-                    <button onclick="window.location.reload()" 
-                            style="background: #3b82f6; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer;">
-                        Seite neu laden
-                    </button>
-                    <details style="margin-top: 20px; text-align: left; background: #f9fafb; padding: 16px; border-radius: 8px;">
-                        <summary style="cursor: pointer; font-weight: 600;">Fehlerdetails</summary>
-                        <pre style="margin-top: 10px; white-space: pre-wrap; font-size: 12px; color: #374151;">${error.message}\n\n${error.stack}</pre>
-                    </details>
+        if (session) {
+            console.log("✅ User authenticated, showing main app");
+            loginDiv.innerHTML = "";
+            appContainer.style.display = '';
+            if (logoutBtn) logoutBtn.style.display = "";
+            setupLogoutButton();
+            setupTabButtons();
+            connectionMonitor.addListener(updateConnectionStatus);
+            if (!tabButtonsInitialized) {
+                switchTab(currentTab);
+            } else {
+                renderCurrentTab();
+            }
+            subscribeAllLiveSync();
+        } else {
+            console.log("❌ No session, showing login form");
+            // Das Loginformular NICHT komplett neu bauen, sondern Felder erhalten!
+            let emailValue = "";
+            let pwValue = "";
+            if (document.getElementById('email')) emailValue = document.getElementById('email').value;
+            if (document.getElementById('pw')) pwValue = document.getElementById('pw').value;
+            loginDiv.innerHTML = `
+                <div class="login-container">
+                    <div class="login-card fade-in">
+                        <div class="login-logo">
+                            <div class="login-logo-icon">
+                                <i class="fas fa-futbol"></i>
+                            </div>
+                            <h1 class="login-title">FIFA Tracker</h1>
+                            <p class="login-subtitle">Melden Sie sich an, um fortzufahren</p>
+                        </div>
+                        
+                        <form id="loginform" class="space-y-6">
+                            <div class="form-group">
+                                <label for="email" class="form-label">E-Mail-Adresse</label>
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    required 
+                                    placeholder="ihre@email.com" 
+                                    autocomplete="email"
+                                    class="form-input" 
+                                    value="${emailValue}" />
+                            </div>
+                            <div class="form-group">
+                                <label for="pw" class="form-label">Passwort</label>
+                                <input 
+                                    type="password" 
+                                    id="pw" 
+                                    required 
+                                    placeholder="Ihr Passwort" 
+                                    autocomplete="current-password"
+                                    class="form-input" 
+                                    value="${pwValue}" />
+                            </div>
+                            <button
+                                type="submit"
+                                class="btn btn-primary btn-lg w-full login-btn">
+                                <i class="fas fa-sign-in-alt"></i> 
+                                <span>Anmelden</span>
+                            </button>
+                        </form>
+                    </div>
                 </div>
+            `;
+            appContainer.style.display = 'none';
+            if (logoutBtn) logoutBtn.style.display = "none";
+            liveSyncInitialized = false;
+            tabButtonsInitialized = false;
+            cleanupRealtimeSubscriptions();
+            if (inactivityCleanupTimer) {
+                clearTimeout(inactivityCleanupTimer);
+                inactivityCleanupTimer = null;
+            }
+            connectionMonitor.removeListener(updateConnectionStatus);
+            
+            // Setup login form handler with better event management
+            const loginForm = document.getElementById('loginform');
+            if (loginForm) {
+                // Remove any existing listeners by cloning the form
+                const newForm = loginForm.cloneNode(true);
+                loginForm.parentNode.replaceChild(newForm, loginForm);
+                
+                newForm.onsubmit = async e => {
+                    e.preventDefault();
+                    const emailInput = document.getElementById('email');
+                    const passwordInput = document.getElementById('pw');
+                    const loginBtn = document.querySelector('.login-btn');
+                    
+                    if (!emailInput || !passwordInput) {
+                        console.error("Login form inputs not found");
+                        return;
+                    }
+                    
+                    console.log("🔑 Attempting login with:", emailInput.value);
+                    
+                    // Show loading state
+                    if (loginBtn) {
+                        loginBtn.disabled = true;
+                        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Anmelden...';
+                    }
+                    
+                    try {
+                        await signIn(emailInput.value, passwordInput.value);
+                        console.log("✅ Login successful, waiting for auth state change");
+                    } catch (error) {
+                        console.error("❌ Login failed:", error);
+                        if (loginBtn) {
+                            loginBtn.disabled = false;
+                            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i> Anmelden';
+                        }
+                    }
+                };
+            }
+        }
+    } catch (error) {
+        console.error("Error in renderLoginArea:", error);
+        // Show error state
+        loginDiv.innerHTML = `
+            <div class="text-center text-red-600 p-4">
+                <h3>Anmeldefehler</h3>
+                <p>Es gab ein Problem beim Laden der Anmeldung: ${error.message}</p>
+                <button onclick="location.reload()" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded">
+                    Seite neu laden
+                </button>
             </div>
         `;
     }
 }
 
-// Start the application
-initializeApp();
+// Separate functions for showing main app vs login form
+async function showMainApp() {
+    console.log("✅ Showing main app");
+    const loginDiv = document.getElementById('login-area');
+    const appContainer = document.querySelector('.app-container');
+    const logoutBtn = document.getElementById('logout-btn');
+    
+    if (loginDiv) loginDiv.innerHTML = "";
+    if (appContainer) appContainer.style.display = '';
+    if (logoutBtn) logoutBtn.style.display = "";
+    
+    setupLogoutButton();
+    setupTabButtons();
+    connectionMonitor.addListener(updateConnectionStatus);
+    
+    if (!tabButtonsInitialized) {
+        switchTab(currentTab);
+    } else {
+        renderCurrentTab();
+    }
+    subscribeAllLiveSync();
+}
+
+async function showLoginForm() {
+    console.log("❌ Showing login form");
+    const loginDiv = document.getElementById('login-area');
+    const appContainer = document.querySelector('.app-container');
+    const logoutBtn = document.getElementById('logout-btn');
+    
+    if (appContainer) appContainer.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = "none";
+    
+    // Preserve existing form values if they exist
+    let emailValue = "";
+    let pwValue = "";
+    if (document.getElementById('email')) emailValue = document.getElementById('email').value;
+    if (document.getElementById('pw')) pwValue = document.getElementById('pw').value;
+    
+    if (loginDiv) {
+        loginDiv.innerHTML = `
+            <div class="login-container">
+                <div class="login-card fade-in">
+                    <div class="login-logo">
+                        <div class="login-logo-icon">
+                            <i class="fas fa-futbol"></i>
+                        </div>
+                        <h1 class="login-title">FIFA Tracker</h1>
+                        <p class="login-subtitle">Melden Sie sich an, um fortzufahren</p>
+                    </div>
+                    
+                    <form id="loginform" class="space-y-6">
+                        <div class="form-group">
+                            <label for="email" class="form-label">E-Mail-Adresse</label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                required 
+                                placeholder="ihre@email.com" 
+                                class="form-input"
+                                value="${emailValue}" />
+                        </div>
+                        <div class="form-group">
+                            <label for="pw" class="form-label">Passwort</label>
+                            <input 
+                                type="password" 
+                                id="pw" 
+                                name="password" 
+                                required 
+                                placeholder="Ihr Passwort" 
+                                class="form-input"
+                                value="${pwValue}" />
+                        </div>
+                        <button
+                            type="submit"
+                            class="btn btn-primary btn-lg w-full">
+                            <i class="fas fa-sign-in-alt"></i> Anmelden
+                        </button>
+                    </form>
+                </div>
+            </div>
+        `;
+        
+        // Setup form handler
+        const form = document.getElementById('loginform');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('pw').value;
+                
+                console.log(`🔑 Attempting login with: ${email}`);
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.textContent = 'Anmelden...';
+                    submitBtn.disabled = true;
+                }
+                
+                try {
+                    await signIn(email, password);
+                    console.log('✅ Login successful, waiting for auth state change');
+                } catch (error) {
+                    console.error('Login error:', error);
+                } finally {
+                    if (submitBtn) {
+                        submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmelden';
+                        submitBtn.disabled = false;
+                    }
+                }
+            });
+        }
+    }
+}
+
+// Enhanced auth state change listener
+supabase.auth.onAuthStateChange(async (event, session) => {
+    console.log(`🔐 Auth state changed: ${event}`, session?.user?.email || 'No user');
+    
+    // Add a small delay to ensure DOM is ready
+    setTimeout(async () => {
+        try {
+            if (event === 'SIGNED_IN' && session) {
+                await showMainApp();
+            } else {
+                await showLoginForm();
+            }
+        } catch (error) {
+            console.error('Error handling auth state change:', error);
+        }
+    }, 100);
+});
+window.addEventListener('DOMContentLoaded', async () => {
+	console.log("DOMContentLoaded!");
+    
+    // Show fallback status if using fallback mode
+    if (usingFallback) {
+        showFallbackStatus();
+    }
+    
+    await renderLoginArea();
+});
+
+// Show fallback status indicator
+function showFallbackStatus() {
+    let indicator = document.getElementById('connection-status');
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'connection-status';
+        indicator.className = 'fixed top-2 right-2 z-50 px-3 py-1 rounded-full text-sm font-medium transition-all duration-300';
+        document.body.appendChild(indicator);
+    }
+    indicator.textContent = 'Demo-Modus (Supabase nicht konfiguriert)';
+    indicator.className = indicator.className.replace(/bg-\w+-\d+/g, '') + ' bg-blue-500 text-white cursor-pointer';
+    
+    // Add click handler to show configuration help
+    indicator.onclick = () => {
+        showDemoModeConfigurationHelp();
+    };
+}
+
+function showDemoModeConfigurationHelp() {
+    const helpContent = `
+        <div class="p-6 text-gray-700">
+            <h3 class="text-xl font-bold mb-4 text-blue-600">🔧 Demo-Modus Konfiguration</h3>
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                <p class="text-sm"><strong>Hinweis:</strong> Die Anwendung läuft im Demo-Modus mit simulierten Daten.</p>
+            </div>
+            <h4 class="font-semibold mb-2">Um eine echte Supabase-Verbindung zu verwenden:</h4>
+            <ol class="list-decimal list-inside space-y-2 text-sm">
+                <li>Ersetzen Sie <code class="bg-gray-100 px-1 rounded">SUPABASE_URL</code> in supabaseClient.js</li>
+                <li>Ersetzen Sie <code class="bg-gray-100 px-1 rounded">SUPABASE_ANON_KEY</code> in supabaseClient.js</li>
+                <li>Stellen Sie sicher, dass die Supabase CDN geladen werden kann</li>
+                <li>Konfigurieren Sie die Datenbank-Tabellen gemäß SUPABASE_SETUP.md</li>
+            </ol>
+            <div class="mt-4 p-3 bg-gray-50 rounded">
+                <p class="text-xs text-gray-600">Weitere Informationen finden Sie in der Datei <strong>SUPABASE_SETUP.md</strong></p>
+            </div>
+        </div>
+    `;
+    
+    ErrorHandler.showUserError(helpContent, 'info');
+}
+
+document.addEventListener('visibilitychange', handleVisibilityChange);
+window.addEventListener('beforeunload', () => {
+    cleanupRealtimeSubscriptions();
+    if (inactivityCleanupTimer) {
+        clearTimeout(inactivityCleanupTimer);
+    }
+    connectionMonitor.destroy();
+});

@@ -47,67 +47,26 @@ export function renderBansTab(containerId = "app") {
     const app = document.getElementById(containerId);
 
     app.innerHTML = `
-        <div class="mb-6 text-center">
-            <h1 class="text-2xl font-bold text-text-primary mb-2">Sperren Verwaltung</h1>
-            <p class="text-text-secondary">Verwalten Sie Spielersperren und Sanktionen</p>
-        </div>
-        
         <div class="mb-4">
-            <button id="add-ban-btn" class="btn btn-primary btn-full">
-                <i class="fas fa-ban"></i>
-                <span>Neue Sperre hinzufügen</span>
-            </button>
-        </div>
-        
-        <div class="space-y-6">
-            <div>
-                <div class="native-card">
-                    <div class="card-header">
-                        <h3 class="card-title text-interactive-danger">Aktive Sperren</h3>
-                        <div class="badge badge-danger">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                    </div>
-                    <div class="card-content">
-                        <div id="bans-active-list"></div>
-                    </div>
-                </div>
+            <h2 class="text-lg font-semibold dark:text-white">Sperren</h2>
+            <div class="flex space-x-2 mt-4 mb-6">
+                <button id="add-ban-btn" class="w-full sm:w-auto bg-sky-600 hover:bg-sky-700 text-white px-4 py-3 rounded-lg text-base flex items-center gap-2 font-semibold transition shadow">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Sperre hinzufügen
+                </button>
             </div>
-            
-            <div class="accordion">
-                <div class="accordion-header" id="history-toggle">
-                    <div class="accordion-title">
-                        <i class="fas fa-history text-text-tertiary"></i>
-                        <h3 class="font-semibold text-lg">Vergangene Sperren</h3>
-                    </div>
-                    <i class="fas fa-chevron-down accordion-icon"></i>
+            <div>
+                <h3 class="font-bold text-base mb-2 dark:text-white">Aktive Sperren</h3>
+                <div id="bans-active-list" class="mb-8"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="font-bold text-base mb-2 text-blue-800 dark:text-blue-400">Vergangene Sperren AEK</h3>
+                    <div id="bans-history-aek"></div>
                 </div>
-                <div class="accordion-content" id="history-content">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="native-card team-aek">
-                            <div class="card-header">
-                                <h4 class="card-title">AEK Athen</h4>
-                                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-users text-white text-sm"></i>
-                                </div>
-                            </div>
-                            <div class="card-content">
-                                <div id="bans-history-aek"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="native-card team-real">
-                            <div class="card-header">
-                                <h4 class="card-title">Real Madrid</h4>
-                                <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-users text-white text-sm"></i>
-                                </div>
-                            </div>
-                            <div class="card-content">
-                                <div id="bans-history-real"></div>
-                            </div>
-                        </div>
-                    </div>
+                <div>
+                    <h3 class="font-bold text-base mb-2 text-red-800 dark:text-red-400">Vergangene Sperren Real</h3>
+                    <div id="bans-history-real"></div>
                 </div>
             </div>
         </div>
@@ -116,22 +75,6 @@ export function renderBansTab(containerId = "app") {
     loadBansAndRender(renderBansLists);
 
     document.getElementById('add-ban-btn').onclick = () => openBanForm();
-    
-    // Setup accordion functionality
-    const historyToggle = document.getElementById('history-toggle');
-    const historyContent = document.getElementById('history-content');
-    const historyIcon = historyToggle.querySelector('.accordion-icon');
-    
-    historyToggle.addEventListener('click', () => {
-        historyToggle.classList.toggle('active');
-        historyContent.classList.toggle('active');
-        
-        if (historyToggle.classList.contains('active')) {
-            historyIcon.style.transform = 'rotate(180deg)';
-        } else {
-            historyIcon.style.transform = 'rotate(0deg)';
-        }
-    });
 }
 
 function renderBansLists() {
@@ -153,96 +96,43 @@ function renderBanList(list, containerId, active) {
     const c = document.getElementById(containerId);
     if (!c) return;
     if (!list.length) {
-        c.innerHTML = `
-            <div class="text-center py-4">
-                <i class="fas fa-${active ? 'shield-alt' : 'history'} text-4xl text-text-tertiary mb-3"></i>
-                <p class="text-text-secondary">${active ? "Keine aktiven Sperren" : "Keine vergangenen Sperren"}</p>
-            </div>
-        `;
+        c.innerHTML = `<div class="text-gray-700 text-sm">${active ? "Keine aktiven Sperren." : "Keine vergangenen Sperren."}</div>`;
         return;
     }
     c.innerHTML = '';
     list.forEach(ban => {
         const player = playersCache.find(p => p.id === ban.player_id);
-        let teamClass = '';
-        let teamIcon = '';
-        
+        let tClass;
         if (!player) {
-            teamClass = "team-ehemalige";
-            teamIcon = "fas fa-question";
+            tClass = "bg-gray-700 dark:bg-gray-700 text-gray-400";
         } else if (player.team === "Ehemalige") {
-            teamClass = "team-ehemalige";
-            teamIcon = "fas fa-user-clock";
+            tClass = "bg-gray-200 dark:bg-gray-700 text-gray-500";
         } else if (player.team === "AEK") {
-            teamClass = "team-aek";
-            teamIcon = "fas fa-users";
+            tClass = "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-200";
         } else {
-            teamClass = "team-real";
-            teamIcon = "fas fa-users";
+            tClass = "bg-red-100 dark:bg-red-900 text-red-900 dark:text-red-200";
         }
-        
         const restGames = getRestGames(ban);
         const div = document.createElement('div');
-        div.className = `native-card ${teamClass} mb-3`;
-        
-        // Ban type icon
-        let banIcon = 'fas fa-ban';
-        if (ban.type === 'Gelb-Rote Karte') banIcon = 'fas fa-square text-warning';
-        else if (ban.type === 'Rote Karte') banIcon = 'fas fa-square text-interactive-danger';
-        else if (ban.type === 'Verletzung') banIcon = 'fas fa-ambulance';
-        
+        div.className = `player-card border dark:border-gray-700 rounded-lg p-3 flex justify-between items-center gap-2 mb-2 ${tClass}`;
         div.innerHTML = `
-            <div class="card-header">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-interactive-danger rounded-full flex items-center justify-center">
-                        <i class="${banIcon} text-white"></i>
-                    </div>
-                    <div>
-                        <h4 class="card-title">${player ? player.name : "Unbekannter Spieler"}</h4>
-                        <p class="card-subtitle">${player ? player.team : "Unbekanntes Team"}</p>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="text-lg font-bold ${active ? 'text-interactive-danger' : 'text-text-tertiary'}">
-                        ${restGames < 0 ? 0 : restGames}
-                    </div>
-                    <div class="text-xs text-text-secondary">
-                        ${active ? 'verbleibend' : 'abgelaufen'}
-                    </div>
-                </div>
+            <div>
+                <div class="font-medium">${player ? player.name : "-"} <span class="text-xs text-gray-600">(${player ? player.team : "-"})</span></div>
+                <div class="text-xs text-gray-700">Typ: <b>${ban.type || "-"}</b></div>
+                <div class="text-xs text-gray-700">Start: <b>${ban.totalgames}</b> | Aktuell: <b>${restGames < 0 ? 0 : restGames}</b></div>
+                ${ban.reason ? `<div class="text-xs text-gray-600">Grund: ${ban.reason}</div>` : ''}
             </div>
-            <div class="card-content">
-                <div class="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                        <span class="text-text-secondary">Typ:</span>
-                        <span class="font-medium">${ban.type || "-"}</span>
-                    </div>
-                    <div>
-                        <span class="text-text-secondary">Gesamt:</span>
-                        <span class="font-medium">${ban.totalgames} Spiele</span>
-                    </div>
-                </div>
-                ${ban.reason ? `
-                    <div class="mt-2 p-2 bg-surface-tertiary rounded-lg">
-                        <span class="text-xs text-text-secondary">Grund:</span>
-                        <p class="text-sm">${ban.reason}</p>
-                    </div>
+            <div class="flex gap-1">
+                ${active ? `
+                <button class="edit-ban-btn bg-sky-500 hover:bg-sky-600 text-white px-3 py-2 rounded-lg" title="Bearbeiten">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-1.5a2.121 2.121 0 00-3 0l-7.5 7.5a2.121 2.121 0 000 3l3.5 3.5a2.121 2.121 0 003 0l7.5-7.5a2.121 2.121 0 000-3z"/></svg>
+                </button>
+                <button class="delete-ban-btn bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-lg" title="Löschen">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
                 ` : ''}
             </div>
-            ${active ? `
-                <div class="card-footer">
-                    <button class="btn btn-secondary btn-xs edit-ban-btn">
-                        <i class="fas fa-edit"></i>
-                        <span>Bearbeiten</span>
-                    </button>
-                    <button class="btn btn-danger btn-xs delete-ban-btn">
-                        <i class="fas fa-trash"></i>
-                        <span>Löschen</span>
-                    </button>
-                </div>
-            ` : ''}
         `;
-        
         if (active) {
             div.querySelector('.edit-ban-btn').onclick = () => openBanForm(ban);
             div.querySelector('.delete-ban-btn').onclick = () => deleteBan(ban.id);

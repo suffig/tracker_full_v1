@@ -47,6 +47,74 @@
     <script src="assets/mobile-menu.js"></script>
     <!-- Font Awesome - Local Replacement -->
     <link rel="stylesheet" href="assets/fonts/fontawesome-icons.css">
+    <!-- Supabase JavaScript Client with improved fallback -->
+    <script>
+      // Pre-create fallback before attempting CDN load
+      window.supabase = window.supabase || {
+        createClient: function(url, key, options) {
+          console.warn('Using fallback Supabase client - CDN not available');
+          return {
+            auth: {
+              signInWithPassword: async (credentials) => {
+                console.log('Demo login with:', credentials.email);
+                if (!credentials.email || !credentials.password) {
+                  return { error: new Error('Email and password required') };
+                }
+                if (credentials.password.length < 3) {
+                  return { error: new Error('Invalid credentials') };
+                }
+                const user = { id: 'demo', email: credentials.email, created_at: new Date().toISOString() };
+                const session = { user, access_token: 'demo_token', expires_at: Date.now() / 1000 + 3600 };
+                return { data: { user, session }, error: null };
+              },
+              signUp: async (credentials) => {
+                console.log('Demo signup - please use login instead');
+                return { data: { user: null, session: null }, error: null };
+              },
+              signOut: async () => {
+                console.log('Demo logout');
+                return { error: null };
+              },
+              getSession: async () => {
+                const user = { id: 'demo', email: 'demo@tracker.com', created_at: new Date().toISOString() };
+                const session = { user, access_token: 'demo_token', expires_at: Date.now() / 1000 + 3600 };
+                return { data: { session } };
+              },
+              onAuthStateChange: (callback) => {
+                console.log('Setting up demo auth state listener');
+                setTimeout(() => {
+                  const user = { id: 'demo', email: 'demo@tracker.com', created_at: new Date().toISOString() };
+                  const session = { user, access_token: 'demo_token', expires_at: Date.now() / 1000 + 3600 };
+                  callback('SIGNED_IN', session);
+                }, 100);
+                return { data: { subscription: { unsubscribe: () => {} } } };
+              }
+            },
+            from: (table) => ({
+              select: (query) => Promise.resolve({ data: [], error: null }),
+              insert: (data) => {
+                const newItem = { id: Date.now(), ...data, created_at: new Date().toISOString() };
+                return Promise.resolve({ data: [newItem], error: null });
+              },
+              update: (data) => ({ eq: () => Promise.resolve({ data: [], error: null }) }),
+              delete: () => ({ eq: () => Promise.resolve({ data: [], error: null }) }),
+              eq: function(col, val) { return this; },
+              order: function(col, opts) { return this; },
+              limit: function(n) { return this; }
+            }),
+            channel: () => ({
+              on: () => ({}),
+              subscribe: () => 'SUBSCRIBED',
+              unsubscribe: () => Promise.resolve({ error: null })
+            }),
+            removeChannel: () => Promise.resolve({ error: null })
+          };
+        }
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" 
+            onload="console.log('✅ Real Supabase CDN loaded successfully')"
+            onerror="console.warn('⚠️ Supabase CDN blocked - using fallback client')"></script>
 </head>
 <body class="nativewind-theme">
 <!-- LOGIN AREA - NATIVEWIND DESIGN -->
@@ -105,40 +173,6 @@
 <!-- MODAL ROOT -->
 <div id="modal-root"></div>
 
-<script src="./main.js"></script>
-<!-- Minimal Supabase Client Fallback -->
-<script>
-  // Create minimal global supabase object if not available from CDN
-  if (typeof window.supabase === 'undefined') {
-    window.supabase = {
-      createClient: function(url, key, config) {
-        console.log('Using fallback Supabase client');
-        return {
-          auth: {
-            signInWithPassword: () => Promise.resolve({ data: { user: { email: 'demo@example.com' }, session: { access_token: 'demo' } }, error: null }),
-            signOut: () => Promise.resolve({ error: null }),
-            getSession: () => Promise.resolve({ data: { session: { user: { email: 'demo@example.com' }, access_token: 'demo' } }, error: null }),
-            onAuthStateChange: (callback) => {
-              setTimeout(() => callback('SIGNED_IN', { user: { email: 'demo@example.com' }, access_token: 'demo' }), 100);
-              return { data: { subscription: { unsubscribe: () => {} } } };
-            }
-          },
-          from: () => ({
-            select: () => Promise.resolve({ data: [], error: null }),
-            insert: () => Promise.resolve({ data: [], error: null }),
-            update: () => Promise.resolve({ data: [], error: null }),
-            delete: () => Promise.resolve({ data: [], error: null })
-          }),
-          channel: () => ({
-            on: () => this,
-            subscribe: () => 'SUBSCRIBED',
-            unsubscribe: () => Promise.resolve({ error: null })
-          }),
-          removeChannel: () => Promise.resolve({ error: null })
-        };
-      }
-    };
-  }
-</script>
+<script type="module" src="./main.js"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 import { supabase, supabaseDb, usingFallback } from './supabaseClient.js';
 import { connectionMonitor, isDatabaseAvailable } from './connectionMonitor.js';
 import { dataManager } from './dataManager.js';
-import { loadingManager, ErrorHandler, eventBus } from './utils.js';
+import { loadingManager, ErrorHandler, eventBus, themeManager, keyboardShortcuts, AccessibilityUtils } from './utils.js';
 
 import { signUp, signIn, signOut } from './auth.js';
 import { renderKaderTab } from './kader.js';
@@ -775,6 +775,9 @@ supabase.auth.onAuthStateChange(async (event, session) => {
 window.addEventListener('DOMContentLoaded', async () => {
 	console.log("DOMContentLoaded!");
     
+    // Initialize new features
+    initializeEnhancements();
+    
     // Show fallback status if using fallback mode
     if (usingFallback) {
         showFallbackStatus();
@@ -782,6 +785,97 @@ window.addEventListener('DOMContentLoaded', async () => {
     
     await renderLoginArea();
 });
+
+// Initialize enhanced features
+function initializeEnhancements() {
+    // Initialize theme manager
+    themeManager.init();
+    
+    // Setup theme toggle button
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const newTheme = themeManager.toggleTheme();
+            const icon = themeToggle.querySelector('i');
+            if (icon) {
+                icon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+            }
+            ErrorHandler.showSuccessMessage(`Theme zu ${newTheme === 'dark' ? 'Dunkel' : 'Hell'} gewechselt`);
+        });
+        
+        // Set initial icon
+        const icon = themeToggle.querySelector('i');
+        if (icon) {
+            icon.className = themeManager.getCurrentTheme() === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+    }
+    
+    // Add accessibility enhancements
+    AccessibilityUtils.addSkipLinks();
+    
+    // Setup global keyboard shortcuts
+    keyboardShortcuts.register('ctrl+shift+h', () => {
+        keyboardShortcuts.showHelp();
+    }, 'Tastenkürzel-Hilfe anzeigen');
+    
+    keyboardShortcuts.register('ctrl+shift+e', () => {
+        showExportModal();
+    }, 'Export-Optionen anzeigen');
+    
+    // Announce app ready to screen readers
+    setTimeout(() => {
+        AccessibilityUtils.announceToScreenReader('FIFA Tracker Anwendung geladen');
+    }, 1000);
+}
+
+// Show export options modal
+function showExportModal() {
+    import('./modal.js').then(({ showModal }) => {
+        const exportHtml = `
+            <div class="export-modal-content">
+                <h3 class="text-lg font-semibold mb-4">Daten exportieren</h3>
+                <p class="text-sm text-gray-400 mb-4">Wählen Sie das gewünschte Exportformat:</p>
+                <div class="export-buttons">
+                    <button class="export-btn" onclick="handleExportJSON()">
+                        <i class="fas fa-file-code"></i>
+                        JSON Export
+                    </button>
+                    <button class="export-btn" onclick="handleExportCSV()">
+                        <i class="fas fa-file-csv"></i>
+                        CSV Export
+                    </button>
+                </div>
+                <p class="text-xs text-gray-500 mt-4">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Exports enthalten alle verfügbaren Daten aus der aktuellen Sitzung.
+                </p>
+            </div>
+        `;
+        
+        // Setup export handlers
+        window.handleExportJSON = () => {
+            import('./utils.js').then(({ DataExport }) => {
+                DataExport.exportToJSON({ message: 'Demo export data' }, 'fifa_tracker_demo');
+            });
+        };
+        
+        window.handleExportCSV = () => {
+            import('./utils.js').then(({ DataExport }) => {
+                const demoData = [
+                    { name: 'Beispiel Spieler', team: 'AEK', position: 'ST', value: 100000 }
+                ];
+                DataExport.exportToCSV(demoData, 'fifa_tracker_demo');
+            });
+        };
+        
+        showModal(exportHtml, {
+            onClose: () => {
+                delete window.handleExportJSON;
+                delete window.handleExportCSV;
+            }
+        });
+    });
+}
 
 // Show fallback status indicator
 function showFallbackStatus() {

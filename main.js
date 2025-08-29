@@ -698,6 +698,7 @@ async function showLoginForm() {
                                 type="email" 
                                 id="email" 
                                 name="email" 
+                                data-field-name="E-Mail"
                                 required 
                                 placeholder="ihre@email.com" 
                                 class="form-input"
@@ -709,6 +710,7 @@ async function showLoginForm() {
                                 type="password" 
                                 id="pw" 
                                 name="password" 
+                                data-field-name="Passwort"
                                 required 
                                 placeholder="Ihr Passwort" 
                                 class="form-input"
@@ -727,8 +729,24 @@ async function showLoginForm() {
         // Setup form handler
         const form = document.getElementById('loginform');
         if (form) {
+            // Add enhanced form validation
+            import('./utils.js').then(({ FormValidator, AccessibilityUtils }) => {
+                FormValidator.setupRealTimeValidation(form);
+                AccessibilityUtils.enhanceFormAccessibility(form);
+            });
+
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                
+                // Validate form before submission
+                const { FormValidator } = await import('./utils.js');
+                const validation = FormValidator.validateForm(form);
+                
+                if (!validation.valid) {
+                    ErrorHandler.showUserError(`Bitte korrigieren Sie folgende Fehler: ${validation.errors.join(', ')}`, 'warning');
+                    return;
+                }
+                
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('pw').value;
                 
@@ -737,6 +755,7 @@ async function showLoginForm() {
                 if (submitBtn) {
                     submitBtn.textContent = 'Anmelden...';
                     submitBtn.disabled = true;
+                    submitBtn.classList.add('form-loading');
                 }
                 
                 try {
@@ -748,6 +767,7 @@ async function showLoginForm() {
                     if (submitBtn) {
                         submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmelden';
                         submitBtn.disabled = false;
+                        submitBtn.classList.remove('form-loading');
                     }
                 }
             });

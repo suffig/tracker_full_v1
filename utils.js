@@ -783,10 +783,10 @@ export class KeyboardShortcuts {
 
     getKeyString(event) {
         const parts = [];
-        if (event.ctrlKey) parts.push('Ctrl');
-        if (event.altKey) parts.push('Alt');
-        if (event.shiftKey) parts.push('Shift');
-        if (event.metaKey) parts.push('Meta');
+        if (event.ctrlKey) parts.push('ctrl');
+        if (event.altKey) parts.push('alt');
+        if (event.shiftKey) parts.push('shift');
+        if (event.metaKey) parts.push('meta');
         
         if (event.key && !['Control', 'Alt', 'Shift', 'Meta'].includes(event.key)) {
             parts.push(event.key.toLowerCase());

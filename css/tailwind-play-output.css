@@ -1887,7 +1887,7 @@ input:focus, select:focus, textarea:focus {
   position: fixed;
   top: 1rem;
   left: 1rem;
-  z-index: 50;
+  z-index: 1050; /* Higher than skip links */
   background: rgba(59, 130, 246, 0.9);
   color: white;
   border: none;
@@ -1928,7 +1928,7 @@ input:focus, select:focus, textarea:focus {
 .skip-nav {
   position: absolute;
   top: 0;
-  left: 0;
+  left: 70px; /* Position after theme toggle */
   z-index: 1000;
 }
 
@@ -1942,6 +1942,7 @@ input:focus, select:focus, textarea:focus {
   text-decoration: none;
   border-radius: 4px;
   transition: top 0.3s;
+  font-size: 0.875rem;
 }
 
 .skip-link:focus {
